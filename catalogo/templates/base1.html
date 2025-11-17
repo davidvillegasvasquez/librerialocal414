@@ -1,0 +1,90 @@
+{% load static %} <!-- Sin esta etiqueta no se cargará el favicon que está en el directorio de los estáticos. -->
+<!DOCTYPE html>
+<html>
+<title>LibreríaLocalMain</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Link para el favicon: -->
+<link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}">
+<!-- Link para css: -->
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+
+<body class="w3-container">
+  <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:23%">
+      {% block barraLateral %}
+      <h3 class="w3-bar-item">Menu</h3>
+      <a href="{% url 'vistaHome' %}" class="w3-bar-item w3-button">Home</a>
+      <a href="{% url 'todosLoslibros' %}" class="w3-bar-item w3-button">Todos los libros</a>
+      <a href="{% url 'librosConBarbara' %}" class="w3-bar-item w3-button">Libros con Barbara</a>
+      <a href="{% url 'toditicosLosAutores' %}" class="w3-bar-item w3-button">Todos los autores</a>
+      <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
+      <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario común html(no de la clase django forms) que envía a la vista genérica de detalle de autor, name='autorDetalles', introduciendo su id (parámetro de ruta)</a>
+
+      <a href="{% url 'redirigiendoA-listaDelibros' %}" class="w3-bar-item w3-button">Redirigir desde aquí a la vista de lista de todos los libros, usando una función anónima lambda directamente en el mapeador url en urls.py, sin una vista en views.py</a>
+
+      <a href="{% url 'UsarUnHttpResponseSinPlantillaNiVista' %}" class="w3-bar-item w3-button">Usando un HttpResponse sin plantilla en templates, ni vista en views.py, usando una función anónima lambda</a>
+
+      <a href="{% url 'formModelChoiceFieldAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario de consulta para el ForeignKey autor y sus libros usando formularios django forms y campos forms.ModelChoiceField</a>
+
+      <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
+      <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
+      <a href="{% url 'resetearVisitas' %}" class="w3-bar-item w3-button">Reestablecer contador</a>
+          {% if user.is_authenticated %}
+            <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.groups.all.0.name == "bibliotecarios" %} es bibliotecario {% if user.is_staff %} y perteneca al staff (puede eliminar libros y autores){% endif %}{% else %} y es un usuario normalito{% endif %}</span>
+            
+      <a href="{% url 'misLibrosalquilados' user.get_username %}" class="w3-bar-item w3-button">Libros en manos de {{ user.get_username }} </a>
+      <a href="{% url 'logout' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Cerrar sesión</a>      
+            {% if perms.catalogo.puedeMarcarRetornado %}
+              <hr>
+              <span class="w3-bar-item">Bibliotecario</span>
+              <a href="{% url 'librosAlquiladosActualmente' %}" class="w3-bar-item w3-button">Todos los libros prestados actualmente por la biblioteca</a>
+              <a href="{% url 'crearautorini' %}" class="w3-bar-item w3-button">Crear Autor</a>
+              <a href="{% url 'crearlibro' %}" class="w3-bar-item w3-button">Crear Libro</a>
+    
+              {% endif %}
+          {% else %}
+    
+              <a href="{% url 'login' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Iniciar sesión</a>
+       {% endif %}   
+        
+       <!-- Pegamos dos etiquetas contiguas con flexboxs: -->
+       <div class="w3-container">
+         <div class="w3-flex" style="gap:8px">
+           <div class="w3-padding w3-green"><h3>1</h3></div>
+
+           <div class="w3-card-4">
+            <header class="w3-container w3-blue">
+              <h5>Encabezado</h5>
+            </header>
+           
+            <div class="w3-container">
+              <p>Esta es una etiqueta con sombra 4.</p>
+            </div>
+
+            <footer class="w3-container w3-blue">
+              <h5>Pie</h5>
+            </footer>
+         </div>  
+       </div>
+       </div>
+      <!-- Fin del bloque barra lateral: -->  
+      {% endblock %}
+  </div>
+
+<!-- Bloque de contenido principal: -->
+
+  <div style="margin-left:25%">
+      <div class="w3-container w3-teal">
+      <h1>Librería Local No Paginada</h1>
+      </div>
+
+      <!-- Bloque para sobreescribir en la plantilla heredera o hija -->
+      {% block content %}{% endblock %}
+
+      <!-- Comienzo bloque de implementación de la paginación: -->
+      
+      <!-- Fin división contenido principal -->
+  </div>
+    
+</body>
+</html>

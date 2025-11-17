@@ -1,0 +1,24 @@
+{% extends "base1.html" %}
+
+{% block content %}
+  <h1>Titulo: {{ libro }} <span style="font-family: Arial; font-size: 18px; color: blue;">(libro.id:{{ libro.id }})</span></h1>
+<!-- Recuerde que la variable de contexto es el nombre del modelo en minúsculas, en este caso, libro -->
+<!-- {{ libro.autor.get_absolute_url }} es igual a {% url 'autorDetalles' libro.autor.pk %} la primera proposición es más concisa y robusta.-->
+  <p><strong>Autor:</strong> <a href="{{libro.autor.get_absolute_url}}">{{ libro.autor }}</a> (libro.autor.id:{{libro.autor.id}}) libro.id:{{libro.id}}</p> <!-- enlace de detalle del autor: el url es el name que definimos para el mapeador path('autor/<int:pk>', views.VistaDetalladaGenAutor.as_view(), name='detallesAutor') -->
+  <p><strong>Resumen:</strong> {{ libro.descripcion }}</p>
+  <p><strong>ISBN:</strong> {{ libro.isbn }}</p>
+  <p><strong>Idioma:</strong> {{ libro.lenguaje }}</p>
+  <p><strong>Genero:</strong> {% for objReturnSelfNombre in libro.genero.all %} {{objReturnSelfNombre}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Copias</h4>
+    <!-- libro.libroinstancia_set.all es un método "automágicamente" creado por Django para devolver el conjunto de registros (instancias) del modelo LibroInstancia, asociado con una instancia o registro del modelo Libro, en particular. Este método es necesario porque has declarado un campo ForeignKey (uno-a-muchos) únicamente en el lado "muchos" (modelo LibroIntancia) de la relación. Como no haces nada para declarar la relación en el otro lado "uno" (modelo Libro), este no tiene ningún campo para obtener el conjunto de registros asociados. Para superar este problema, Django construye una función apropiadamente llamada "búsqueda reversa" que puedes usar. La función se construye escribiendo en minúsculas el nombre del modelo dónde está la clave principal (lado de 1), punto, nombre en minúscula del modelo donde la ForeignKey fue declarada (lado muchos), seguido por _set. Así, la función creada es: libro.libroinstancia_set()). Se lee: conjunto de las copias (libroinstancias) para ese libro: -->
+    {% for copia in libro.libroinstancia_set.all %}
+    <hr>
+    <p class="{% if copia.estatus == 'd' %}text-success{% elif copia.estatus == 'm' %}text-danger{% else %}text-warning{% endif %}">{{ copia.get_estatus_display }}</p>
+    {% if copia.estatus == 'p' %}<p><strong>Pendiente de devolución:</strong> {% if not copia.estaVencido %}{{copia.debidoderegresar}} {% else %} el usuario de nombre "{{copia.prestatario}}" (id.{{copia.prestatario.id}}) debió regresarlo el {{ copia.debidoderegresar }} ... no ha regresado el libro aún!!! {% endif %}</p>{% endif %}<!--Note cómo podemos llegar hasta el id del usuario, prestatario de la instancia de libro (copia.prestatario.id), a través de un elemento de libro.libroinstancia_set.all: con django se hace fácil e intuitivo acceder a los valores de los campos de las intancias de sus modelos correspondientes.--> 
+    <p><strong>Imprenta:</strong> {{copia.imprenta}}</p>
+    <p class="text-muted"><strong>Id:</strong> {{copia.id}}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

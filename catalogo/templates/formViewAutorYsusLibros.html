@@ -1,0 +1,35 @@
+{% extends "base1.html" %}
+{% block content %}
+
+<form method="post">
+{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="accion" value="seleccionarAutor">Sus libros</button>
+    <button id="id_selecLibro" type="submit" name="accion" value="seleccionarLibroDelAutor" disabled>Ver el libro</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectElement = document.getElementById('{{ form.librosEnFormulario.id_for_label }}');
+    const submitButton = document.getElementById('id_selecLibro');
+
+    // Lógica inicial al cargar la página
+    if (selectElement.value) {
+        submitButton.disabled = false;
+    } else {
+        submitButton.disabled = true;
+    }
+
+    // Lógica al cambiar la selección
+    selectElement.addEventListener('change', function() {
+        if (selectElement.value) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    });
+});
+</script>
+
+
+{% endblock %}

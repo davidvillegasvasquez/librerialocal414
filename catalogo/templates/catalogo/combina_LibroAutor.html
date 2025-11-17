@@ -1,0 +1,21 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<h2>Lista de autores actuales en la biblioteca:</h2>
+<ul>
+    <!-- Aquí vemos la importancia y vigencia de la función de etiquetas para plantillas del tipo {% url nombreUrl parámetro %}, puesto que debemos enviar un parámetro al url específicado, que no tiene un enlace explícito o visible para clikear a la vista y plantilla a usar: -->
+    {% for objeto in objetos_combinados %}
+        <li>{{ objeto }}</li>
+    {% endfor %}
+</ul>
+
+<!--
+<h2>Lista de libros actuales en la biblioteca:</h2>
+<ul>
+    {% for itemLibro in listaDeLibros %}
+        <li>{{ itemLibro }}</li>
+    {% endfor %}
+</ul> -->
+
+{% endblock %}

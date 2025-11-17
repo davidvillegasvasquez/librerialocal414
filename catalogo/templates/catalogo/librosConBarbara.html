@@ -1,0 +1,30 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+    <h1>Lista de libros con Barbara</h1>
+
+    {% if listaDeLibrosConBarbara %}
+
+    <ul>
+      
+      {% for objeto in listaDeLibrosConBarbara %}
+
+      <li>
+        <!-- Usamos href="{% url 'detallesDeLibro' objeto.id %}" en vez de href="{{ objeto.get_absolute_url }}" para este caso, con fines didáctico: sabemos que es preferible usar el método get_absolute_url que implementamos en el código de este modelo para este tipo de url dinámicas que tienen parámetros. -->
+        
+        <a href="{% url 'detallesDeLibro' objeto.id %}">{{ objeto.titulo }}</a> ({{objeto.autor}}) <br> Retorno del método objeto.get_absolute_url o la función url 'detallesDeLibro' objeto.id: {{objeto.get_absolute_url}}
+      </li>
+        
+      {% endfor %}
+      <br>-La variable de contexto principal declarada para esta vista genérica, context_object_name = 'listaDeLibrosConBarbara': {{listaDeLibrosConBarbara}}
+      <br>-La variable de contexto adicional 'una2daVariableDeContexto': {{una2daVariableDeContexto}}
+      <br>-Y la variable de contexto, 'variableDeContextoN' (50+25+3.1415+200+500): {{variableDeContextoN}}
+
+       {% comment %} Cuando queremos generar la url dinamicamente de un enlace a una página, la única opción es la etiqueta de función {% url 'nombreDeLaUrlEnFunciónPath' %}. Observación: no puedo comentar este texto con las etiquetas html de comentar, <!-- -->, porque me lee la etiqueta de función url y me envia el error "no se encuentra el reverso para 'nombreDeLaUrlEnFunciónPath'. Averiguar por qué pasa esto.{% endcomment %}
+    </ul>
+    
+    {% else %}
+      <p>No hay libros en la biblioteca con barbara en su título.</p>
+    {% endif %}
+{% endblock %}

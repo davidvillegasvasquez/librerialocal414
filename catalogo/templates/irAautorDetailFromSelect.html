@@ -1,0 +1,28 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<p>Lista de libros del autor id 1<strong>{{ autor_context }}</strong>: {{ sus_libros }}</p>
+<p>Autores: {{ autores_contx }}</p>
+
+{% if autores_contx %}
+
+<select class="w3-select w3-border" onchange="mostrarValor(this.value)" style="width:50%">
+    <option value="" disabled selected>Escoje el autor</option>
+    <!-- Nota: en value puedo prescindir de las comillas, si no dejo espacio entre las llaves, así: value={{objeto.get_absolute_url}} -->
+    {% for objeto in autores_contx %}
+    <option value="{{ objeto.get_absolute_url }}">{{ objeto }}</option>
+    {% endfor %}
+</select>
+{% else %}  
+  <p>No hay autores.</p>
+{% endif %}
+
+<script>
+//Claro, podemos usar onchange="window.location.href = this.value" en el elmento <select>, en lugar de esta función, y es más conciso:  
+function mostrarValor(url) {
+    window.location.href = url;
+}
+</script>
+
+{% endblock %}

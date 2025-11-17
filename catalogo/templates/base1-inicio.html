@@ -1,0 +1,26 @@
+{% extends "base1.html" %}<!--Heredado o extendido de base1.html -->
+
+{% block content %}
+<div class="w3-panel w3-red">
+<p><h1>Librería versión no paginada</h1></p>
+</div>
+<div class="w3-container">
+  <p>Bienvenido a la <em>biblioteca local</em>, un website muy básico desarrollado en el framework backend django,por Mozilla Developer Network.</p>
+<div class="w3-container">
+  <div class="w3-card-4" style="width:50%; margin:auto;">
+  <ul class="w3-ul">
+    <li><h3>Estadísticas de la librería:</h3></li>
+    <li><strong>Libros:</strong> {{ cant_libros }}</li>
+    <li><strong>Copias:</strong> {{ cant_instancias }}</li>
+    <li><strong>Copias disponibles:</strong> {{ cant_inst_dispon }}</li>
+    <li><strong>Autores:</strong> {{ cant_autores }}</li>
+    <li><strong>Generos:</strong> {{ cant_generos }}</li>
+  </ul>
+  </div>
+</div> 
+ 
+<div class="w3-container">
+<p>Has visitado esta página {{ cantVisitas }}{% if cantVisitas == 1 %} vez {% else %} veces {% endif %}. <a href="{% url 'resetearVisitas' %}">Reestablecer contador</a></p>
+</div>
+
+{% endblock %}

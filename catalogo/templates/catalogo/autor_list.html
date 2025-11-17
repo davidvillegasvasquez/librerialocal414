@@ -1,0 +1,29 @@
+{% extends "base1.html" %}
+
+{% block content %}
+    <h1>Lista de Autores</h1>
+
+    {% if autor_list %}
+    <br>
+    
+    <input oninput="w3.filterHTML('#id01', 'li', this.value)" class="w3-input w3-light-gray" placeholder="Búsqueda por nombre de autor:">
+    <ul id="id01" class="w3-ul w3-margin-top w3-border">
+    {% for objetoX in autor_list %}
+      <li>
+        <a href="{{objetoX.get_absolute_url}}">
+        <!-- Recuerde que el objeto retorna la propiedad nombre y apellido con el su atributo método __str__(self): return '%s, %s' % (self.apellido, self.nombre) -->
+      {{ objetoX }} </a>(id:{{ objetoX.id }}) ({{ objetoX.nacimiento }} - {% if objetoX.muerte %}{{objetoX.muerte}}{% endif %}) {% if perms.catalogo.puedeMarcarRetornado %}<a href="{% url 'actualizarEsteAutor' objetoX.id %}">Actualizar</a> {% endif %}{% if user.is_staff %}<a href="{% url 'borrar-autor' objetoX.id %}">-Borrar</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <p>Variable de contexto autor_list: {{autor_list}}</p>
+    
+    <br>
+    {% else %}  
+      <p>No hay libros en la biblioteca.</p>
+    {% endif %}
+    <br>
+    <p><a href="{% url 'librosConBarbara' %}">Libros con barbara</a></p>
+{% endblock %}
+

@@ -1,0 +1,12 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<p>¡Sesión finalizada!</p>
+
+<a href="{% url 'login' %}">Haga clic aquí para iniciar sesión nuevamente.</a>
+
+<!-- En la plantilla de tu página de inicio de sesión -->
+<p>Usuario: {{ user.get_username }}</p>
+
+{% endblock %}

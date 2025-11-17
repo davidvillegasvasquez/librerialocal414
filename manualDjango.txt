@@ -1,0 +1,280 @@
+Para ver mi versión django: $ python3 -m django --version
+
+Visión general
+
+Resumen creación de un sitio web "esqueleto", que puedes luego llenar con configuraciones específicas del sitio, urls, modelos, vistas y plantillas.
+
+El proceso es sencillo:
+
+-Usar la herramienta django-admin para crear la carpeta del proyecto, los ficheros de plantillas básicos y el script de gestión del proyecto (manage.py).
+
+-Usar manage.py para crear una o más aplicaciones.
+
+Nota: Un sitio web puede consistir de una o más secciones, ej. sitio principal, blog, wiki, area de descargas, etc. Django te recomienda encarecidamente que desarrolles estos componentes como aplicaciones separadas que podrían ser reutilizadas, si se desea, en otros proyectos.
+
+-Registrar las nuevas aplicaciones para incluirlas en el proyecto.
+
+-Conectar el mapeador url de cada aplicación.
+
+Estructura directorios y ficheros del sitio web y proyecto:
+
+locallibrary/         # Carpeta del sitio web creado usando django-admin
+    manage.py         # Script para ejecutar las herramientas de Django 
+
+    locallibrary/     # Carpeta del Sitio web/Proyecto
+    catalog/          # Carpeta de la Aplicación (creada usando manage.py)
+
+
+                **************
+
+
+Procedimiento creación del website-proyecto:
+
+1. Primero se crea el website y proyecto (directorio, subdirectorio y fichero manage.py usando la herramienta script django-admin, en el directorio deseado: 
+
+    django-admin startproject locallibrary
+
+2. Para crear las aplicaciones del proyecto se usa el script de gestión del proyecto, manage.py, obvio en el directorio dónde se encuentra dicho módulo de script: 
+
+    python3 manage.py startapp catalog
+
+3. Se registra la nueva aplicación en el proyecto para incluirla en la ejecución de cualquiera de las herramientas. Para ello se añade a la lista INSTALLED_APPS en settings.py quedándo así:
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    ...
+    'catalog.apps.CatalogConfig',
+]
+
+4. Se conecta el mapeador url. El sitio web se crea con un fichero mapeador de URLs (urls.py) en la carpeta de entrada del proyecto (/locallibrery/locallibrary/urls.py). Los mapeos URL se gestionan a través de la variable urlpatterns, que es una lista Python de funciones path(). Cada función path() asocia un patrón URL a una vista específica. Añadimos el nuevo path() a la lista urlpatterns, que redirige las peticiones (request) con el patrón de la aplicación específica, en este caso de ejemplo, catalog/ al módulo catalog.urls (el fichero con el URL relativo /catalog/urls.py):
+
+from django.urls import include
+
+urlpatterns += [
+    path('catalog/', include('catalog.urls')),
+]
+
+5. Redirijamos con la función especial RedirectView la URL raíz de nuestro sitio (ej. 127.0.0.1:8000) al URL 127.0.0.1:8000/catalog/; esta es la única app que usaremos en este proyecto, así que es lo que deberíamos hacer. Toma como su primer argumento la nueva URL relativa a redirigir a (/catalog/) cuando el patrón URL especificado en la función path() se empareja (la URL raíz, en este caso). Añadimos: 
+
+#Add URL maps to redirect the base URL to our application
+from django.views.generic import RedirectView
+urlpatterns += [
+    path('', RedirectView.as_view(url='/catalog/', permanent=True)),
+]
+
+6. Como estamos en fase de desarrollo, habilitamos el servicio de ficheros estáticos agregando a urlpatterns. Recuerde que django no sirve ficheros estáticos, de ahí que tenemos que simular que usamos un servicio web que nos proporciona el contenido estático para nuestro proyecto: 
+
+# Use static() to add url mapping to serve static files during development (only)
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+7. Por último, creamos el fichero urls.py dentro del directorio de nuestra aplicación de ejemplo, catalog, y le añadimos lo siguiente: 
+
+from django.urls import path
+from . import views
+
+urlpatterns = []
+
+Éste es donde añadimos nuestros patrones urls a medida que construimos la aplicación.
+
+8. En este punto tenemos un proyecto de esqueleto completo. Cuando creamos el sitio web de Django, añadimos automáticamente unos cuantos modelos para ser usados por la sección de administración que viene prefabricado del sitio. Todo esto lo hace el Object-Relational-Mapper (ORM) para mapear las definiciones de Modelos en el código Django con la estructura de datos utilizada por la base de datos subyacente. Ejecuta los siguientes comandos para definir tablas para esos modelos de la base de datos, esto se denomina migración. Procedemos a hacer las migraciones de la base de dato para ejecutar los cambios estructurales en la base de datos:
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+9. Finalmente corremos el servidor web de desarrollo de django:
+
+python3 manage.py runserver
+
+Una vez que el servidor está funcionando puedes ver el sitio navegando a http://127.0.0.1:8000/ en tu explorador local. Deberías ver una página de error del sitio "Page not found (404).  Es lo esperado porque no tenemos ninguna página/url definidas en el módulo catalog.urls, que es al que nos redirigimos cuando obtenemos la URL a la raíz del sitio, recuerde la función especial RedirectView a la URL raíz de nuestro sitio 127.0.0.1:8000/catalog/ en librerialocal/urls.py. Nota: si cambias el sitio en RedirectView, seguirá redirigiendo al sitio anterior si no borra el caché del navegador. Por otra parte, si usas https en las peticiones, se producirá un error porque el servidor de desarrollo sólo funciona con el protocolo http.
+
+10. Definimos los modelos (tablas) para la base de datos subyacente. El modelo de un modelo django es así:
+
+from django.db import models
+
+class MyModelName(models.Model):
+    """
+    Una clase típica definiendo un modelo, derivado desde la clase Model.
+    """
+
+    # Campos
+    my_field_name = models.CharField(max_length=20, help_text="Enter field documentation")
+    ...
+
+    # Metadata
+    class Meta:
+        ordering = ["-my_field_name"]
+
+    # Métodos
+    def get_absolute_url(self):
+         """
+         Devuelve la url para acceder a una instancia particular de MyModelName.
+         """
+         return reverse('model-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+        """
+        Cadena para representar el objeto MyModelName (en el sitio de Admin, etc.)
+        """
+        return self.field_name
+
+Los modelos los definimos en el módulo models.py de la aplicación en cuestión. Una vez que has definido tus clases de modelos puedes usarlas para crear, actualizar o borrar registros, y ejecutar consultas para obtener todos los registros o subconjuntos particulares de registros en la base de datos.
+
+10. Hacemos las migraciones para crear las tablas basadas en los modelos que hicimos, en la base de datos subyacentes:
+    python3 manage.py makemigrations
+    python3 manage.py migrate
+
+11. Usaremos el sitio o aplicación de administración de Django para añadir algunos datos de inicialización a nuestras tablas (modelos). Esta puede usar tus modelos para construir automáticamente un área dentro del sitio que puedes usar para crear, consultar, actualizar y borrar registros. Esta aplicación sólo se usa para los administradores del sitio (staff) como sugiere su nombre. Para los usuarios públicos se debe usar el sistema de autenticación de Django con el objeto User. Toda su gestión se codifica en los módulos admin.py de las aplicaciones respectivas que hallan en tu proyecto django.
+
+11.1 Se registran los modelos en admin.py (/locallibrary/catalog/admin.py). Esta es la forma simple de registrar los modelos y los muestra de forma sencilla y plana para cada modelo de cada aplicación que hallas hecho en tu proyecto django:
+
+from .models import Author, Genre, Book, BookInstance
+
+admin.site.register(Book)
+admin.site.register(Author)
+admin.site.register(Genere)
+admin.site.register(BookInstance)
+
+11.2 Se crea una cuenta "administrador" que tenga acceso total al sitio y a todos los permisos necesarios (super usuario) usando manage.py:
+
+python3 manage.py createsuperuser
+
+Deberás ingresar un nombre de usuario, dirección email, y una contraseña fuerte
+
+Activa el servidor de desarrollo (python3 manage.py runserver) y ve a http://127.0.0.1:8000/admin e ingresa tus credenciales de id usuario y contraseña de administrador (serás redirigido a la página login, y entonces volverás a la URL de /admin después de haber ingresado tus datos).
+
+Esta parte del sitio muestra todos tus modelos, agrupados por aplicación instalada. Puedes hacer click en un nombre de modelo para ir a una pantalla que lista todos los registros asociados, y además puedes hacer click sobre esos registros para editarlos. También puedes hacer click directamente sobre el vínculo Añadir a continuación de cada modelo para comenzar a crear un registro de ese tipo.
+
+11.3 Registrar una clase ModelAdmin
+Para cambiar la forma sencilla y plana en la que un modelo se despliega en la interfaz de administración, por una más funcional y personalizada, debes definir una clase ModelAdmin (que describe el diseño) para el modelo a personalizar. Para ello debes eliminar los registros sencillos (admin.site.register(nombreModelo) o comentarlos para inutilizarlos.
+
+Comencemos con el modelo Author. Abre admin.py en la aplicación catalog (/locallibrary/catalog/admin.py). Comenta tu registro original para el modelo Author (colocando el prefijo # en la línea):
+
+# admin.site.register(Author)
+
+Ahora añade una nueva clase AuthorAdmin y regístrala como se muestra abajo (El nombre de la clase es arbitrario, no es reservado de django). Esto es recomendable para dar mayor legibilidad a la página:
+
+# Define the admin class (list_display si es palabra reserv)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('last_name', 'first_name', 'date_of_birth', 'date_of_death')
+
+# Register the admin class with the associated model
+admin.site.register(Author, AuthorAdmin).
+
+La línea de proposición admin.site.register(Author, AuthorAdmin) está en deshuso. Ahora se usa solamente un decorador para dichas clases para modelos:
+
+@admin.register(nombreDelModelo)
+class nomClaseParaElmodelo(admin.ModelAdmin):
+    list_display = (......
+
+12. Procedemos hacer las vistas y sus plantillas respectivas.
+
+    Ahora que hemos definindo nuestros modelos y hemos creado los primeros registros en la aplicación para trabajar, es hora de escribir código para presentar información a los usuarios (público en internet). Lo primero que necesitamos es determinar que información queremos mostrar en nuestras páginas, y definir una URL apropiada hacia estos recursos. Vamos a necesitar crear el mapeador de URLs, las vistas y plantillas para mostrar estas páginas.
+
+  Los principales elementos que necesitamos crear son:
+
+    -Mapeadores URL para reenviar las URLs admitidas (y cualquier información codificada en las URLs) a las funciones de vista apropiadas.
+    -Funciones de vista para obtener los datos solicitados desde los modelos, crear una página HTML que muestre los datos, y devolverlo al usuario para que lo vea en el navegador.
+    -Plantillas usadas por las vistas para renderizar los datos.
+
+12.1. Abra urls.py en el directorio de la aplicación y agregue la primera función path a la lista de funciones path urlpatterns:
+
+    urlpatterns = [path('', views.index, name='idParaIndex'),]
+
+Esta función path() define una cadena vacía (''), y una función vista que será llamada si el patrón es detectado (views.index — una función llamada para este ejemplo, index(), en views). Lo que necesitas saber es que en un patron de '' coincidirá con una cadena vacía. Nuestra primera función vista será llamada si recibimos una consulta HTTP con una URL de /catalog/, gracias a la funcion include('catalog.urls') de la función path en el módulo urls.py en el directorio del proyecto. La función include() corta cualquier parte de la URL que coincida hasta este punto, y envía el resto de la cadena para incluir la configuración URL para el siguiente procesamiento.
+    La función path() también especifica un parámetro name, que identifica de manera única este mapeador de URL particular. Puedes usar este nombre para "revertir" el mapeador — para crear dinámicamente una URL que apunta al recurso que el mapeador esta diseñado para manejar. Por ejemplo, con esto hecho, ahora podemos enlazar nuestra página inicio creando el siguiente enlace en nuestra plantilla para un hipervínculo como Home, por ejemplo:
+    <a href="{% url 'idParaIndex' %}">Home</a>.
+
+12.2 Vista (basada en funciones)
+    Una vista es una función que procesa una consulta HTTP, trae datos desde la base de datos cuando los necesita, genera una página HTML renderizando estos datos usando una plantilla HTML, y luego retorna el HTML en una respuesta HTTP para ser mostrada al usuario. La vista del índice sigue este modelo — extrae para nuestro ejemplo, información sobre cuantos Book, BookInstance, BookInstance disponibles y registros Author tenemos en la base de datos, y los pasa a una plantilla para mostrarlos.
+    Abre catalog/views.py, y nota que el archivo ya importa el atajo de la función render() que genera archivos HTML usando una plantilla y datos:
+
+    from django.shortcuts import render
+
+    # Create your views here.
+
+La vista para nuestro ejemplo es:
+
+from .models import Book, Author, BookInstance, Genre
+
+def index(request):
+    """
+    Función vista para la página inicio del sitio.
+    """
+    # Genera contadores de algunos de los objetos principales
+    num_books=Book.objects.all().count()
+    num_instances=BookInstance.objects.all().count()
+    # Libros disponibles (status = 'a')
+    num_instances_available=BookInstance.objects.filter(status__exact='a').count()
+    num_authors=Author.objects.count()  # El 'all()' esta implícito por defecto.
+
+    # Renderiza la plantilla HTML index.html con los datos en la variable contexto
+    return render(
+        request,
+        'index.html',
+        context={'numeros_books':num_books,'cant_instances':num_instances,'cant_instances_available':num_instances_available,'cant_authors':num_authors},
+    )
+
+13. Plantillas
+
+Una plantilla es un archivo de texto que determina la estructura o diseño de un archivo (como una página HTML), con marcadores usados para representar el contenido real. Django automaticamente buscará plantillas en un directorio llamado 'templates' de su aplicación. Así por ejemplo, en la vista índice que acabamos de agregar, la función render() esperará poder encontrar el archivo /locallibrary/catalog/templates/index.html, y entregará un error si el archivo no puede ser encontrado.
+
+13.1 Plantillas extendidas
+    La plantilla índice va a necesitar marcado HTML estándar para la cabecera y el cuerpo, junto con secciones para navegar (a otras páginas en el sitio que todavía no hemos creado) y para mostrar algún texto introductorio y nuestros datos de libro. La mayoría de este texto (el HTML y la estructura de navegación) será el mismo para cada página en nuestro sitio. En lugar de obligar a los desarrolladores a duplicar este texto en cada página, el lenguaje de plantillas de Django le permite declarar una plantilla base y luego extenderla, reemplazando solo las porciones que son distintos para cada página específica.
+
+Por ejemplo, un plantilla base base_generic.html podría verse como el texto de abajo. Como puedes ver, este contiene algo de HTML "común" y secciones para el título, barra lateral, y contendio marcados usando las etiquetas de plantillas llamadas block y endblock (mostradas en negrita). Los bloques pueden estar vacíos, o tener contenido que será usado "por defecto" para páginas derivadas.
+
+Nota: Las etiquetas de plantilla son como funciones que puede usar en una plantilla para recorrer listas, realizar operaciones condicionales basadas en el valor de una variable, etc. Además de las etiquetas de plantilla, la sintaxis de plantilla te permite referenciar variables de plantilla (que son pasadas en la plantilla desde la vista) y usar filtros de plantilla, que reformatean las variables (por ejemplo, establecer una cadena en minúsculas).
+
+Una plantilla madre extendible para crear otras plantillas similares, podría verse así:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block title %}<title>Local Library</title>{% endblock %}
+</head>
+
+<body>
+  {% block sidebar %}<!-- insert default navigation text for every page -->{% endblock %}
+  {% block content %}<!-- default content text (typically empty) -->{% endblock %}
+</body>
+</html>
+
+13.2 La plantilla hija o extendida de la madre se puede ver así:
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Local Library Home</h1>
+<p>Welcome to <em>LocalLibrary</em>, a very basic Django website developed as a tutorial example on the Mozilla Developer Network.</p>
+{% endblock %}
+
+13.3 Configuramos el contenido estático.
+
+13.4 Configuramos, enlazamos los urls.
+
+13.5 Configurando adonde buscar las plantillas.
+
+Para que Django encuentre los archivos de plantillas es necesario editar el archivo settings.py en el directorio del proyecto, agregando el directorio donde creamos nuestras plantillas en el objeto TEMPLATES, como indica la linea a continuación, en el par clave-valor correspondiente a 'DIRS' ('DIRS': [os.path.join(BASE_DIR, 'templates'),] del diccionario TEMPLATES:
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+

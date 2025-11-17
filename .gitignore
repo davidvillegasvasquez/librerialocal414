@@ -1,0 +1,6 @@
+db.sqlite3
+manualDjango.txt
+requirements.txt
+*.pyc
+__pycache__/
+

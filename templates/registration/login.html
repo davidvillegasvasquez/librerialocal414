@@ -1,0 +1,52 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <div class="w3-panel w3-red w3-border">
+      <h3>Uff! hubo un error:</h3>
+      <p>Su nombre de usuario y contraseña no coinciden!. Intente de nuevo.</p>
+</div>
+  {% endif %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Su cuenta no tiene acceso a esta página. Para continuar,
+      inicie sesión con una cuenta que tenga acceso.</p>
+    {% else %}
+      <p>Inicie sesión para poder ejecutar la acción.</p>
+    {% endif %}
+  {% endif %}
+
+<div class="w3-panel w3-tiny" style="width:50%;">
+<div class="w3-card-4">
+  <div class="w3-panel w3-brown">
+    <h2>Datos</h2>
+  </div>
+
+  <form class="w3-container" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <p>
+    <label ​class="w3-text-brown"><b>Usuario</b></label>
+    <input class="w3-input w3-border w3-sand" type="text" name="username" required>
+    </p>
+   
+    </p>
+    <p>
+    <label ​class="w3-text-brown"><b>Contraseña</b></label>
+    <input class="w3-input w3-border w3-sand" type="password" name="password" required>
+   
+    <p>
+
+    <div class="w3-panel">
+    <button type="submit" class="w3-button w3-green w3-margin-top">Acceder</button>
+    <!-- <input class="w3-button w3-border w3-black" type="submit" value="login">
+    <input type="hidden" name="next" value="{{ next }}"> -->
+    </div>
+  </form>
+</div>
+</div>
+  
+  <p><a href="{% url 'password_reset' %}">¿Olvidó su contraseña?</a></p>
+
+{% endblock %}
