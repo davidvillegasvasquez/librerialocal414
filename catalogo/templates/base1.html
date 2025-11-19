@@ -30,7 +30,7 @@
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
       <a href="{% url 'resetearVisitas' %}" class="w3-bar-item w3-button">Reestablecer contador</a>
           {% if user.is_authenticated %}
-            <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.groups.all.0.name == "bibliotecarios" %} es bibliotecario {% if user.is_staff %} y perteneca al staff (puede eliminar libros y autores){% endif %}{% else %} y es un usuario normalito{% endif %}</span>
+            <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.is_superuser %} y es super usuario {% elif user.groups.all.0.name == "bibliotecarios" %}, es bibliotecario {% if user.is_staff %} y pertenece al staff{% endif %}{% else %} y es miembro corriente{% endif %}</span>
             
       <a href="{% url 'misLibrosalquilados' user.get_username %}" class="w3-bar-item w3-button">Libros en manos de {{ user.get_username }} </a>
       <a href="{% url 'logout' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Cerrar sesión</a>      

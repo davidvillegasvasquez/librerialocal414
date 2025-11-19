@@ -34,7 +34,7 @@ class Libro(models.Model):
    
     def __str__(self):
         """
-        String que representa al objeto Book
+        String que representa al objeto Libro usando su atributo titulo.
         """
         return self.titulo
 #El método get_absolute_url para usarlo en las plantillas como href="{{ objeto.get_absolute_url }}", es generalmente preferible porque crea dinamicamente URLs más genéricas y fáciles de mantener en el código del modelo,
@@ -79,7 +79,7 @@ class LibroInstancia(models.Model):
 
     class Meta:
         ordering = ["debidoderegresar"] #ordering es un apuntador-identificador de palabra reservada de django para esta clase, no puedo usar el nombre "ordenar".
-        permissions = (("puedeMarcarRetornado", "Colocar libro como retornado"),)
+        permissions = (("puedeMarcarRetornado", "Tiene permiso para marcar libro como retornado"),)
 
     @property
     def estaVencido(self):
