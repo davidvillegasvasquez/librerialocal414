@@ -8,9 +8,7 @@ import datetime #for checking renewal date range.
 
 class ModeloFormRenovDeLibros(ModelForm):
     """
-    Este es el formulario no consolidado (el que se presenta por primera vez). Se usa principalmente para limpiar y validar la fecha de renovación introducida por el usuario.
-    Si solo necesita un formulario para asignar los campos de un solo modelo, entonces su modelo ya definirá la mayor parte de la información que necesita en su formulario: campos, etiquetas, texto de ayuda, etc. En lugar de recrear las definiciones de modelo en su formulario, usando el enfoque de usar un Form y la función view, es más fácil usar una clase auxiliar ModelForm como hacemos aquí, para crear el formulario a partir de su modelo. La gran ventaja de usar ModelForm es que si tiene que usar muchos campos, puede reducir la cantidad de código de manera bastante significativa.
-    Ahora, en formularios raros muy complejos, no genéricos con uso de multiples modelos, usamos el enfoque Form-función view.
+    
     """
     def clean_debidoderegresar(self):
         fecha = self.cleaned_data['debidoderegresar']
@@ -38,7 +36,9 @@ class ModeloFormRenovDeLibros(ModelForm):
 
 
 class LibroConsultaForm(forms.Form):
-    # Campo para la selección de la categoría (relacionada con Categoria)
+    """
+Campo para la selección de la categoría (relacionada con Categoria). Note que no hay que inicializar el campo de selección de autores a nivel de html en la plantilla, sinó que se hace desde aquí desde un principio queryset=Autor.objects.all()
+   """ 
     autorEnFormulario = forms.ModelChoiceField(queryset=Autor.objects.all(), widget=forms.Select(attrs={}), required=False)
 
     # Campo para el nombre del producto (relacionado con Producto)
@@ -56,3 +56,30 @@ class LibroConsultaForm(forms.Form):
                 print(f"valor de self.fields['librosEnFormulario'].queryset: {self.fields['librosEnFormulario'].queryset}")
             except (ValueError, TypeError):
                 pass # No se hace nada si no hay objeto_principal o no es válido
+
+#----------------------------------------------------------------------------
+
+#Formularios para construir el formulario dinámico por pasos django-formtools:
+
+class FormularioAutor(forms.ModelForm): 
+ 
+    CHOICES = [(choice.pk, f'{choice.nombre}, {choice.apellido}') for choice in Autor.objects.all()] 
+
+    identif_autor = forms.ChoiceField(label='Autor', choices=CHOICES, required=True) 
+    
+    class Meta: 
+        model = Autor 
+        fields = [] 
+      
+class FormularioLibros(forms.ModelForm): 
+  
+    def __init__(self, *args, **kwargs):   
+        choice = kwargs.pop('choice', None)   
+        super(FormularioLibros, self).__init__(*args, **kwargs) 
+
+        if choice is not None: 
+            self.fields['sus_libros'] = forms.ChoiceField(choices=choice) 
+    
+    class Meta: 
+        model = Libro 
+        fields = [] 

@@ -213,13 +213,13 @@ class VistaCombAutorLibro(generic.ListView):
 
 def goTovistaGenDetailsAutorFromSelect(solicitud):
     """
-    Función para fines didácticos, que muestra el uso de elementos w3.css select y option en su plantilla asociada, para enlazar los elementos option a las vistas detallada genéricas de autor (catalogo/autor/<int:pk>).
+    Función para fines didácticos, que muestra el uso de elementos w3.css select y option en su plantilla asociada, para enlazar los elementos input option html seleccionado, a las vistas detallada genéricas de autor (catalogo/autor/<int:pk>).
     """
     return render(solicitud,'irAautorDetailFromSelect.html', context={'autores_contx': Autor.objects.all()})
 
 def irAdetalleAutorDesdeForm(solicitud):
     """
-    Función para fines didácticos, muestra el javascript necesario para cambiar dinámicamente el parámetro de ruta en etiquetas url django en un formulario en la plantilla de esta vista.
+    Función para fines didácticos, muestra el javascript necesario en la plantilla correspondiente, para proporcionar la variable de contexto necesaria para cambiar dinámicamente el parámetro de ruta en etiquetas url django en un formulario html común y corriente en la plantilla de esta vista.
     """
     lista_valores = list(Autor.objects.values_list('id', flat=True)) #Flat=true da una lista plana
     contexto = {'listaDeIds':lista_valores}
@@ -238,29 +238,7 @@ from .forms import LibroConsultaForm
 
 def LibroConsultaView(solicituche):
     """
-class LibroConsultaView(FormView):
-    
-    Vista para un formulario combinado padre (lado uno) e hijo (lado muchos) en una relación foreignkey de sólo lecturad de datos (get), usando la vista genérica basada en clases, django FormView. FormView no se vincula directamente a un modelo por defecto, lo que la hace útil para formularios como de contacto,de búsqueda o cualquier formulario personalizado que no cree directamente un registro en la base de datos.
-    
-    template_name = 'formViewAutorYsusLibros.html'
-    form_class = LibroConsultaForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        # Para la consulta GET, se pasa el producto y la categoría
-        if 'libro_id' in self.kwargs:
-            try:
-                libros = Libro.objects.get(id=self.kwargs['libro_id'])
-                kwargs['initial'] = {
-                    'autor': libros.autor.id,
-                    'sus_libros': libros
-                }
-                print(libros)
-            except Libro.DoesNotExist:
-                pass
-        
-            
-        return kwargs
+    Usando un formularion django forms (LibroConsultaForm) en vez de una html directamente en la plantilla, como los casos anteriores.
     """
     
     if solicituche.method == 'POST':
@@ -276,7 +254,49 @@ class LibroConsultaView(FormView):
                 else: pass
     else:
         form = LibroConsultaForm()
-
-    
     
     return render(solicituche, 'formViewAutorYsusLibros.html', {'form':form}) #Candidata para una función anónima en la función path en urls.py
+
+#Implementación de django-formtools:
+from .forms import FormularioAutor, FormularioLibros
+from formtools.wizard.views import SessionWizardView
+
+class FormMultiAutorYsusLibros(SessionWizardView): 
+    template_name = 'formAutorYsusLibrosFormTools.html' 
+    form_list = [FormularioAutor, FormularioLibros] 
+
+    def done(self, form_list, **kwargs):
+        return render(self.request, 'done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
+    
+    def get_form(self, step=None, data=None, files=None): 
+        form = super(FormMultiAutorYsusLibros, self).get_form(step, data, files) 
+        stepIndex = self.get_step_index(step) 
+
+        if stepIndex == 1: # LIBROS_FORM_STEP 
+            identAutor = self.get_cleaned_data_for_step("0")['identif_autor'] # AUTOR_FORM_STEP 
+            choice = [(choice.pk, choice.titulo) for choice in Libro.objects.filter(autor_id=identAutor)]
+       
+            #choice.insert(0, (-1, 'crear nuevo'))
+            form = FormularioLibros(choice=choice, data=data)
+
+        return form
+    """
+    def done(self, form_list, **kwargs): 
+        form_data = [form.cleaned_data for form in form_list] 
+        autor_name = form_data[0]['identif_autor']   
+        
+        autorq = Autor.objects.get(autor_id=autor_name) 
+        
+        if form_data[1]['sus_libros'] == '-1': 
+
+            librodata = Libro(titulo=form_data[1]['titulo'], libro_description=form_data[1]['descripcion'], autor=autorq) 
+                             
+            librodata.save() 
+            libro_id = librodata.libro_id 
+        
+        else:
+         
+            libro_id = form_data[1]['sus_libros']
+   """

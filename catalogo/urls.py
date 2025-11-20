@@ -43,3 +43,5 @@ urlpatterns += [path('vistaDeFuncionAnonimaParaRedirigirAunaUrl/', lambda solici
 urlpatterns += [path('UsandoUnHttpResponseSinPlantillaNiVista/', lambda solicitudcualquiera: HttpResponse("<p>-----Saludos!!!</p><a href='/catalogo/'>Ir a home</a>"), name='UsarUnHttpResponseSinPlantillaNiVista'),]
 
 urlpatterns += [path('formAutorYsusLibros/', views.LibroConsultaView, name='formModelChoiceFieldAutorYsusLibros'),]
+
+urlpatterns += [path('formAutorYsusLibrosFormTools/', views.FormMultiAutorYsusLibros.as_view(), name='formFormToolsAutorYsusLibros'),]

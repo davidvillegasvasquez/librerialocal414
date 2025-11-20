@@ -24,11 +24,16 @@
 
       <a href="{% url 'UsarUnHttpResponseSinPlantillaNiVista' %}" class="w3-bar-item w3-button">Usando un HttpResponse sin plantilla en templates, ni vista en views.py, usando una función anónima lambda</a>
 
-      <a href="{% url 'formModelChoiceFieldAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario de consulta para el ForeignKey autor y sus libros usando formularios django forms y campos forms.ModelChoiceField</a>
+      <a href="{% url 'formModelChoiceFieldAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario de consulta para el ForeignKey autor y sus libros usando formularios django forms y campos forms.ModelChoiceField sin multipasos</a>
+
+      <a href="{% url 'formFormToolsAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario multipasos para autor y sus libros usando django-formtools</a>
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
       <a href="{% url 'resetearVisitas' %}" class="w3-bar-item w3-button">Reestablecer contador</a>
+
+            <!-- Area de autenticación del usuario: -->
+                
           {% if user.is_authenticated %}
             <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.is_superuser %} y es super usuario {% elif user.groups.all.0.name == "bibliotecarios" %}, es bibliotecario {% if user.is_staff %} y pertenece al staff{% endif %}{% else %} y es miembro corriente{% endif %}</span>
             
