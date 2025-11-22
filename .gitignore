@@ -3,4 +3,6 @@ manualDjango.txt
 requirements.txt
 *.pyc
 __pycache__/
+a.sh
+d.sh
 

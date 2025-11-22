@@ -39,21 +39,21 @@ class LibroConsultaForm(forms.Form):
     """
 Campo para la selección de la categoría (relacionada con Categoria). Note que no hay que inicializar el campo de selección de autores a nivel de html en la plantilla, sinó que se hace desde aquí desde un principio queryset=Autor.objects.all()
    """ 
-    autorEnFormulario = forms.ModelChoiceField(queryset=Autor.objects.all(), widget=forms.Select(attrs={}), required=False)
+    autores = forms.ModelChoiceField(queryset=Autor.objects.all(), widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_autor'}), label="Autor", required=False)
 
-    # Campo para el nombre del producto (relacionado con Producto)
-    librosEnFormulario = forms.ModelChoiceField(queryset=Libro.objects.none(), widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_librosEnFormulario'}), label="Sus libros",required=False)
+    # Definición e inicialización a none para el lado muchos o foreignkey:
+    librosDelAutor = forms.ModelChoiceField(queryset=Libro.objects.none(), widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_librosDelAutor'}), label="Sus libros",required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Almacena el queryset del segundo campo
-        self.fields['librosEnFormulario'].queryset = Libro.objects.none()
-        if 'autorEnFormulario' in self.data:
+        # Almacena el queryset del campo muchos (foreignkey), en este caso, libros del autor:
+        self.fields['librosDelAutor'].queryset = Libro.objects.none()
+        if 'autores' in self.data:
             try:
-                autorSeleccionadoEnModelChoiceField = self.data.get('autorEnFormulario')
+                autorSeleccionadoEnModelChoiceField = self.data.get('autores')
                 
-                self.fields['librosEnFormulario'].queryset = Libro.objects.all().filter(autor=autorSeleccionadoEnModelChoiceField) # Usa el nombre de tu campo de relación
-                print(f"valor de self.fields['librosEnFormulario'].queryset: {self.fields['librosEnFormulario'].queryset}")
+                self.fields['librosDelAutor'].queryset = Libro.objects.all().filter(autor=autorSeleccionadoEnModelChoiceField) # Usa el nombre de tu campo de relación
+                print(f"valor de self.fields['librosDelAutor'].queryset: {self.fields['librosDelAutor'].queryset}")
             except (ValueError, TypeError):
                 pass # No se hace nada si no hay objeto_principal o no es válido
 

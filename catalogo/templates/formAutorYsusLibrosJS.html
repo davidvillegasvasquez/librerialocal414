@@ -1,0 +1,41 @@
+{% extends "base1.html" %}
+{% block content %}
+
+<form method="post"> {# Si no es post, no recoge los valores #}
+{% csrf_token %}
+    {{ form.as_p }}
+    <button id="id_botonSusLibros" type="submit" name="accion" value="seleccionarAutor" disabled>Sus libros</button>
+    <button id="id_selecLibro" type="submit" name="accion" value="seleccionarLibroDelAutor" disabled>Ver el libro</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    //Note como se referencia los elementos de formularios forms.Form desde su plantilla:
+    const selectAutor = document.getElementById('{{ form.autores.id_for_label }}');
+
+    const selectElement = document.getElementById('{{ form.librosDelAutor.id_for_label }}');
+    const submitButton = document.getElementById('id_selecLibro');
+    const botonSusLibros = document.getElementById('id_botonSusLibros');
+
+    // Lógica al seleccionar un autor:
+    selectAutor.addEventListener('change', function() {
+        if (selectAutor.value) {
+            botonSusLibros.disabled = false;
+        } else {
+            botonSusLibros.disabled = true;
+        }
+    }); 
+
+    // Lógica al seleccionar un libro del autor:
+    selectElement.addEventListener('change', function() {
+        if (selectElement.value) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }); //Cierre del SelectElement.addEventListener
+
+}); //Cierre del document.addEventListener
+</script>
+
+{% endblock %}

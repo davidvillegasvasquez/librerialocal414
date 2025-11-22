@@ -236,7 +236,7 @@ def irListaDeAutoresDesdeEstaVista(SolicitudQueNoSeLeExtraeParams):
 from django.views.generic.edit import FormView
 from .forms import LibroConsultaForm
 
-def LibroConsultaView(solicituche):
+def AutorYsusLibrosChoiceFieldJS(solicituche):
     """
     Usando un formularion django forms (LibroConsultaForm) en vez de una html directamente en la plantilla, como los casos anteriores.
     """
@@ -246,7 +246,7 @@ def LibroConsultaView(solicituche):
         if form.is_valid():
             if solicituche.POST.get('accion') == 'seleccionarLibroDelAutor':
                 # Lógica para guardar los datos
-                objeto_seleccionado = form.cleaned_data['librosEnFormulario']
+                objeto_seleccionado = form.cleaned_data['librosDelAutor']
                 # ...
                 #print(f'objeto_seleccionado.get_absolute_url(): {objeto_seleccionado.get_absolute_url()}')
                 if objeto_seleccionado is not None:
@@ -255,23 +255,19 @@ def LibroConsultaView(solicituche):
     else:
         form = LibroConsultaForm()
     
-    return render(solicituche, 'formViewAutorYsusLibros.html', {'form':form}) #Candidata para una función anónima en la función path en urls.py
+    return render(solicituche, 'formAutorYsusLibrosJS.html', {'form':form}) #Candidata para una función anónima en la función path en urls.py
 
 #Implementación de django-formtools:
 from .forms import FormularioAutor, FormularioLibros
 from formtools.wizard.views import SessionWizardView
 
-class FormMultiAutorYsusLibros(SessionWizardView): 
+@method_decorator(never_cache, name='dispatch')
+class AutorYsusLibrosChoiceFielFormTools(SessionWizardView): 
     template_name = 'formAutorYsusLibrosFormTools.html' 
     form_list = [FormularioAutor, FormularioLibros] 
 
-    def done(self, form_list, **kwargs):
-        return render(self.request, 'done.html', {
-            'form_data': [form.cleaned_data for form in form_list],
-        })
-    
     def get_form(self, step=None, data=None, files=None): 
-        form = super(FormMultiAutorYsusLibros, self).get_form(step, data, files) 
+        form = super(AutorYsusLibrosChoiceFielFormTools, self).get_form(step, data, files) 
         stepIndex = self.get_step_index(step) 
 
         if stepIndex == 1: # LIBROS_FORM_STEP 
@@ -282,6 +278,13 @@ class FormMultiAutorYsusLibros(SessionWizardView):
             form = FormularioLibros(choice=choice, data=data)
 
         return form
+
+    def done(self, form_list, **kwargs):
+        form_data = [form.cleaned_data for form in form_list]
+        libro_id = form_data[1]['sus_libros']
+        return HttpResponseRedirect(reverse('detallesDeLibro', args=[libro_id]))
+
+
     """
     def done(self, form_list, **kwargs): 
         form_data = [form.cleaned_data for form in form_list] 
