@@ -4,8 +4,8 @@
 <form method="post"> {# Si no es post, no recoge los valores #}
 {% csrf_token %}
     {{ form.as_p }}
-    <button id="id_botonSusLibros" type="submit" name="accion" value="seleccionarAutor" hidden>Sus libros</button>
-    <button id="id_selecLibro" type="submit" name="accion" value="seleccionarLibroDelAutor" hidden>Ver el libro</button>
+    <button id="id_botonSusLibros" type="submit" value="seleccionarAutor" hidden></button>
+    <button id="id_selecLibro" type="submit" name="accion" value="seleccionarLibroDelAutor" hidden>ir al libro</button>
 </form>
 
 <script>
@@ -16,26 +16,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectElement = document.getElementById('{{ form.librosDelAutor.id_for_label }}');
     const submitButton = document.getElementById('id_selecLibro');
     const botonSusLibros = document.getElementById('id_botonSusLibros');
-    var yaHabiaUnAutorSeleccionado = false;
+    
     // Lógica al seleccionar un autor:
     selectAutor.addEventListener('change', function() {
-        if (selectAutor.value) {
-            if (yaHabiaUnAutorSeleccionado === false) {
-               selectElement.value = ''; //selectElement.selectedIndex = -1 tiene el mismo efecto de limpiar el ModelChoiceField.
-               submitButton.hidden = true;
-                };
-            botonSusLibros.click();
-            yaHayUnAutorSeleccionado = true;
-        } 
-    }); 
+         selectElement.value = ''; //limpiamos previamente lo que pueda estar ahí.
+         botonSusLibros.click();
+    });  
 
     // Lógica al seleccionar un libro del autor:
     selectElement.addEventListener('change', function() {
         if (selectElement.value) {
             submitButton.hidden = false;
         } else {
-            submitButton.hidden = true;
-        }
+            submitButton.hidden = true;}
     }); //Cierre del SelectElement.addEventListener
 
 }); //Cierre del document.addEventListener
