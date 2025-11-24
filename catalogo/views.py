@@ -263,6 +263,7 @@ from formtools.wizard.views import SessionWizardView
 
 @method_decorator(never_cache, name='dispatch')
 class AutorYsusLibrosChoiceFielFormTools(SessionWizardView): 
+    #Estos identificadores son reservados de formtools.
     template_name = 'formAutorYsusLibrosFormTools.html' 
     form_list = [FormularioAutor, FormularioLibros] 
 
@@ -272,7 +273,7 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
 
         if stepIndex == 1: # LIBROS_FORM_STEP 
             identAutor = self.get_cleaned_data_for_step("0")['identif_autor'] # AUTOR_FORM_STEP 
-            choice = [(choice.pk, choice.titulo) for choice in Libro.objects.filter(autor_id=identAutor)]
+            choice = [(choice.pk, choice.titulo) for choice in Libro.objects.filter(autor_id = identAutor)]
        
             #choice.insert(0, (-1, 'crear nuevo'))
             form = FormularioLibros(choice=choice, data=data)
@@ -280,26 +281,8 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
         return form
 
     def done(self, form_list, **kwargs):
-        form_data = [form.cleaned_data for form in form_list]
-        libro_id = form_data[1]['sus_libros']
-        return HttpResponseRedirect(reverse('detallesDeLibro', args=[libro_id]))
-
-
-    """
-    def done(self, form_list, **kwargs): 
-        form_data = [form.cleaned_data for form in form_list] 
-        autor_name = form_data[0]['identif_autor']   
+        dataDelFormulario = [form.cleaned_data for form in form_list]
+        idDelLibro = dataDelFormulario[1]['sus_libros']
+        return HttpResponseRedirect(reverse('detallesDeLibro', args=[idDelLibro]))
         
-        autorq = Autor.objects.get(autor_id=autor_name) 
         
-        if form_data[1]['sus_libros'] == '-1': 
-
-            librodata = Libro(titulo=form_data[1]['titulo'], libro_description=form_data[1]['descripcion'], autor=autorq) 
-                             
-            librodata.save() 
-            libro_id = librodata.libro_id 
-        
-        else:
-         
-            libro_id = form_data[1]['sus_libros']
-   """

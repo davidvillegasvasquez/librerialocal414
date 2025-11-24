@@ -10,20 +10,12 @@
     name="argumento"
     placeholder="Ingrese indice autor"
     min=1 />
-
-  <select class="w3-select w3-border" id="miSeleccion" style="">
-    <option value="" disabled selected>Escoje el id autor</option>
-    <!-- Nota: en value puedo prescindir de las comillas, si no dejo espacio entre las llaves, así: value={{objeto.get_absolute_url}} -->
-    {% for id in listaDeIds %}
-    <option >{{ id }}</option>
-    {% endfor %}
-  </select>
-
   <input type="submit" value="Ir" />
-
 </form>
 
-{{ listaDeIds }}
+<br>
+Lista de id: {{ listaDeIds }}
+
 <script>
 /*Hay que usar el nombre de parámetro de ruta reservado, pk, porque es el que espera la vista genérica de detalle de autor a la cual mandamos los datos.*/
 document.getElementById('miInput').addEventListener('change', function() {

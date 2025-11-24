@@ -18,15 +18,18 @@
       <a href="{% url 'librosConBarbara' %}" class="w3-bar-item w3-button">Libros con Barbara</a>
       <a href="{% url 'toditicosLosAutores' %}" class="w3-bar-item w3-button">Todos los autores</a>
       <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
-      <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista genérica de detalle de autor, name='autorDetalles', introduciendo su id (parámetro de ruta)</a>
+      <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>
 
       <a href="{% url 'redirigiendoA-listaDelibros' %}" class="w3-bar-item w3-button">Redirigir desde aquí a la vista de lista de todos los libros, usando una función anónima lambda directamente en el mapeador url en urls.py, como vista, sin función en views.py</a>
 
       <a href="{% url 'UsarUnHttpResponseSinPlantillaNiVista' %}" class="w3-bar-item w3-button">Usando un HttpResponse sin plantilla en templates, ni vista en views.py, usando una función anónima lambda</a>
 
-      <a href="{% url 'formModelChoiceFieldAutorYsusLibrosJS' %}" class="w3-bar-item w3-button">Formulario de consulta autor y sus libros usando django forms y campos forms.ModelChoiceField que se actualizan dinámicamente usando javascript</a>
+      <a href="{% url 'formModelChoiceFieldAutorYsusLibrosJS' %}" class="w3-bar-item w3-button">Formulario de consulta autor y sus libros usando django forms y campos forms.ModelChoiceField que se actualizan dinámicamente usando js</a>
 
       <a href="{% url 'formToolsAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario multipasos para autor y sus libros usando django-formtools</a>
+
+      <a href="" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all", y js para botones de navegación</a>
+
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
@@ -79,8 +82,8 @@
 <!-- Bloque de contenido principal: -->
 
   <div style="margin-left:25%">
-      <div class="w3-container w3-teal">
-      <h1>Librería Local No Paginada</h1>
+      <div class="w3-container w3-teal w3-center">
+      <h1>Biblioteca Pío Tamayo</h1>
       </div>
 
       <!-- Bloque para sobreescribir en la plantilla heredera o hija -->
