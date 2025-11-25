@@ -234,7 +234,7 @@ def irListaDeAutoresDesdeEstaVista(SolicitudQueNoSeLeExtraeParams):
 
 # views.py
 from django.views.generic.edit import FormView
-from .forms import LibroConsultaForm
+from .forms import FormAutorYsusLibros
 
 def AutorYsusLibrosChoiceFieldJS(solicituche):
     """
@@ -242,9 +242,9 @@ def AutorYsusLibrosChoiceFieldJS(solicituche):
     """
     
     if solicituche.method == 'POST':
-        form = LibroConsultaForm(solicituche.POST)
+        form = FormAutorYsusLibros(solicituche.POST)
         if form.is_valid():
-            if solicituche.POST.get('accion') == 'seleccionarLibroDelAutor':
+            if solicituche.POST.get('botonIrAlLibroSelecDeEseAutor') == 'IrAlLibroSelecDeEseAutor':
                 # Lógica para guardar los datos
                 objeto_seleccionado = form.cleaned_data['librosDelAutor']
                 # ...
@@ -253,7 +253,7 @@ def AutorYsusLibrosChoiceFieldJS(solicituche):
                     return HttpResponseRedirect(objeto_seleccionado.get_absolute_url())
                 else: pass
     else:
-        form = LibroConsultaForm()
+        form = FormAutorYsusLibros()
     
     return render(solicituche, 'formAutorYsusLibrosJS.html', {'form':form}) #Candidata para una función anónima en la función path en urls.py
 

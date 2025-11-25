@@ -4,8 +4,8 @@
 <form method="post"> {# Si no es post, no recoge los valores #}
 {% csrf_token %}
     {{ form.as_p }}
-    <button id="id_botonSusLibros" type="submit" value="seleccionarAutor" hidden></button>
-    <button id="id_selecLibro" type="submit" name="accion" value="seleccionarLibroDelAutor" hidden>ir al libro</button>
+    <button id="id_botonSusLibros" type="submit" hidden></button>
+    <button id="id_botonIrAlLibro" type="submit" name="botonIrAlLibroSelecDeEseAutor" value="IrAlLibroSelecDeEseAutor" hidden>ir al libro</button>
 </form>
 
 <script>
@@ -13,22 +13,22 @@ document.addEventListener('DOMContentLoaded', function() {
     //Note como se referencia los elementos de formularios forms.Form desde su plantilla:
     const selectAutor = document.getElementById('{{ form.autores.id_for_label }}');
 
-    const selectElement = document.getElementById('{{ form.librosDelAutor.id_for_label }}');
-    const submitButton = document.getElementById('id_selecLibro');
+    const selectLibro = document.getElementById('{{ form.librosDelAutor.id_for_label }}');
+    const botonConsultarLibro = document.getElementById('id_botonIrAlLibro');
     const botonSusLibros = document.getElementById('id_botonSusLibros');
     
     // Lógica al seleccionar un autor:
     selectAutor.addEventListener('change', function() {
-         selectElement.value = ''; //limpiamos previamente lo que pueda estar ahí.
+         selectLibro.value = ''; //limpiamos previamente lo que pueda estar ahí.
          botonSusLibros.click();
     });  
 
     // Lógica al seleccionar un libro del autor:
-    selectElement.addEventListener('change', function() {
-        if (selectElement.value) {
-            submitButton.hidden = false;
+    selectLibro.addEventListener('change', function() {
+        if (selectLibro.value) {
+            botonConsultarLibro.hidden = false;
         } else {
-            submitButton.hidden = true;}
+            botonConsultarLibro.hidden = true;}
     }); //Cierre del SelectElement.addEventListener
 
 }); //Cierre del document.addEventListener

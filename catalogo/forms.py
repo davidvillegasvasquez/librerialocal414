@@ -35,7 +35,7 @@ class ModeloFormRenovDeLibros(ModelForm):
         widgets = {'debidoderegresar': forms.DateInput(attrs={'type': 'date', 'onkeydown': 'return false', 'placeholder': 'YYYY-MM-DD'}),}
 
 
-class LibroConsultaForm(forms.Form):
+class FormAutorYsusLibros(forms.Form):
     """
 Campo para la selección de la categoría (relacionada con Categoria). Note que no hay que inicializar el campo de selección de autores a nivel de html en la plantilla, sinó que se hace desde aquí desde un principio queryset=Autor.objects.all()
    """ 
@@ -53,7 +53,7 @@ Campo para la selección de la categoría (relacionada con Categoria). Note que 
                 autorSeleccionadoEnModelChoiceField = self.data.get('autores')
                 
                 self.fields['librosDelAutor'].queryset = Libro.objects.all().filter(autor=autorSeleccionadoEnModelChoiceField) # Usa el nombre de tu campo de relación
-                print(f"valor de self.fields['librosDelAutor'].queryset: {self.fields['librosDelAutor'].queryset}")
+               
             except (ValueError, TypeError):
                 pass # No se hace nada si no hay objeto_principal o no es válido
 
