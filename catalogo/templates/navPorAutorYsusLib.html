@@ -24,31 +24,38 @@ lita de ids: {{ listaDeIds }}
 
 <script>
 // Guardar un dato (igual que localStorage, pero solo para la sesión actual)
-sessionStorage.setItem('posicionActual', 0);
+//sessionStorage.setItem('posicionActual', 0);
 const listaIdsAutores = {{ listaDeIds }};
+const ultIdEnListIdsAutores = listaIdsAutores.length-1;
 const avanzar = document.getElementById('botonAvanzar');
 const retroceder = document.getElementById('botonRetroceder');
-let posicion={{ posicionEnv }}
-// 2. Añade un escuchador para el evento 'click'
+const posicionRec={{ posicionEnv }}
+
 avanzar.addEventListener('click', function() {
-  // 3. Tu código JavaScript va aquí
-  //let posicion = sessionStorage.getItem('posicionActual');
-  let nuevaPosicion = ++posicion
-  //sessionStorage.setItem('posicionActual', nuevaPosicion);
-  //let pks=listaIdsAutores[posicion];
-  //alert('posicion: ' + posicion + ' id: ' + listaIdsAutores[posicion]);
+  let nuevaPosicion = posicionRec+1;
+  if (nuevaPosicion <= ultIdEnListIdsAutores) {
   let url = "{% url 'navAutorYsusLibJS' %}?posicionEnviada=1".replace('1', nuevaPosicion);
   //Redirige al navegador a esa URL
-  window.location.href = url;
+  window.location.href = url;} 
+  else {
+  alert('Mi pana, este es el último, no hay más autores.');
+}
+  
 });
 
 retroceder.addEventListener('click', function() {
-  let nuevaPosicion = --posicion
+  //Note como guardar valores persistentemente en una sesión como se hacía en la versión anterior:
   //let posicion = sessionStorage.getItem('posicionActual');
   //sessionStorage.setItem('posicionActual', --posicion);
   //alert('posicion: ' + posicion + ' id: ' + listaIdsAutores[posicion]);
+  let nuevaPosicion = posicionRec-1;
+  if (nuevaPosicion >= 0) {
   let url = "{% url 'navAutorYsusLibJS' %}?posicionEnviada=1".replace('1', nuevaPosicion);
-  window.location.href = url;
+  //Redirige al navegador a esa URL
+  window.location.href = url;} 
+  else {
+  alert('Mi pana, este es el primer autor.');
+}
 });
 </script>
 

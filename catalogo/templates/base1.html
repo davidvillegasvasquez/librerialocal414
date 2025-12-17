@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Link para el favicon: -->
 <link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}">
-<!-- Link para css: -->
+<!-- Link para w3.css y w3.js: -->
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 <script src="https://www.w3schools.com/lib/w3.js"></script>
+<!-- Link para htmx: -->
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
 
 <body class="w3-container">
@@ -29,7 +30,9 @@
 
       <a href="{% url 'formToolsAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario multipasos para autor y sus libros usando django-formtools</a>
 
-      <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" de la plantilla de su vista genérica generic.DetailView, insertada dentro de la plantilla fija de la vista </a>
+      <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" en plantilla y enviando a la vista la posición actual en lista de ids por parámetro de consulta </a>
+
+      <a href="" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" en plantilla, reutilizando la vista generica de detalle de autor insertando su plantilla en una fija con htmx </a>
 
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->

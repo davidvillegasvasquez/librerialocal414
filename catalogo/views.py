@@ -85,16 +85,7 @@ class VistaListaGenAutores(generic.ListView):
 
 class VistaDetalladaGenAutor(generic.DetailView):
     model = Autor
-    #Sobreescribimos el método para enviar la variable de contexto adicional 'esNav'. Recuerde que la variable de contexto única para esta vista genérica es 'autor'. 
-    """
-    def get_context_data(self, **kwargs):
-        # Llama al método padre para obtener el contexto base
-        context = super().get_context_data(**kwargs)
-        # Agrega tus variables adicionales
-        context['esNav'] = False
-        
-        return context
-    """
+    
 class ListaLibrosPrestadosAlUsuario(LoginRequiredMixin, generic.ListView):
     """
     Vista genérica basada en clases que enumera los libros prestados al usuario actual.
@@ -290,13 +281,19 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
         idDelLibro = dataDelFormulario[1]['sus_libros']
         return HttpResponseRedirect(reverse('detallesDeLibro', args=[idDelLibro]))
         
-def contenedorDeDetailAutorYSusLibros(otraSolicitudMas):
+def navDetailAutorYSusLibros(otraSolicitudMas):
     """
-    Candidata para una función anónima en su mapeador url path en detrimento de su legibilidad para su mantenimiento.
+  
     """
     lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
     posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
-    autorObtenido = Autor.objects.get(id=lista_ids[posicionRecibida])
-    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorObtenido}
+    autorEnPosicionRecibida = Autor.objects.get(id=lista_ids[posicionRecibida])
+    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorEnPosicionRecibida}
 
-    return render(otraSolicitudMas,'navPorAutorYsusLibContenedor.html',context=contexto) 
+    return render(otraSolicitudMas,'navPorAutorYsusLib.html',context=contexto) 
+
+def navDetailAutorYSusLibGenYhTMX(otraSolicitudMas):
+    """
+    """
+    pass
+

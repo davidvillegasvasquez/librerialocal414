@@ -46,4 +46,4 @@ urlpatterns += [path('formChoiceFieldAutorYsusLibrosJS/', views.autorYsusLibrosC
 
 urlpatterns += [path('formChoiceFieldAutorYsusLibrosFormTools/', views.AutorYsusLibrosChoiceFielFormTools.as_view(), name='formToolsAutorYsusLibros'),]
 
-urlpatterns += [path('navAutorYsusLibrosConJS/', views.contenedorDeDetailAutorYSusLibros, name='navAutorYsusLibJS'),] #Note que el nombre de parámetro de ruta es (cualquierNombre) es arbitrario por ser una vista función y no una genérica de django.
+urlpatterns += [path('navAutorYsusLibrosConJS/', views.navDetailAutorYSusLibros, name='navAutorYsusLibJS'),] #Note que el nombre de parámetro de ruta es (cualquierNombre) es arbitrario por ser una vista función y no una genérica de django.
