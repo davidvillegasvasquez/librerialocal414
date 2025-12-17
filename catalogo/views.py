@@ -84,8 +84,17 @@ class VistaListaGenAutores(generic.ListView):
     #paginate_by = 2
 
 class VistaDetalladaGenAutor(generic.DetailView):
-    model = Autor 
-
+    model = Autor
+    #Sobreescribimos el método para enviar la variable de contexto adicional 'esNav'. Recuerde que la variable de contexto única para esta vista genérica es 'autor'. 
+    """
+    def get_context_data(self, **kwargs):
+        # Llama al método padre para obtener el contexto base
+        context = super().get_context_data(**kwargs)
+        # Agrega tus variables adicionales
+        context['esNav'] = False
+        
+        return context
+    """
 class ListaLibrosPrestadosAlUsuario(LoginRequiredMixin, generic.ListView):
     """
     Vista genérica basada en clases que enumera los libros prestados al usuario actual.
@@ -236,7 +245,7 @@ def irListaDeAutoresDesdeEstaVista(SolicitudQueNoSeLeExtraeParams):
 from django.views.generic.edit import FormView
 from .forms import FormAutorYsusLibros
 
-def AutorYsusLibrosChoiceFieldJS(solicituche):
+def autorYsusLibrosChoiceFieldJS(solicituche):
     """
     Usando un formularion django forms (LibroConsultaForm) en vez de una html directamente en la plantilla, como los casos anteriores.
     """
@@ -247,15 +256,14 @@ def AutorYsusLibrosChoiceFieldJS(solicituche):
             if solicituche.POST.get('botonIrAlLibroSelecDeEseAutor') == 'IrAlLibroSelecDeEseAutor':
                 # Lógica para guardar los datos
                 objeto_seleccionado = form.cleaned_data['librosDelAutor']
-                # ...
-                #print(f'objeto_seleccionado.get_absolute_url(): {objeto_seleccionado.get_absolute_url()}')
+                
                 if objeto_seleccionado is not None:
                     return HttpResponseRedirect(objeto_seleccionado.get_absolute_url())
                 else: pass
     else:
         form = FormAutorYsusLibros()
     
-    return render(solicituche, 'formAutorYsusLibrosJS.html', {'form':form}) #Candidata para una función anónima en la función path en urls.py
+    return render(solicituche, 'formAutorYsusLibrosJS.html', {'form':form})
 
 #Implementación de django-formtools:
 from .forms import FormularioAutor, FormularioLibros
@@ -271,13 +279,10 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
         form = super(AutorYsusLibrosChoiceFielFormTools, self).get_form(step, data, files) 
         stepIndex = self.get_step_index(step) 
 
-        if stepIndex == 1: # LIBROS_FORM_STEP 
-            identAutor = self.get_cleaned_data_for_step("0")['identif_autor'] # AUTOR_FORM_STEP 
+        if stepIndex == 1: 
+            identAutor = self.get_cleaned_data_for_step("0")['identif_autor'] 
             choice = [(choice.pk, choice.titulo) for choice in Libro.objects.filter(autor_id = identAutor)]
-       
-            #choice.insert(0, (-1, 'crear nuevo'))
             form = FormularioLibros(choice=choice, data=data)
-
         return form
 
     def done(self, form_list, **kwargs):
@@ -285,4 +290,13 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
         idDelLibro = dataDelFormulario[1]['sus_libros']
         return HttpResponseRedirect(reverse('detallesDeLibro', args=[idDelLibro]))
         
-        
+def contenedorDeDetailAutorYSusLibros(otraSolicitudMas):
+    """
+    Candidata para una función anónima en su mapeador url path en detrimento de su legibilidad para su mantenimiento.
+    """
+    lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
+    posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
+    autorObtenido = Autor.objects.get(id=lista_ids[posicionRecibida])
+    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorObtenido}
+
+    return render(otraSolicitudMas,'navPorAutorYsusLibContenedor.html',context=contexto) 

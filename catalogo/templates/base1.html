@@ -8,6 +8,7 @@
 <!-- Link para css: -->
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 <script src="https://www.w3schools.com/lib/w3.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
 
 <body class="w3-container">
   <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:23%">
@@ -28,7 +29,7 @@
 
       <a href="{% url 'formToolsAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario multipasos para autor y sus libros usando django-formtools</a>
 
-      <a href="" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all", y js para botones de navegación</a>
+      <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" de la plantilla de su vista genérica generic.DetailView, insertada dentro de la plantilla fija de la vista </a>
 
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->

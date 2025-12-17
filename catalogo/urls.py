@@ -42,6 +42,8 @@ urlpatterns += [path('vistaDeFuncionAnonimaParaRedirigirAunaUrl/', lambda solici
 #Note que podemos usar elementos html dentro de la pseudoplantilla que usamos en la función anónima lambda. Lo que no pudimo meter fue una etiqueta url django para ir a home: {% url 'vistaHome' %}
 urlpatterns += [path('UsandoUnHttpResponseSinPlantillaNiVista/', lambda solicitudcualquiera: HttpResponse("<p>-----Saludos!!!</p><a href='/catalogo/'>Ir a home</a>"), name='UsarUnHttpResponseSinPlantillaNiVista'),]
 
-urlpatterns += [path('formChoiceFieldAutorYsusLibrosJS/', views.AutorYsusLibrosChoiceFieldJS, name='formModelChoiceFieldAutorYsusLibrosJS'),]
+urlpatterns += [path('formChoiceFieldAutorYsusLibrosJS/', views.autorYsusLibrosChoiceFieldJS, name='formModelChoiceFieldAutorYsusLibrosJS'),]
 
 urlpatterns += [path('formChoiceFieldAutorYsusLibrosFormTools/', views.AutorYsusLibrosChoiceFielFormTools.as_view(), name='formToolsAutorYsusLibros'),]
+
+urlpatterns += [path('navAutorYsusLibrosConJS/', views.contenedorDeDetailAutorYSusLibros, name='navAutorYsusLibJS'),] #Note que el nombre de parámetro de ruta es (cualquierNombre) es arbitrario por ser una vista función y no una genérica de django.
