@@ -1,17 +1,4 @@
 {% extends "base1.html" %}
 {% block content %}
-
-  <h1>Autor: {{ autor }} <span style="font-family: Arial; font-size: 18px; color: blue;">(autor.id:{{ autor.id }})</span></h1>
-  <p><strong>{{ autor.nacimiento }} - {{ autor.muerte }}</p>
-
-  <div style="margin-left:20px;margin-top:20px">
-    <h4>Libros</h4> 
-    <!-- autor.libro_set.all es un método "automágicamente" creado por Django para devolver el conjunto de registros (instancias) del modelo Libro, asociado con una instancia o registro del modelo Autor, en particular. Este método es necesario porque has declarado un campo ForeignKey (uno-a-muchos) únicamente en el lado "muchos" (modelo Libro) de la relación. Como no haces nada para declarar la relación en el otro lado "uno" (modelo Autor), este no tiene ningún campo para obtener el conjunto de registros asociados. Para superar este problema, Django construye una función apropiadamente llamada "búsqueda reversa" que puedes usar. La función se construye convirtiendo a minúsculas el nombre del modelo de la clave primaria (lado 1), punto, el nombre del modelo en minúscula donde la ForeignKey fue declarada (lado muchos), seguido por _set. Así, la función creada es: autor.libro_set()). Se lee: conjunto de libros del autor: -->
-    {% for libro in autor.libro_set.all %}
-    <hr>
-    <p class="text-success"><a href="{{ libro.get_absolute_url }}">{{ libro }}</a> (libro.id:{{ libro.id }})</p>
-    <p style="font-family: Arial, Helvetica, sans-serif; font-weight: normal;">{{ libro.descripcion }}</p>
-    {% endfor %}
-  </div>
-
+  {% include "catalogo/baseAutorYsusLibros.html" %}
 {% endblock %}

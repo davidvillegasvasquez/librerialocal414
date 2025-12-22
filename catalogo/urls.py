@@ -32,7 +32,6 @@ urlpatterns += [path('ejemUsoSelectOptionsW3.css/', views.goTovistaGenDetailsAut
 
 urlpatterns += [path('irAdetalleAutorDesdeFormulario/', views.irAdetalleAutorDesdeForm, name='autorDetailDesdeForm'),]
 
-
 #Ejemplos de cómo usar una función anónima lambda en lugar de usar vistas en views.py :
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
@@ -46,4 +45,8 @@ urlpatterns += [path('formChoiceFieldAutorYsusLibrosJS/', views.autorYsusLibrosC
 
 urlpatterns += [path('formChoiceFieldAutorYsusLibrosFormTools/', views.AutorYsusLibrosChoiceFielFormTools.as_view(), name='formToolsAutorYsusLibros'),]
 
-urlpatterns += [path('navAutorYsusLibrosConJS/', views.navDetailAutorYSusLibros, name='navAutorYsusLibJS'),] #Note que el nombre de parámetro de ruta es (cualquierNombre) es arbitrario por ser una vista función y no una genérica de django.
+urlpatterns += [path('navAutorYsusLibrosConJS/', views.navDetailAutorYSusLibros, name='navAutorYsusLibJS'),]
+
+urlpatterns += [path('navAutorYsusLibrosConW3JS/', views.navDetailAutorYSusLibW3JS, name='navAutorYsusLibW3JS'),]
+
+urlpatterns += [path('navAutorYsusLibrosConW3JSauxiliar/', views.auxParaUsarW3jsIncludeHTMLEnAutorYsusLib, name='navAutorYsusLibW3JSauxiliar'),]

@@ -283,16 +283,39 @@ class AutorYsusLibrosChoiceFielFormTools(SessionWizardView):
         
 def navDetailAutorYSusLibros(otraSolicitudMas):
     """
-  
+    Navegamos por los autore y sus libros, insertando la sección de código necesaria (baseAutorYsusLibros.html) con la etiqueta de plantilla {% include "catalogo/baseAutorYsusLibros.html" %} en la plantilla de esta vista.
     """
     lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
+    #Capturamos el parámetro de consulta 'posiciónEnviada'enviado desde {% url 'navAutorYsusLibJS' %}?posicionEnviada=x con Get.get:
     posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
     autorEnPosicionRecibida = Autor.objects.get(id=lista_ids[posicionRecibida])
     contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorEnPosicionRecibida}
 
-    return render(otraSolicitudMas,'navPorAutorYsusLib.html',context=contexto) 
+    return render(otraSolicitudMas,'navPorAutorYsusLibJS.html',context=contexto) 
 
-def navDetailAutorYSusLibGenYhTMX(otraSolicitudMas):
+def navDetailAutorYSusLibW3JS(otraSolicitudMas):
+    """
+    Al igual que la vista navDetailAutorYsusLib, aquí insertamos una sección de html en la plantilla django asociada a esta vista, navPorAutorYsusLibW3JS.html, con W3.includeHTML(). Es ineficiente porque tenemos que usar una vista auxiliar intermedia para poder usar la plantilla que insertaremos.
+    """
+    lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
+    #Capturamos el parámetro de consulta 'posiciónEnviada'enviado desde {% url 'navAutorYsusLibJS' %}?posicionEnviada=x con Get.get:
+    posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
+    autorEnPosicionRecibida = Autor.objects.get(id=lista_ids[posicionRecibida])
+    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorEnPosicionRecibida}
+
+    return render(otraSolicitudMas,'navPorAutorYsusLibW3JS.html',context=contexto)
+
+def auxParaUsarW3jsIncludeHTMLEnAutorYsusLib(solicitud):
+    """
+    Se usa esta vista intermedia auxiliar, porque un error 404 se produce porque la ruta URL especificada en su w3-include-html atributo no está asignada a un patrón de URL existente en el urls.py archivo de su proyecto Django. Este método es ineficiente, se hizo para prácticar el uso de w3.
+    """
+    idRecibido = solicitud.GET.get('autorId', 'Not provided')
+    autorDeIdRecibido = Autor.objects.get(id=idRecibido)
+    print(f'autor:{autorDeIdRecibido}')
+
+    return render(solicitud, 'catalogo/baseAutorYsusLibros.html', {'autor':autorDeIdRecibido})
+
+def navDetailAutorYSusLibGenConHTMX(solici):
     """
     """
     pass

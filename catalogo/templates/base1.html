@@ -32,7 +32,9 @@
 
       <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" en plantilla y enviando a la vista la posición actual en lista de ids por parámetro de consulta </a>
 
-      <a href="" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" en plantilla, reutilizando la vista generica de detalle de autor insertando su plantilla en una fija con htmx </a>
+      <a href="{% url 'navAutorYsusLibW3JS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, pero reutilizando la plantilla de la vista genérica VistaDetalladaGenAutor, insertandola con w3.includeHTML() en un elemento div</a>
+
+      <a href="" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, reutilizando la vista generica de detalle de autor insertando su plantilla en una fija con htmx </a>
 
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
