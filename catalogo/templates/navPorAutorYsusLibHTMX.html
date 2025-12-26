@@ -1,15 +1,18 @@
+{% comment %}
 {% extends "base1.html" %}
 
 {% block content %}
-<div>Navegar por autor y sus libros con JS y reutilizando la plantilla baseAutorYsusLibros.html insertando aquí con la etiqueta de plantilla include:</div>
+{% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+
+<div>Navegar por autor y sus libros con JS y HTMX usando la vista generica detalles de autor:</div>
   <div>
       lita de ids: {{ listaDeIds }}
-      <button id="botonAvanzar">Avanzar</button>
-      <button id="botonRetroceder">Retroceder</button>
+      <button id="botonAvanzar" hx-get="{% url 'autorDetalles' pk=2 %}" hx-target="#resultado" hx-swap="outerHTML">Avanzar</button>
+
+      <button id="botonRetroceder" hx-get="{% url 'autorDetalles' pk=2 %}" hx-target="#resultado" hx-swap="outerHTML">Retroceder</button>
   </div>
-  <div>
-      {% include "catalogo/baseAutorYsusLibros.html" %}
-  </div>
+  <div id="resultado"></div>
 </div>
 
 <script>
@@ -19,14 +22,13 @@ const listaIdsAutores = {{ listaDeIds }};
 const ultIdEnListIdsAutores = listaIdsAutores.length-1;
 const avanzar = document.getElementById('botonAvanzar');
 const retroceder = document.getElementById('botonRetroceder');
-const posicionRec={{ posicionEnv }}
 
 avanzar.addEventListener('click', function() {
   let nuevaPosicion = posicionRec+1;
   if (nuevaPosicion <= ultIdEnListIdsAutores) {
-  let url = "{% url 'navAutorYsusLibJS' %}?posicionEnviada=1".replace('1', nuevaPosicion);
-  //Redirige al navegador a esa URL
-  window.location.href = url;} 
+  let url = "{% url 'autorDetalles' pk=2 %}".replace('2', nuevaPosicion);
+  //insertamos la nueva etiqueta URL:
+  this.setAttribute('hx-get', url); 
   else {
   alert('Mi pana, este es el último, no hay más autores.');
 }
@@ -49,4 +51,4 @@ retroceder.addEventListener('click', function() {
 });
 </script>
 
-{% endblock %}
+{# {% endblock %} #}

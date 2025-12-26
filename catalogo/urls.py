@@ -50,3 +50,6 @@ urlpatterns += [path('navAutorYsusLibrosConJS/', views.navDetailAutorYSusLibros,
 urlpatterns += [path('navAutorYsusLibrosConW3JS/', views.navDetailAutorYSusLibW3JS, name='navAutorYsusLibW3JS'),]
 
 urlpatterns += [path('navAutorYsusLibrosConW3JSauxiliar/', views.auxParaUsarW3jsIncludeHTMLEnAutorYsusLib, name='navAutorYsusLibW3JSauxiliar'),]
+
+urlpatterns += [path('navAutorYsusLibrosConHTMX/', views.navDetailAutorYSusLibHTMX, name='navAutorYsusLibHTMX'),]
+
