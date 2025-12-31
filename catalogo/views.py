@@ -322,3 +322,42 @@ def navDetailAutorYSusLibHTMX(sol):
 
     return render(sol, 'navPorAutorYsusLibHTMX.html', {'listaDeIds':lista_ids})
 
+#--------------------Fomularios formsets y models formsets-------
+
+from django.forms import modelformset_factory
+from django.core.paginator import Paginator
+from .forms import FormGenAutor
+
+autorFormset = modelformset_factory(Autor, form=FormGenAutor, extra=0)
+
+def navAutorFormset(request):
+    """
+    Formset para solo consultar (GET).
+    
+    
+    formset = autorFormset(request.GET or None)
+
+    # Crea el paginador
+    paginador = Paginator(formset, 1) # Un formularios por página
+    numeroPag = request.GET.get('page')
+    page_obj = paginador.get_page(numeroPag)
+    
+    if request.method == 'POST':
+        formset = autorFormset(request.POST)
+        if formset.is_valid():
+            formset.save()  # Saves all valid forms to the database
+       
+    formset = autorFormset()
+
+    contexto = {'page_obj': page_obj, 'paginator':paginador}
+    """
+    
+    if request.method == 'POST':
+        formset = autorFormset(request.POST, prefix='mi_formset')
+        if formset.is_valid():
+            # Procesar formularios...
+            pass
+    else:
+        formset = autorFormset(prefix='mi_formset')
+
+    return render(request, 'formsetAutores.html', {'formset': formset})

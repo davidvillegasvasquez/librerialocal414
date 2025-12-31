@@ -33,8 +33,9 @@
       <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" de la plantilla baseAutorYsusLibros.html insertándola con la etiqueta include en la plantilla padre y enviando a la vista la posición actual en lista de ids por parámetro de consulta en etiqueta url </a>
 
       <a href="{% url 'navAutorYsusLibW3JS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, insertando baseAutorYsusLibros.html con w3.includeHTML() en la plantilla padre</a>
-
       <a href="{% url 'navAutorYsusLibHTMX' %}" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, pero reutilizando baseAutorYsusLibros.html con htmx</a>
+
+      <a href="{% url 'navAutorFormset' %}" class="w3-bar-item w3-button">Navegar por autor y sus libros con formsets</a>
 
 
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
@@ -95,9 +96,28 @@
       <!-- Bloque para sobreescribir en la plantilla heredera o hija -->
       {% block content %}{% endblock %}
 
-      <!-- Comienzo bloque de implementación de la paginación: -->
-      
-      <!-- Fin división contenido principal -->
+   
+{# Paginación para vistas genéricas que lo solicite: #}
+{% comment %}
+{% block pagination %}
+  {% if is_paginated %}
+      <div class="pagination">
+          <span class="page-links">
+              {% if page_obj.has_previous %}
+                  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+              {% endif %}
+              <span class="page-current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
+              {% if page_obj.has_next %}
+                  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+              {% endif %}
+          </span>
+      </div>
+  {% endif %}
+{% endblock %}
+{% endcomment %}
+
   </div>
     
 </body>

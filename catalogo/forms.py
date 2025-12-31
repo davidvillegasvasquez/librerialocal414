@@ -57,6 +57,12 @@ Campo para la selección de la categoría (relacionada con Categoria). Note que 
             except (ValueError, TypeError):
                 pass # No se hace nada si no hay objeto_principal o no es válido
 
+
+class FormGenAutor(ModelForm):
+     class Meta:
+        model = Autor
+        fields = '__all__'
+
 #----------------------------------------------------------------------------
 
 #Formularios para construir el formulario dinámico por pasos django-formtools:

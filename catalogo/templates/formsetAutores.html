@@ -1,0 +1,59 @@
+{% extends "base1.html" %}
+{% block content %}
+<!-- mi_template.html -->
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div id="formset-container">
+        {% for form in formset %}
+            <div class="form-item" data-index="{{ forloop.counter0 }}" style="display: none;">
+                {{ form.as_p }}
+                <!-- Campos ocultos para IDs, etc. -->
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" id="prev-form"><</button>
+    <button type="button" id="next-form">></button>
+    
+</form>
+
+<script>
+// Lógica JavaScript aquí
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('.form-item');
+    const cantDeForms = forms.length;
+    const nextButton = document.getElementById('next-form');
+    const prevButton = document.getElementById('prev-form');
+    let currentFormIndex = 0;
+
+    forms[currentFormIndex].style.display = 'block';
+
+    nextButton.addEventListener('click', function() {
+        forms[currentFormIndex].style.display = 'none';
+        currentFormIndex+=1;
+        if (currentFormIndex < cantDeForms) {
+            forms[currentFormIndex].style.display = 'block';}
+        else {alert('Mi pana, este es el último, no hay más autores.');
+              forms[currentFormIndex-1].style.display = 'block';
+              currentFormIndex-=1;}     
+    });
+
+    prevButton.addEventListener('click', function() {
+        forms[currentFormIndex].style.display = 'none';
+        currentFormIndex-=1;
+        if (currentFormIndex >= 0) {
+            forms[currentFormIndex].style.display = 'block';}
+        else {alert('Mi pana, este es el primer autor.');
+              forms[currentFormIndex+1].style.display = 'block';
+              currentFormIndex+=1;}
+    });     
+});
+
+</script>
+
+{% endblock %}
+
+
