@@ -1,6 +1,7 @@
 {% extends "base1.html" %}
 {% block content %}
 <!-- mi_template.html -->
+<p class="w3-center">Navegación por el modelo Autor con modelformset</p>
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}

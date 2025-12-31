@@ -316,7 +316,7 @@ def auxParaUsarW3jsIncludeHTMLEnAutorYsusLib(solicitud):
 
 def navDetailAutorYSusLibHTMX(sol):
     """
-    
+    Esto no sirvió.
     """
     lista_ids = list(Autor.objects.values_list('id', flat=True))
 
@@ -328,30 +328,14 @@ from django.forms import modelformset_factory
 from django.core.paginator import Paginator
 from .forms import FormGenAutor
 
-autorFormset = modelformset_factory(Autor, form=FormGenAutor, extra=0)
-
-def navAutorFormset(request):
+def navAutorModelFormsetJS(request):
     """
-    Formset para solo consultar (GET).
-    
-    
-    formset = autorFormset(request.GET or None)
-
-    # Crea el paginador
-    paginador = Paginator(formset, 1) # Un formularios por página
-    numeroPag = request.GET.get('page')
-    page_obj = paginador.get_page(numeroPag)
-    
-    if request.method == 'POST':
-        formset = autorFormset(request.POST)
-        if formset.is_valid():
-            formset.save()  # Saves all valid forms to the database
-       
-    formset = autorFormset()
-
-    contexto = {'page_obj': page_obj, 'paginator':paginador}
     """
-    
+    #autorFormset = modelformset_factory(Autor, form=FormGenAutor, extra=0)
+
+    #Usando el parámetro fields, no necesito hacer una ModelForm(FormGenAutor) en forms.py para importarlo aquí, y hacer el formset para Autor. La bibliografía dice que fields y extra son opcionales, con valor predeterminado de all y 0, pero no es verdad:
+    autorFormset = modelformset_factory(Autor, fields = '__all__', extra = 0)
+
     if request.method == 'POST':
         formset = autorFormset(request.POST, prefix='mi_formset')
         if formset.is_valid():
@@ -360,4 +344,34 @@ def navAutorFormset(request):
     else:
         formset = autorFormset(prefix='mi_formset')
 
-    return render(request, 'formsetAutores.html', {'formset': formset})
+    return render(request, 'navAutoresConModelFormsetJS.html', {'formset': formset})
+
+from django.core.paginator import Paginator
+from django.forms import formset_factory
+
+def navAutorModelFormsetYpaginator(request):
+    todos_los_objetos = Autor.objects.all().order_by('id') # Ajusta el orden
+
+    # 2. Crear el paginador
+    paginator = Paginator(todos_los_objetos, 1) # 10 elementos por página
+
+    # 3. Obtener la página actual de la URL (ej: ?page=2)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) # get_page maneja errores y devoluciones por defecto
+
+    # 4. Crear el FormSet a partir de la página actual (¡Importante!)
+    MiModeloFormSet = modelformset_factory(Autor, fields = '__all__', extra = 0)
+    
+    # Usamos page_obj.object_list para pasar solo los objetos de la página actual
+    formset = MiModeloFormSet(queryset=page_obj.object_list) 
+
+    context = {
+        'formset': formset,
+        'page_obj': page_obj, # Para la navegación en la plantilla
+        'paginator': paginator, # Para range de páginas
+        'is_paginated': True # Para activar el html de paginación heredado de base1.html
+    }
+    return render(request, 'navAutorModelFormsetYpaginator.html', context)
+
+
+

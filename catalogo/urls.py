@@ -53,5 +53,7 @@ urlpatterns += [path('navAutorYsusLibrosConW3JSauxiliar/', views.auxParaUsarW3js
 
 urlpatterns += [path('navAutorYsusLibrosConHTMX/', views.navDetailAutorYSusLibHTMX, name='navAutorYsusLibHTMX'),]
 
-urlpatterns += [path('navAutorConFormset/', views.navAutorFormset, name='navAutorFormset'),]
+urlpatterns += [path('navAutoresConModelFormsetJS/', views.navAutorModelFormsetJS, name='navAutorModelFormsetJS'),]
+
+urlpatterns += [path('navAutoresConModelFormsetYpaginator/', views.navAutorModelFormsetYpaginator, name='navAutorModelFormsetYpaginator'),]
 
