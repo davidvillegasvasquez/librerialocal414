@@ -87,7 +87,7 @@ class VistaDetalladaGenAutor(generic.DetailView):
     model = Autor
     
 class ListaLibrosPrestadosAlUsuario(LoginRequiredMixin, generic.ListView):
-    """
+    """5
     Vista genérica basada en clases que enumera los libros prestados al usuario actual.
     """
     model = LibroInstancia
@@ -316,7 +316,7 @@ def auxParaUsarW3jsIncludeHTMLEnAutorYsusLib(solicitud):
 
 def navDetailAutorYSusLibHTMX(sol):
     """
-    Esto no sirvió.
+    Esto no funcionó.
     """
     lista_ids = list(Autor.objects.values_list('id', flat=True))
 
@@ -326,14 +326,15 @@ def navDetailAutorYSusLibHTMX(sol):
 
 from django.forms import modelformset_factory
 from django.core.paginator import Paginator
-from .forms import FormGenAutor
 
 def navAutorModelFormsetJS(request):
     """
     """
     #autorFormset = modelformset_factory(Autor, form=FormGenAutor, extra=0)
 
-    #Usando el parámetro fields, no necesito hacer una ModelForm(FormGenAutor) en forms.py para importarlo aquí, y hacer el formset para Autor. La bibliografía dice que fields y extra son opcionales, con valor predeterminado de all y 0, pero no es verdad:
+    #Usando el parámetro fields, no necesito hacer una ModelForm(FormGenAutor) en forms.py para importarlo aquí, y hacer el formset para Autor. 
+    #La bibliografía dice que fields y extra son opcionales, con valor predeterminado de __all__ y 0, pero no es verdad:
+
     autorFormset = modelformset_factory(Autor, fields = '__all__', extra = 0)
 
     if request.method == 'POST':
@@ -353,7 +354,7 @@ def navAutorModelFormsetYpaginator(request):
     todos_los_objetos = Autor.objects.all().order_by('id') # Ajusta el orden
 
     # 2. Crear el paginador
-    paginator = Paginator(todos_los_objetos, 1) # 10 elementos por página
+    paginator = Paginator(todos_los_objetos, 1) # 1 elementos por página
 
     # 3. Obtener la página actual de la URL (ej: ?page=2)
     page_number = request.GET.get('page', 1)
@@ -373,5 +374,42 @@ def navAutorModelFormsetYpaginator(request):
     }
     return render(request, 'navAutorModelFormsetYpaginator.html', context)
 
+from .forms import inlineFormsetParaAutorYsusLibros
 
+def navAutorYsusLibrosInlienformset(request):
+    """
+    Podemos concluir, que la navegación con formularios no es conveniente: definitivamente los formularios están indicados para la modificación de contenido en un sólo objeto, y eventualmente sus relacionados.
+    """
+    autorRecibido = int(request.GET.get('autor_id', 'Not provided'))
+    autor = get_object_or_404(Autor, id=autorRecibido)
+    if request.method == 'POST':
+        formset = inlineFormsetParaAutorYsusLibros(request.POST, request.FILES, instance=autor)
+        if formset.is_valid():
+            formset.save()
+            return redirect('author_detail', autorRecibido=autor.id) # Redirect to a success page
+    else:
+        formset = inlineFormsetParaAutorYsusLibros(instance=autor)
+    
+    return render(request, 'navAutorYsusLibrosInlineformset.html', {'formset': formset, 'autor': autor})
+
+
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.http import HttpResponse
+
+def descargar_pdf(request):
+    # 1. Obtener datos de la base de datos (ej. búsqueda)
+    resultados = Libro.objects.all() 
+
+    # 2. Renderizar HTML con los datos
+    html_string = render_to_string('plantilla_pdf.html', {'resultados': resultados})
+
+    # 3. Generar PDF
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+
+    # 4. Crear respuesta HTTP para descarga
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
+    return response
 

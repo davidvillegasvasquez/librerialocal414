@@ -57,3 +57,7 @@ urlpatterns += [path('navAutoresConModelFormsetJS/', views.navAutorModelFormsetJ
 
 urlpatterns += [path('navAutoresConModelFormsetYpaginator/', views.navAutorModelFormsetYpaginator, name='navAutorModelFormsetYpaginator'),]
 
+urlpatterns += [path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsusLibrosInlienformset, name='navAutorYsusLibrosInlineformset'),]
+
+urlpatterns += [path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),]
+

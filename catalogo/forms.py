@@ -57,12 +57,6 @@ Campo para la selección de la categoría (relacionada con Categoria). Note que 
             except (ValueError, TypeError):
                 pass # No se hace nada si no hay objeto_principal o no es válido
 
-
-class FormGenAutor(ModelForm):
-     class Meta:
-        model = Autor
-        fields = '__all__'
-
 #----------------------------------------------------------------------------
 
 #Formularios para construir el formulario dinámico por pasos django-formtools:
@@ -89,3 +83,11 @@ class FormularioLibros(forms.ModelForm):
     class Meta: 
         model = Libro 
         fields = [] 
+
+#-----------------------------------------------------
+#Formulario inlineformset_factory: se hace aquí a pesar de lo corto para llevar una coherencia en el proyecto
+
+from django.forms import inlineformset_factory
+
+# Crea un FormSet para los libros de un autor
+inlineFormsetParaAutorYsusLibros = inlineformset_factory(Autor, Libro, fields=('titulo', 'isbn', 'genero'), extra=0, can_delete=False) #can_delete=False hace que no aparezca un checkbox de eliminar en cada subformulario.

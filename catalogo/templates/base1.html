@@ -39,8 +39,13 @@
 
       <a href="{% url 'navAutorModelFormsetYpaginator' %}" class="w3-bar-item w3-button">Navegar por solo autores con ModelFormset y paginator sin una pizca de JS</a>
 
+    <a href="{% url 'navAutorYsusLibrosInlineformset' %}?autor_id=1" class="w3-bar-item w3-button">Navegar por autor y sus libro usando inlineformset_factory</a>
+
+<a href="{% url 'descargar_pdf' %}" class="w3-bar-item w3-button">Descargar todos los títulos en pdf</a>
+
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
+
       <a href="{% url 'resetearVisitas' %}" class="w3-bar-item w3-button">Reestablecer contador</a>
 
             <!-- Area de autenticación del usuario: -->
