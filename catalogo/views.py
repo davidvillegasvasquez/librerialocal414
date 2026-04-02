@@ -116,7 +116,7 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 import datetime
-from catalogo.forms import ModeloFormRenovDeLibros
+from .forms import ModeloFormRenovDeLibros
 
 #@login_required #Trabaja igual sin este decorador. Averiguar por qué?
 @permission_required('catalogo.puedeMarcarRetornado')
@@ -392,6 +392,7 @@ def navAutorYsusLibrosInlienformset(request):
     
     return render(request, 'navAutorYsusLibrosInlineformset.html', {'formset': formset, 'autor': autor})
 
+#Imprimir pdf:
 
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -413,3 +414,25 @@ def descargar_pdf(request):
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
     return response
 
+from django.contrib.auth.models import Group, User
+from rest_framework import permissions, viewsets
+from .serializadores import SerializadorUsuarios, SerializadorGrupos
+
+class ConjuntoVistaUsuario(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+
+    queryset = User.objects.all().order_by("-date_joined")
+    serializer_class = SerializadorUsuarios
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class ConjuntoVistaGrupo(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+
+    queryset = Group.objects.all().order_by("name")
+    serializer_class = SerializadorGrupos
+    permission_classes = [permissions.IsAuthenticated]

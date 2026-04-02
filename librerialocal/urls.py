@@ -14,8 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from django.urls import include
+from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -33,3 +32,20 @@ urlpatterns += [
     path('accounts/', include('django.contrib.auth.urls')), path('', RedirectView.as_view(url='/accounts/', permanent=True)),
 ]
 #El nombre url accounts no puede ser arbitrario, porque django en sus vistas genéricas utiliza este nombre en su implementación.
+
+
+#urls de la api rest:
+
+from catalogo import views
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"users", views.ConjuntoVistaUsuario)
+router.register(r"groups", views.ConjuntoVistaGrupo)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
+urlpatterns += [
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+]
