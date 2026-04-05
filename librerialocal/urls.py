@@ -33,19 +33,20 @@ urlpatterns += [
 ]
 #El nombre url accounts no puede ser arbitrario, porque django en sus vistas genéricas utiliza este nombre en su implementación.
 
-
 #urls de la api rest:
 
-from catalogo import views
+from catalogo.views import VistaConjuntoDeUsuarios, VistaConjuntoDeGrupos, LibrosDeGallegos, LibsDeRangel #views
 from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r"users", views.ConjuntoVistaUsuario)
-router.register(r"groups", views.ConjuntoVistaGrupo)
+enrutador = routers.DefaultRouter()
+enrutador.register(r"users", VistaConjuntoDeUsuarios)
+enrutador.register(r"groups", VistaConjuntoDeGrupos)
+enrutador.register(r"romulo-gallegos", LibrosDeGallegos)
+enrutador.register(r"carlos-rangel", LibsDeRangel, basename='carlos-rangel') #Hay que usar el parámetro basename porque estoy serializando el mismo modelo más de una vez.
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns += [
-    path("", include(router.urls)),
-    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("", include(enrutador.urls)),
+    path("api-auth-cualquiervaina/", include("rest_framework.urls", namespace="rest_framework")),
 ]

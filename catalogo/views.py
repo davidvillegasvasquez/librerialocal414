@@ -414,25 +414,36 @@ def descargar_pdf(request):
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
     return response
 
+#Vistas de django rest framework a base de serializadores:
+
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
-from .serializadores import SerializadorUsuarios, SerializadorGrupos
+from .serializadores import *
 
-class ConjuntoVistaUsuario(viewsets.ModelViewSet):
+class VistaConjuntoDeUsuarios(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
 
     queryset = User.objects.all().order_by("-date_joined")
-    serializer_class = SerializadorUsuarios
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SerializarUsuarios
+    #permission_classes = [permissions.IsAuthenticated]
 
 
-class ConjuntoVistaGrupo(viewsets.ModelViewSet):
+class VistaConjuntoDeGrupos(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
 
     queryset = Group.objects.all().order_by("name")
-    serializer_class = SerializadorGrupos
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SerializarGrupos
+    #permission_classes = [permissions.IsAuthenticated]
+
+class LibrosDeGallegos(viewsets.ModelViewSet):
+    queryset = Libro.objects.filter(autor__nombre="Rómulo", autor__apellido="Gallegos")
+    serializer_class = SerializarLibros
+
+class LibsDeRangel(viewsets.ModelViewSet):
+    queryset = Libro.objects.filter(autor__nombre="Carlos", autor__apellido="Rangel")
+    serializer_class = SerializarLibros
+
