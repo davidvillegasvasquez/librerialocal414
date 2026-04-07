@@ -7,6 +7,16 @@ from rest_framework.parsers import JSONParser
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
 
+def inicioSnippets(solicitud):
+    """
+    Función vista para la página inicio de la app snippets con la lista de todos los snippets.
+    """
+    
+    # Renderiza la plantilla HTML inicio.html con los datos en la variable contexto
+    return render(solicitud,'base1-inicio-snippets.html',context={'listaDeSnippets':snippet_list(solicitud)})
+#Recuerde que podemos colocar el retorno del atributo objects.count() directamente en el valor de la clave del par clave-valor en el diccionario.
+
+
 @csrf_exempt
 def snippet_list(request):
     """

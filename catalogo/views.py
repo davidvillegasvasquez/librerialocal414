@@ -13,6 +13,7 @@ def borrarConteoVisitas(solicitudReset):
     return redirect('/') #Para usar con redirect y reverse. Es la mejor opción.
     #return render(solicitudReset,'base1-inicio.html',context={'cantVisitas':0})
     #Si se usa la función render, se perderá la visualización en otras variables de contexto a la primera sesión.
+
 def inicio(solicitud):
     """
     Función vista para la página inicio del sitio.

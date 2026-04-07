@@ -43,6 +43,9 @@
 
 <a href="{% url 'descargar_pdf' %}" class="w3-bar-item w3-button">Descargar todos los títulos en pdf</a>
 
+{# Note como referimos el enlace a la app snippets desde la app catalogo: #}
+<a href="{% url 'snippets:irAsnippets' %}" class="w3-bar-item w3-button">Ir a la app Snippets</a> 
+
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
 
