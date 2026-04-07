@@ -23,6 +23,8 @@ urlpatterns = [path('admin/', admin.site.urls),]
 
 urlpatterns += [path('catalogo/', include('catalogo.urls')),]
 
+urlpatterns += [path('snippets/', include('snippets.urls')),]
+
 urlpatterns += [path('', RedirectView.as_view(url='/catalogo/', permanent=True)),]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
@@ -50,3 +52,4 @@ urlpatterns += [
     path("", include(enrutador.urls)),
     path("api-auth-cualquiervaina/", include("rest_framework.urls", namespace="rest_framework")),
 ]
+
