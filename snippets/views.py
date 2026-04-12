@@ -1,62 +1,42 @@
 from django.shortcuts import render
-
-# Create your views here.
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
+from rest_framework import generics
+
+# Create your views here.
+
 
 def inicioSnippets(solicitud):
     """
     Función vista para la página inicio de la app snippets con la lista de todos los snippets.
     """
-    
     # Renderiza la plantilla HTML inicio.html con los datos en la variable contexto
-    return render(solicitud,'base1-inicio-snippets.html',context={'listaDeSnippets':snippet_list(solicitud)})
+    return render(solicitud,'base1-inicio-snippets.html',context={'listaDeSnippets':SnippetList()})
 #Recuerde que podemos colocar el retorno del atributo objects.count() directamente en el valor de la clave del par clave-valor en el diccionario.
 
+from rest_framework import permissions
 
-@csrf_exempt
-def snippet_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == "GET":
-        snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class SnippetList(generics.ListCreateAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    elif request.method == "POST":
-        data = JSONParser().parse(request)
-        serializer = SnippetSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-@csrf_exempt
-def snippet_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
-    try:
-        snippet = Snippet.objects.get(pk=pk)
-    except Snippet.DoesNotExist:
-        return HttpResponse(status=404)
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    if request.method == "GET":
-        serializer = SnippetSerializer(snippet)
-        return JsonResponse(serializer.data)
+from django.contrib.auth.models import User
+from snippets.serializers import UserSerializer
 
-    elif request.method == "PUT":
-        data = JSONParser().parse(request)
-        serializer = SnippetSerializer(snippet, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    elif request.method == "DELETE":
-        snippet.delete()
-        return HttpResponse(status=204)
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+

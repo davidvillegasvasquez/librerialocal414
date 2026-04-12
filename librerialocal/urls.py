@@ -37,19 +37,7 @@ urlpatterns += [
 
 #urls de la api rest:
 
-from catalogo.views import VistaConjuntoDeUsuarios, VistaConjuntoDeGrupos, LibrosDeGallegos, LibsDeRangel #views
-from rest_framework import routers
-
-enrutador = routers.DefaultRouter()
-enrutador.register(r"users", VistaConjuntoDeUsuarios)
-enrutador.register(r"groups", VistaConjuntoDeGrupos)
-enrutador.register(r"romulo-gallegos", LibrosDeGallegos)
-enrutador.register(r"carlos-rangel", LibsDeRangel, basename='carlos-rangel') #Hay que usar el parámetro basename porque estoy serializando el mismo modelo más de una vez.
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
 urlpatterns += [
-    path("", include(enrutador.urls)),
-    path("api-auth-cualquiervaina/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api-auth/", include("rest_framework.urls")),
 ]
-
+#La 'api-auth/' parte del patrón puede ser cualquier URL que desees utilizar.
