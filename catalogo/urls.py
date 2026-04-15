@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib import admin #Aunque no se vé el uso del admin aquí, si no lo importo se presenta la excepción "LookupError: No installed app with label 'admin'".
-
+from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [path('', views.inicio, name='vistaHome'), path('libros/', views.LibroVistaLista.as_view(), name='todosLoslibros'), path('libros/conbarbara', views.LibroVistaListaConBarbara.as_view(), name='librosConBarbara'), path('libro/<int:pk>', views.VistaDetalleLibro.as_view(), name='detallesDeLibro'), path('autores/', views.VistaListaGenAutores.as_view(), name='toditicosLosAutores'), path('autor/<int:pk>', views.VistaDetalladaGenAutor.as_view(), name='autorDetalles'), path('reseteoContSesiones', views.borrarConteoVisitas, name='resetearVisitas'),]
 
@@ -61,3 +61,15 @@ urlpatterns += [path('navAutoresConModelFormsetYpaginator/', views.navAutorModel
 urlpatterns += [path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsusLibrosInlienformset, name='navAutorYsusLibrosInlineformset'),]
 
 urlpatterns += [path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),]
+
+urlpatterns += [path('api-todosLoslibros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), ]
+
+urlpatterns += [path('api-todosLoslibros/', views.Libros.as_view(), name="libro-list"), ]
+
+urlpatterns += [path('api-todosLosAutores/', views.Autores.as_view(), name="autor-list"), ]
+
+urlpatterns += [path("apirest-catalogo/", views.api_root),]
+
+urlpatterns += [path("api-todosLosAutores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail")]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

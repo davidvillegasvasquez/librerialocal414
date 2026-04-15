@@ -415,36 +415,39 @@ def descargar_pdf(request):
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
     return response
 
+
 #Vistas de django rest framework a base de serializadores:
 
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
 from .serializadores import *
+from rest_framework import generics
 
-class VistaConjuntoDeUsuarios(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
+class Libros(generics.ListCreateAPIView):
+    queryset = Libro.objects.all()
+    serializer_class = SerializadorLibro
 
-    queryset = User.objects.all().order_by("-date_joined")
-    serializer_class = SerializarUsuarios
-    #permission_classes = [permissions.IsAuthenticated]
+class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Libro.objects.all()
+    serializer_class = SerializadorLibro
 
+class Autores(generics.ListCreateAPIView):
+    queryset = Autor.objects.all()
+    serializer_class = SerializadorAutor
 
-class VistaConjuntoDeGrupos(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
+class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Autor.objects.all()
+    serializer_class = SerializadorAutor
 
-    queryset = Group.objects.all().order_by("name")
-    serializer_class = SerializarGrupos
-    #permission_classes = [permissions.IsAuthenticated]
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
-class LibrosDeGallegos(viewsets.ModelViewSet):
-    queryset = Libro.objects.filter(autor__nombre="Rómulo", autor__apellido="Gallegos")
-    serializer_class = SerializarLibros
-
-class LibsDeRangel(viewsets.ModelViewSet):
-    queryset = Libro.objects.filter(autor__nombre="Carlos", autor__apellido="Rangel")
-    serializer_class = SerializarLibros
-
+@api_view(["GET"])
+def api_root(request, format=None):
+    return Response(
+        {
+            "api-todosLosAutores": reverse("autor-list", request=request, format=format),
+            "api-todosLoslibros": reverse("libro-list", request=request, format=format),
+        }
+    )

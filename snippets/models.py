@@ -26,7 +26,7 @@ class Snippet(models.Model):
     highlighted = models.TextField() #Valor por defecto arbitrario, '0000000', porque agregué este campo después de crear el modelo.
 
     class Meta:
-        ordering = ["created"]
+        ordering = ["id"]
     
     def save(self, *args, **kwargs):
         """
