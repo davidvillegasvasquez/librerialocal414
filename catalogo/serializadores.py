@@ -5,8 +5,9 @@ from .models import Libro, Autor
 # Serializers define the API representation.
 
 class SerializadorLibro(serializers.HyperlinkedModelSerializer):
-    autor = serializers.StringRelatedField()
-    
+    autor = serializers.HyperlinkedRelatedField(
+        many=False, view_name="autor-detail", read_only=True
+    ) #many=False: un libro - un autor.
     class Meta:
         model = Libro
         fields = [
@@ -20,7 +21,7 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
 class SerializadorAutor(serializers.HyperlinkedModelSerializer):
     libros = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
-    )
+    ) #many=True: un autor - varios libros.
 
     class Meta:
         model = Autor
