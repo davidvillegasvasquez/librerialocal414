@@ -23,7 +23,7 @@ urlpatterns = [path('admin/', admin.site.urls),]
 
 urlpatterns += [path('catalogo/', include('catalogo.urls')),]
 
-urlpatterns += [path('appsnippets/', include('snippets.urls')),]
+urlpatterns += [path('snippets/', include('snippets.urls')),]
 
 urlpatterns += [path('', RedirectView.as_view(url='/catalogo/', permanent=True)),]
 
@@ -41,4 +41,3 @@ urlpatterns += [
     path("entraraladrf/", include("rest_framework.urls")),
 ]
 #Por supuesto, 'entrarAlaDrf/' parte del patrón puede ser cualquier URL que desees utilizar (nombre arbitrario). Para usarla se debe acompañar con la acción a ejecutar, ej: http://127.0.0.1:8000/entraraladrf/login/
-

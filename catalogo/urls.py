@@ -63,12 +63,14 @@ urlpatterns += [path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsus
 urlpatterns += [path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),]
 
 urlpatterns += [path('api-todosLoslibros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), ]
+#Con http://127.0.0.1:8000/catalogo/api-todosLoslibros/1/ vamos a la vista detalle de la gui drf para el libro id. 1 que es el del buen salvaje de Carlos Rangel.
 
 urlpatterns += [path('api-todosLoslibros/', views.Libros.as_view(), name="libro-list"), ]
+#Con http://127.0.0.1:8000/catalogo/api-todosLoslibros/ vamos a la interfaz gráfica de django drf para la vista de lista de todos los libros.
 
 urlpatterns += [path('api-todosLosAutores/', views.Autores.as_view(), name="autor-list"), ]
 
-urlpatterns += [path("apirest-catalogo/", views.api_root),]
+urlpatterns += [path("", views.api_root),]
 
 urlpatterns += [path("api-todosLosAutores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail")]
 

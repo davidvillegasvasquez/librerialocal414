@@ -3,11 +3,11 @@ from .models import Snippet
 from django.contrib.auth.models import User
 
 class SnippetSerializer(serializers.HyperlinkedModelSerializer):
+    #owner = serializers.HyperlinkedRelatedField(view_name="snippet-detail", read_only=True)
     owner = serializers.ReadOnlyField(source="owner.username")
     highlight = serializers.HyperlinkedIdentityField(
         view_name="snippet-highlight", format="html"
     )
-    #url = serializers.HyperlinkedIdentityField(view_name='snippet-detail')
     
     class Meta:
         model = Snippet
@@ -23,10 +23,9 @@ class SnippetSerializer(serializers.HyperlinkedModelSerializer):
             "style",
         ]
 
-
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     snippets = serializers.HyperlinkedRelatedField(
-        many=True, view_name="snippet-detail", read_only=True
+        many=True, view_name="snippet-detail", queryset = Snippet.objects.all()
     )
 
     class Meta:

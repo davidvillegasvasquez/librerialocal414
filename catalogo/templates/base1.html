@@ -57,7 +57,15 @@
             <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.is_superuser %} y es super usuario {% elif user.groups.all.0.name == "bibliotecarios" %}, es bibliotecario {% if user.is_staff %} y pertenece al staff{% endif %}{% else %} y es miembro corriente{% endif %}</span>
             
       <a href="{% url 'misLibrosalquilados' user.get_username %}" class="w3-bar-item w3-button">Libros en manos de {{ user.get_username }} </a>
-      <a href="{% url 'logout' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Cerrar sesión</a>      
+      
+      {# Por seguridad (prevención CSRF), Django requiere que el cierre de sesión se realice mediante una petición POST, no un enlace GET directo. De lo contrario se producirá el error 405 Method Not Allowed, así que tenemos que incrustar como item un form con método post: #}
+      <li class="w3-bar-item">
+       <form action="{% url 'logout' %}?next={{ request.path }}" method="post">
+         {% csrf_token %}
+         <button class="w3-button"type="submit">Cerrar sesión</button>
+       </form>
+      </li>  
+    
             {% if perms.catalogo.puedeMarcarRetornado %}
               <hr>
               <span class="w3-bar-item">Bibliotecario</span>
