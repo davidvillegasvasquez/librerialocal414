@@ -5,4 +5,5 @@ requirements.txt
 __pycache__/
 a.sh
 d.sh
+private_key.pem
 

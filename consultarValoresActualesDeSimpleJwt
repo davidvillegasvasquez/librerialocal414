@@ -1,0 +1,64 @@
+Para ver el valor actual de ACCESS_TOKEN_LIFETIME de djangorestframework-simplejwt desde la terminal de Ubuntu, el método más directo y preciso es utilizar la shell de Django (python manage.py shell).
+Aquí tienes los pasos para consultarlo:
+
+1. Entrar en la Shell de Django
+Asegúrate de estar en el directorio raíz de tu proyecto (donde está el archivo manage.py) y tener tu entorno virtual activado. Ejecuta: 
+python manage.py shell
+
+2. Consultar la configuración
+Una vez dentro de la shell de Python, escribe las siguientes líneas para imprimir el valor configurado:
+from rest_framework_simplejwt.settings import api_settings
+print(api_settings.ACCESS_TOKEN_LIFETIME)
+
+Resultado esperado:
+La terminal mostrará un objeto timedelta. Por ejemplo, si está configurado para 60 minutos, verás:
+datetime.timedelta(seconds=3600) o datetime.timedelta(minutes=60). 
+
+Nota: Si no has definido SIMPLE_JWT en tu settings.py, este comando mostrará el valor por defecto (generalmente 5 minutos). 
+
+Alternativas rápidas en la terminal
+A. Buscar directamente en el archivo settings.py
+Si prefieres no entrar en la shell, puedes usar grep para buscar la configuración en el archivo de settings:
+grep -A 2 "ACCESS_TOKEN_LIFETIME" path/to/your/project/settings.py
+(Cambia path/to/your/project/settings.py por la ruta real).
+
+B. Usar python -c (línea de comandos directa)
+python -c "from rest_framework_simplejwt.settings import api_settings; print(api_settings.ACCESS_TOKEN_LIFETIME)"
+
+¿Por qué hacerlo así?
+El paquete simplejwt combina la configuración por defecto con tus configuraciones personalizadas (SIMPLE_JWT en settings.py) durante la ejecución, por lo que consultar api_settings dentro de la shell de Django es la forma más fiable de obtener el valor realmente activo. 
+
+Como listar en la terminal todos los valores actuales de configuración en simplejwt:
+
+1. Iniciar la consola de Django
+python manage.py shell
+
+2. Ejecutar el script para mostrar la configuración
+Una vez dentro de la consola, copia y pega las siguientes líneas. Esto imprimirá la configuración combinada (valores por defecto + tus sobrescrituras en settings.py):
+
+from django.conf import settings
+from rest_framework_simplejwt.settings import api_settings
+
+print("--- Configuración Actual de Simple JWT ---")
+for setting, value in api_settings.user_settings.items(): 
+    print(f"{setting}: {value}")
+
+Para ver qué valores se están usando realmente (incluyendo los predeterminados):
+print(api_settings.__dict__)
+
+Explicación
+rest_framework_simplejwt.settings.api_settings: Es el objeto que simplejwt utiliza en tiempo de ejecución.
+
+api_settings.user_settings: Contiene únicamente lo que has definido en el diccionario SIMPLE_JWT dentro de tu settings.py. 
+
+Alternativa rápida (solo imprimir valores personalizados)
+Si solo quieres ver qué has sobrescrito en tu settings.py sin entrar a la shell:
+bash
+grep -A 20 "SIMPLE_JWT =" settings.py
+
+Configuraciones clave que deberías ver
+ACCESS_TOKEN_LIFETIME: Duración del token.
+REFRESH_TOKEN_LIFETIME: Duración del refresh token.
+ALGORITHM: Algoritmo de firma (ej. HS256).
+SIGNING_KEY: La clave de firma (por defecto es SECRET_KEY de Django).
+

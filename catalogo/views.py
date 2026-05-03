@@ -422,31 +422,43 @@ from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
 from .serializadores import *
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 class Libros(generics.ListCreateAPIView):
     """
     Vista de endpoint de tipo generics.ListCreateAPIView, serializada con serializers.HyperlinkedModelSerializer, para listar todos los libros (list) usando el método http get, o crear(create) uno nuevo con el método http post.
     """
+
+    permission_classes = [IsAuthenticated]
+
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
-    Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlos(destroy).
+    Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlo(destroy).
     """
+    #Permisos necesario para usar con la autenticación con simplejwt:
+    permission_classes = [IsAuthenticated]
+
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
 
 class Autores(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
+#Hacemos un pundo de entrada para nuestra api:
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 @api_view(["GET"])
