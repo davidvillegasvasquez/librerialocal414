@@ -429,7 +429,7 @@ class Libros(generics.ListCreateAPIView):
     """
     Vista de endpoint de tipo generics.ListCreateAPIView, serializada con serializers.HyperlinkedModelSerializer, para listar todos los libros (list) usando el método http get, o crear(create) uno nuevo con el método http post.
     """
-
+    #Permisos necesario para usar con la autenticación con simplejwt:
     permission_classes = [IsAuthenticated]
 
     queryset = Libro.objects.all()
@@ -439,7 +439,6 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
     Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlo(destroy).
     """
-    #Permisos necesario para usar con la autenticación con simplejwt:
     permission_classes = [IsAuthenticated]
 
     queryset = Libro.objects.all()
