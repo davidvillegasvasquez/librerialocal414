@@ -1,0 +1,59 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<div class="w3-panel w3-sand w3-tiny" style="width:50%; margin:auto;">
+<div class="w3-card-4">
+  <div class="w3-panel w3-brown">
+    <h2>Datos</h2>
+  </div>
+  <form class="w3-container" method="post">
+    {% csrf_token %}
+    <label class="w3-text-blue">Nombre</label>
+    <input
+      class="w3-input w3-border w3-animate-input"
+      id="id_nombre"
+      name="nombre"
+      type="text"
+      value=""
+      style="width:30%"
+      required>
+    <label class="w3-text-blue">Apellido</label>
+    <input
+      class="w3-input w3-border w3-animate-input"
+      id="id_apellido"
+      name="apellido"
+      type="text"
+      value="" 
+      style="width:30%"
+      required>
+    <label class="w3-text-blue">Nacimiento</label>
+    <input
+      class="w3-input w3-border"
+      id="id_nacimiento"
+      name="nacimiento"
+      type="date"
+      value=""
+      style="width:30%"
+      onkeydown="return false"
+      required>
+    <label class="w3-text-blue">Muerte</label>
+    <input
+      class="w3-input w3-border"
+      id="id_muerte"
+      name="muerte"
+      type="date"
+      value=""
+      style="width:30%"
+      onkeydown="return false">
+
+    <div class="w3-panel">
+    {% if request.path == "/catalogo/autor/crear/" %} <input type="submit" class="w3-button w3-border w3-black"  value="Crear"> {% else %} <input type="submit" class="w3-button w3-border w3-black"  value="Actualizar">{% endif %}
+    </div>
+   </form>
+</div>
+<p>La URL actual es: {{ request.path }}</p>
+<p>Usuario: {{ user.get_username }}</p>
+<p>Usuario objeto: {{ user }}</p>
+</div>
+
+{% endblock %}

@@ -3,7 +3,15 @@ from . import views
 from django.contrib import admin #Aunque no se vé el uso del admin aquí, si no lo importo se presenta la excepción "LookupError: No installed app with label 'admin'".
 from rest_framework.urlpatterns import format_suffix_patterns
 
-urlpatterns = [path('', views.inicio, name='vistaHome'), path('libros/', views.LibroVistaLista.as_view(), name='todosLoslibros'), path('libros/conbarbara', views.LibroVistaListaConBarbara.as_view(), name='librosConBarbara'), path('libro/<int:pk>', views.VistaDetalleLibro.as_view(), name='detallesDeLibro'), path('autores/', views.VistaListaGenAutores.as_view(), name='toditicosLosAutores'), path('autor/<int:pk>', views.VistaDetalladaGenAutor.as_view(), name='autorDetalles'), path('reseteoContSesiones', views.borrarConteoVisitas, name='resetearVisitas'),]
+urlpatterns = [
+    path('', views.Libros.as_view(), name='home'), 
+    path('libros/', views.Libros.as_view(), name='todosLoslibros'),        
+    path('libros/conbarbara', views.LibroVistaListaConBarbara.as_view(), name='librosConBarbara'), 
+    path('libro/<int:pk>', views.VistaDetalleLibro.as_view(), name='detallesDeLibro'), 
+    path('autores/', views.VistaListaGenAutores.as_view(), name='toditicosLosAutores'), 
+    path('autor/<int:pk>', views.VistaDetalladaGenAutor.as_view(), name='autorDetalles'), 
+    path('reseteoContSesiones', views.borrarConteoVisitas, name='resetearVisitas'),
+]
 
 urlpatterns += [
     path('LibrosEnManosDelUsuario/<str:username>', views.ListaLibrosPrestadosAlUsuario.as_view(), name='misLibrosalquilados'),
@@ -62,16 +70,16 @@ urlpatterns += [path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsus
 
 urlpatterns += [path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),]
 
-urlpatterns += [path('api-todosLoslibros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), ]
+urlpatterns += [path('libros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"),]
 #Con http://127.0.0.1:8000/catalogo/api-todosLoslibros/1/ vamos a la vista detalle de la gui drf para el libro id. 1 que es el del buen salvaje de Carlos Rangel.
 
-urlpatterns += [path('api-todosLoslibros/', views.Libros.as_view(), name="libro-list"), ]
+urlpatterns += [path('libros/', views.Libros.as_view(), name="libro-list"), ]
 #Con http://127.0.0.1:8000/catalogo/api-todosLoslibros/ vamos a la interfaz gráfica de django drf para la vista de lista de todos los libros.
 
-urlpatterns += [path('api-todosLosAutores/', views.Autores.as_view(), name="autor-list"), ]
+urlpatterns += [path('autores/', views.Autores.as_view(), name="autor-list"), ]
 
 urlpatterns += [path("", views.api_root),]
 
-urlpatterns += [path("api-todosLosAutores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail")]
+urlpatterns += [path("autores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail")]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

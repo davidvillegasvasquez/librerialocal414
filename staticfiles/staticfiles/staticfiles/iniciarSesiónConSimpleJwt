@@ -1,0 +1,67 @@
+Para acceder a una sesión de usuario en Django utilizando djangorestframework-simplejwt de manera sin estado (stateless), el cliente (frontend) debe enviar el token de acceso JWT en cada petición dentro de la cabecera Authorization. 
+Reddit
+Reddit
+ +1
+Aquí tienes los pasos para configurar y utilizar esta autenticación:
+1. Instalación y Configuración
+Instala la biblioteca: 
+bash
+pip install djangorestframework_simplejwt
+En tu settings.py, configura DRF para usar JWT: 
+python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+2. Configurar las URLs para obtener Tokens
+Configura las rutas para loguearse y refrescar tokens: 
+Dev Genius
+Dev Genius
+ +1
+python
+from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+urlpatterns = [
+    # Proporciona username/password, devuelve access y refresh tokens
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # Proporciona refresh token, devuelve nuevo access token
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]
+3. Acceder al Usuario en las Vistas (Backend)
+Cuando la autenticación JWT está activa, request.user estará disponible automáticamente en tus vistas basadas en clases (APIView) o funciones, tal como en la autenticación basada en sesiones tradicional. 
+python
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated] # Protege la vista
+
+    def get(self, request):
+        # Acceso directo al usuario autenticado
+        user = request.user
+        return Response({
+            'username': user.username,
+            'email': user.email,
+            'id': user.id
+        })
+4. Cómo consumir la API (Frontend - Stateless)
+Login: Haz un POST a /api/token/ con tus credenciales.
+Almacenamiento: Guarda el access token (ej. en localStorage o en memoria).
+Peticiones: En cada petición a vistas protegidas, incluye la cabecera:
+Authorization: Bearer <tu_access_token>. 
+Reddit
+Reddit
+ +2
+Alternativa: JWTStatelessUserAuthentication 
+Si no necesitas consultar la base de datos para obtener los detalles del usuario y prefieres la máxima velocidad, puedes usar JWTStatelessUserAuthentication. Esta opción devuelve un objeto TokenUser que contiene los datos del usuario extraídos directamente del token, evitando una búsqueda en la base de datos. 
+
+python
+# settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+       'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
+    )
+}

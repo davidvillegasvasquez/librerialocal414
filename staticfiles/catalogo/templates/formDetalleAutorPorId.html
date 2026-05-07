@@ -1,0 +1,28 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<br>
+<form id="id_form" action="{% url 'autorDetalles' pk=1 %}" method="get">
+  <label>Autor: </label>
+  <input
+    id="miInput"
+    type="number"
+    name="argumento"
+    placeholder="Ingrese indice autor"
+    min=1 />
+  <input type="submit" value="Ir" />
+</form>
+
+<br>
+Lista de id: {{ listaDeIds }}
+
+<script>
+/*Hay que usar el nombre de parámetro de ruta reservado, pk, porque es el que espera la vista genérica de detalle de autor a la cual mandamos los datos.*/
+document.getElementById('miInput').addEventListener('change', function() {
+   var nuevoPk = this.value;
+   var url = "{% url 'autorDetalles' pk=1 %}".replace('1', nuevoPk); // Reemplaza el parámetro en la URL
+   document.getElementById('id_form').action = url;
+    });
+</script>
+
+{% endblock %}

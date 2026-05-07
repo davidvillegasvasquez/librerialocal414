@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Libro, Autor, LibroInstancia, Genero
 from django.urls import reverse
+from rest_framework.views import APIView
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 # Create your views here.
 def borrarConteoVisitas(solicitudReset):
@@ -14,25 +16,35 @@ def borrarConteoVisitas(solicitudReset):
     #return render(solicitudReset,'base1-inicio.html',context={'cantVisitas':0})
     #Si se usa la función render, se perderá la visualización en otras variables de contexto a la primera sesión.
 
-def inicio(solicitud):
+class Inicio(APIView):
     """
-    Función vista para la página inicio del sitio.
+    Vista basada en clase para la página inicio del sitio, que maneja múltples modelos, a diferencia de generics.ListCreateAPIView y generics.RetrieveUpdateDestroyAPIView que están diseñadas para un sólo modelo.
     """
-    # Genera contadores de algunos de los objetos principales
-    num_libros=Libro.objects.all().count()
-    #num_instancias=LibroInstancia.objects.count() # El 'all()' esta implícito por defecto.
-    #Libros disponibles (status = 'd')
-    num_instan_disponi=LibroInstancia.objects.filter(estatus__exact='d').count()
-    num_autores=Autor.objects.count()
-    # Numero de visitas a esta view, como está contado en la variable de sesión.
-    numeroDeVisitas = solicitud.session.get('numeroDeVisitasAinicio', 0)#Como no está predefinida de arranque en el dict solicitud.session, le asignamos un nombre de identificador arbitrario (numeroDeVisitasAinicio) al contador de sesiones.
-    #También recuerde que el identificador con nombre arbitrario (solicitud) es el nombre del parámetro que usamos en esta función, y pasa un objeto de la clase HttpRequest que tiene el atributo .session
-    numeroDeVisitas += 1
-    solicitud.session['numeroDeVisitasAinicio'] = numeroDeVisitas
 
-    # Renderiza la plantilla HTML inicio.html con los datos en la variable contexto
-    return render(solicitud,'base1-inicio.html',context={'cant_libros':num_libros,'cant_instancias':LibroInstancia.objects.count(), 'cant_inst_dispon':num_instan_disponi,'cant_autores':num_autores, 'cant_generos':Genero.objects.count(), 'cantVisitas':numeroDeVisitas})
-#Recuerde que podemos colocar el retorno del atributo objects.count() directamente en el valor de la clave del par clave-valor en el diccionario.
+    #authentication_classes = [authentication.TokenAuthentication]
+    queryset = Libro.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    def get(self, solicitud, formato=None):
+        # Obtener datos de múltiples modelos:
+        num_libros=Libro.objects.all().count()
+        num_autores=Autor.objects.all().count() #num_instan_disponi=LibroInstancia.objects.filter(estatus__exact='d').count()
+        #num_autores=Autor.objects.count() 
+
+        # Serializar por separado
+        serializar_num_libros = SerializadorLibro(num_libros, context={'request': solicitud})
+        serializar_num_autores = SerializadorAutor(num_autores, context={'request': solicitud})
+        #serializar_num_instan_disponi = pendiente hacer los serializadores restantes.
+        
+        if solicitud.accepted_renderer.format == 'json':
+            return response
+        # Si es navegador, devuelve la plantilla con los datos
+        return Response({
+            'cantLibros': serializar_num_libros.data,
+            'cantAutores': serializar_num_autores.data
+        }, template_name = base1-inicio.html)
+
+    
 
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -419,21 +431,32 @@ def descargar_pdf(request):
 #Vistas de django rest framework a base de serializadores:
 
 from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets
 from .serializadores import *
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
 class Libros(generics.ListCreateAPIView):
     """
     Vista de endpoint de tipo generics.ListCreateAPIView, serializada con serializers.HyperlinkedModelSerializer, para listar todos los libros (list) usando el método http get, o crear(create) uno nuevo con el método http post.
     """
     #Permisos necesario para usar con la autenticación con simplejwt:
-    permission_classes = [IsAuthenticated]
-
+    #permission_classes = [IsAuthenticated]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
+    # Orden importa: primero HTML, luego JSON
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'base1-inicio.html' # Plantilla para GET HTML
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        # Si la petición es API (JSON), devuelve la respuesta JSON
+        if request.accepted_renderer.format == 'json':
+            return response
+        # Si es navegador, devuelve la plantilla con los datos
+        return Response({'datos': response.data}, template_name=self.template_name)
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -461,10 +484,11 @@ from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 
 @api_view(["GET"])
-def api_root(request, format=None):
+def api_root(solicitud, formato=None):
     return Response(
-        {
-            "api-todosLosAutores": reverse("autor-list", request=request, format=format),
-            "api-todosLoslibros": reverse("libro-list", request=request, format=format),
+        { 
+            #"": reverse("libro-list", request=solicitud, format=formato),
+            "autores": reverse("autor-list", request=solicitud, format=formato),
+            "libros": reverse("libro-list", request=solicitud, format=formato),
         }
     )

@@ -1,0 +1,29 @@
+{% extends "base1.html" %}
+
+{% block content %}
+    <h1>Lista de libros</h1>
+
+    {% if mi_listaDeLibros %}
+    
+    <input oninput="w3.filterHTML('#id01', 'li', this.value)" class="w3-input w3-light-gray" placeholder="Búsqueda libro por nombre:">
+    <ul id="id01" class="w3-ul w3-margin-top w3-border">
+    {% for objetoNomArbitr in mi_listaDeLibros %}
+      <li>
+        <!-- Recuerde que el objeto retorna la propiedad titulo del modelo Libro con su atributo método __str__(self): return self.titulo -->
+        <a href="{{ objetoNomArbitr.get_absolute_url }}">{{ objetoNomArbitr }}</a> ({{objetoNomArbitr.autor}} id autor:{{ objetoNomArbitr.autor.id }}) (id libro:{{ objetoNomArbitr.id }}) {% if perms.catalogo.puedeMarcarRetornado %}<a href="{% url 'actualizarLibro' objetoNomArbitr.id %}">Actualizar</a> {% endif %}{% if user.is_staff %}<a href="{% url 'borrarlibro' objetoNomArbitr.id %}">-Borrar</a>{% endif %}
+<!-- Recuerde que este hipervínculo (href), llama al método get_absolute_url(self) del modelo que se está utilizando, en este caso, Libro, que retorna reverse('detallesDeLibro', args=[str(self.id)])  -->
+      </li>
+      {% endfor %}
+    </ul>
+    <br>
+    <br>
+    <p>Variable de contexto mi_listaDeLibros: {{ mi_listaDeLibros }}</p>
+    </ul>
+    <br>
+    {% else %}  
+      <p>No hay libros en la biblioteca.</p>
+    {% endif %}
+    <br>
+    <p><a href="{% url 'librosConBarbara' %}">Libros con barbara</a></p>
+{% endblock %}
+
