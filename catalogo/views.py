@@ -16,46 +16,9 @@ def borrarConteoVisitas(solicitudReset):
     #return render(solicitudReset,'base1-inicio.html',context={'cantVisitas':0})
     #Si se usa la función render, se perderá la visualización en otras variables de contexto a la primera sesión.
 
-class Inicio(APIView):
-    """
-    Vista basada en clase para la página inicio del sitio, que maneja múltples modelos, a diferencia de generics.ListCreateAPIView y generics.RetrieveUpdateDestroyAPIView que están diseñadas para un sólo modelo.
-    """
-
-    #authentication_classes = [authentication.TokenAuthentication]
-    queryset = Libro.objects.all()
-    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
-
-    def get(self, solicitud, formato=None):
-        # Obtener datos de múltiples modelos:
-        num_libros=Libro.objects.all().count()
-        num_autores=Autor.objects.all().count() #num_instan_disponi=LibroInstancia.objects.filter(estatus__exact='d').count()
-        #num_autores=Autor.objects.count() 
-
-        # Serializar por separado
-        serializar_num_libros = SerializadorLibro(num_libros, context={'request': solicitud})
-        serializar_num_autores = SerializadorAutor(num_autores, context={'request': solicitud})
-        #serializar_num_instan_disponi = pendiente hacer los serializadores restantes.
-        
-        if solicitud.accepted_renderer.format == 'json':
-            return response
-        # Si es navegador, devuelve la plantilla con los datos
-        return Response({
-            'cantLibros': serializar_num_libros.data,
-            'cantAutores': serializar_num_autores.data
-        }, template_name = base1-inicio.html)
-
-    
 
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-class LibroVistaLista(generic.ListView): # ,LoginRequiredMixin):
-    model = Libro
-    context_object_name = 'mi_listaDeLibros'#Atributo opcional: si no lo uso, la variable de contexto del objeto en la plantilla para esta vista, será automáticamente libro_list, es decir, nombreDelModeloEnMinuscula_list.
-    template_name = 'catalogo/todosLosLibros.html' #Atributo opcional. En caso de usar solamente una clase, el nombre por defecto de su plantilla única será:
-#nombreDelModeloEnMinuscula_list.html (obligatorio el complemento _list), si no especifíco su atributo template_name. Esto es importante si voy a usar varias vistas de clase con un mismo modelo.
-
-    #paginate_by = 2 #Paginación en grupo de dos objetos libro.
 
 #Constante declarada para uso global en este módulo:
 constante = 25
@@ -443,7 +406,7 @@ class Libros(generics.ListCreateAPIView):
     """
     #Permisos necesario para usar con la autenticación con simplejwt:
     #permission_classes = [IsAuthenticated]
-    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    #permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
     # Orden importa: primero HTML, luego JSON
@@ -462,19 +425,19 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
     Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlo(destroy).
     """
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
 
 class Autores(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
@@ -486,9 +449,8 @@ from rest_framework.reverse import reverse
 @api_view(["GET"])
 def api_root(solicitud, formato=None):
     return Response(
-        { 
-            #"": reverse("libro-list", request=solicitud, format=formato),
-            "autores": reverse("autor-list", request=solicitud, format=formato),
+        {  
             "libros": reverse("libro-list", request=solicitud, format=formato),
+            "autores": reverse("autor-list", request=solicitud, format=formato),
         }
     )

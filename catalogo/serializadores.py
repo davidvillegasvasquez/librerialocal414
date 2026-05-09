@@ -18,6 +18,7 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
             "descripcion",
             "isbn",
         ]
+
 class SerializadorAutor(serializers.HyperlinkedModelSerializer):
     libros = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
