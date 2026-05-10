@@ -4,9 +4,11 @@ from django.contrib import admin #Aunque no se vé el uso del admin aquí, si no
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('', views.Libros.as_view(), name='home'), 
+    #Pasamos la plantilla a utilizar desde la url:
+    path('', views.Libros.as_view(plantilla='base1-inicio.html'), name='home'),
+    path('libros/', views.Libros.as_view(plantilla='catalogo/todosLosLibros.html'), name='libros'), #A lo sumo sólo he podido reutilizar las vistas, más no los mapeadores.
     path('api/', views.api_root),
-    path('api/libros/', views.Libros.as_view(), name='libro-list'),        
+    path('api/libros/', views.Libros.as_view(plantilla='catalogo/todosLosLibros.html'), name='libro-list'),        
     path('libros/conbarbara', views.LibroVistaListaConBarbara.as_view(), name='librosConBarbara'), 
     path('api/libros/<int:pk>', views.LibroDetalle.as_view(), name='libro-detail'), 
     path('api/autores/', views.Autores.as_view(), name='autor-list'), 
