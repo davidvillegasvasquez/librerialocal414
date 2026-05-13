@@ -436,7 +436,7 @@ class Libros(generics.ListCreateAPIView):
         return ['base1-inicio.html']
     """
     def get_queryset(self):
-        queryset = Libro.objects.all()
+        #queryset = Libro.objects.all()
         #Filtra el queryset basado en los parámetros de la URL ?parametro=...
         #titulo=None
         #isbn=None
@@ -444,20 +444,18 @@ class Libros(generics.ListCreateAPIView):
         #Note que aquí si podemos capturar estos valores, cosa que con la plantilla fue imposible. Es tarea pendiente.
         titulo=self.request.query_params.get('titulo', None)
         isbn=self.request.query_params.get('isbn', None)
-        
+        #Creí que el problema era usar if not None para entrar a armar los queryset según el caso, pero resultó al final que estaba enviando los valores
+#desde las etiquetas url de base1.html, entrecomillados ('Canaima', en vez de Canaima) via parámetros de consulta url, lo cual cuyas comillas hacía diferente el valor que se quería encontrar según titulo=titulo, arrojando un queryset vacío al no encontrar coincidencias.
         if titulo:
-            print(f'titulo={titulo}')
-            print(f'type(titulo)={type(titulo)}')
-            queryset = queryset.filter(titulo=titulo)
+            queryset = Libro.objects.filter(titulo=titulo)
 
         elif isbn:
             print(f'isbn={isbn}')
-            queryset = queryset.filter(isbn=isbn)
+            queryset = Libro.objects.filter(isbn=isbn)
 
         else:
-            pass
+            queryset=Libro.objects.all()
 
-        print(f'queryset={queryset}')
         return queryset
     
     def list(self, request, *args, **kwargs):
