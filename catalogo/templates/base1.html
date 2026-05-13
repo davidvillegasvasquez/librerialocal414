@@ -16,8 +16,9 @@
       {% block barraLateral %}
       <h3 class="w3-bar-item">Menu</h3>
       <a href="{% url 'home' %}" class="w3-bar-item w3-button">Home</a>
-      <a href="{% url 'libro-list' %}" class="w3-bar-item w3-button">Todos los libros</a>
-      <a href="{% url 'librosConBarbara' %}" class="w3-bar-item w3-button">Libros con Barbara</a>
+      <a href="{% url 'libros' %}" class="w3-bar-item w3-button">Todos los libros</a>
+      <a href="{% url 'librosConBarbara' %}?titulo='Canaima'" class="w3-bar-item w3-button">Libros con titulo "Canaima"</a>
+      <a href="{% url 'isbn' %}?isbn='4077862365395'" class="w3-bar-item w3-button">Libros con isbn 4077862365395"</a>  
       <a href="{% url 'autor-list' %}" class="w3-bar-item w3-button">Todos los autores</a>
       <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
       <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>

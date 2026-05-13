@@ -3,6 +3,11 @@
 {% block content %}
 
     <h1>Lista de libros con Barbara</h1>
+    <p>datos: {{ datos }}</p>
+    <p>datos.results: {{ datos.results }}</p>
+    <p>datos.results.0: {{ datos.results.0 }}</p>
+    <p>datos.results.0.titulo: {{ datos.results.0.titulo }}</p>
+    <p>autor: <a href="{{ datos.results.0.autor }}">autor</a></p>
 
     {% if listaDeLibrosConBarbara %}
 

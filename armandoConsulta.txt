@@ -1,0 +1,20 @@
+Para armar dinámicamente el argumento de un .filter() en Django, la mejor práctica es construir un diccionario de Python y luego usar el operador de desempaquetado de diccionarios (**) para pasarlo como argumentos de palabra clave (kwargs).
+Aquí te mostramos los métodos más comunes, desde el más básico al más avanzado:
+1. Uso de diccionarios y desempaquetado (**kwargs)
+Esta es la forma más directa. Creas un diccionario donde las claves son los nombres de los campos (con sus lookups como __gte, __icontains) y los valores son los datos de búsqueda.
+def buscar_productos(request):
+    # 1. Iniciar con un diccionario vacío
+    filtros = {}
+
+    # 2. Agregar condiciones dinámicamente
+    nombre = request.GET.get('nombre')
+    if nombre:
+        filtros['nombre__icontains'] = nombre
+    
+    precio_min = request.GET.get('precio_min')
+    if precio_min:
+        filtros['precio__gte'] = precio_min
+    
+    # 3. Pasar el diccionario con **
+    resultados = Producto.objects.filter(**filtros)
+    return resultados
