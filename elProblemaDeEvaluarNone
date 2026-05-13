@@ -1,0 +1,10 @@
+El comportamiento que describes se debe a cómo Python y Django gestionan los valores "falsy" (falsos) frente a un valor None explícito, combinado con cómo se envían los parámetros en las URL.En resumen: Cuando envías ?var1= en la URL, get('var1', None) no devuelve None, devuelve una cadena vacía "".Aquí está la explicación detallada:1. ¿Por qué if var is not None: parece fallar?Cuando haces self.request.query_params.get('var1', None):Si la URL no tiene var1 (ej: /api/users/), var es None.Si la URL tiene var1 pero vacío (ej: /api/users/?var1=), var es "" (una cadena vacía), no None.Por lo tanto, if var is not None: evalúa "" is not None, lo cual es True. Tu código entra en el bloque if creyendo que hay un valor cuando en realidad hay una cadena vacía.2. ¿Por qué if var: si funciona?if var: evalúa la "verdad" (truthiness) del objeto.Si var es None, if var: es False.Si var es "" (cadena vacía), if var: es False.Si var es "0", if var: es True (cuidado aquí).Si var es "hola", if var: es True.if var: es más estricto contra valores vacíos (cadenas, listas, etc.), mientras que is not None solo comprueba que no sea el objeto None.Soluciones RecomendadasDependiendo de qué consideres un valor "válido", utiliza una de estas opciones:A. Si quieres ignorar tanto None como cadenas vacías ""Esta es la solución más común para filtros:pythonvar = self.request.query_params.get('var1', None)
+if var:  # O if var is not None and var != "":
+    # Hacer algo
+B. Si necesitas comprobar si el parámetro existe en la URLpythonif 'var1' in self.request.query_params:
+    var = self.request.query_params.get('var1')
+    # var puede ser ""
+C. Si el valor 0 (como entero o cadena) es válido y no debe ignorarseif var: fallará si var es "0". Usa esto en su lugar:pythonvar = self.request.query_params.get('var1', None)
+if var is not None and var != "":                
+    # Procesa el valor
+Nota sobre DRF: Para manejar la validación de parámetros de consulta de forma más limpia, se recomienda utilizar el paquete django-filter o serializadores para validar query_params.

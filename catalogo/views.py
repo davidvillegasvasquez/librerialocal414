@@ -436,25 +436,27 @@ class Libros(generics.ListCreateAPIView):
         return ['base1-inicio.html']
     """
     def get_queryset(self):
-        #queryset = Libro.objects.all()
+        queryset = Libro.objects.all()
         #Filtra el queryset basado en los parámetros de la URL ?parametro=...
         #titulo=None
         #isbn=None
         # Capturamos el parámetro 'tipo' de la URL (?tipo=valor)
         #Note que aquí si podemos capturar estos valores, cosa que con la plantilla fue imposible. Es tarea pendiente.
-        titulo_buscado = self.request.query_params.get('titulo', None)
-        isbn = self.request.query_params.get('isbn', None)
+        titulo=self.request.query_params.get('titulo', None)
+        isbn=self.request.query_params.get('isbn', None)
         
-        if titulo_buscado is not None:
-            print(f'titulo_buscado={titulo_buscado}')
-            print(f'type(titulo_buscado)={type(titulo_buscado)}')
-            
-            queryset = Libro.objects.filter(titulo__icontains=titulo_buscado.strip())
-        elif isbn is not None:
+        if titulo:
+            print(f'titulo={titulo}')
+            print(f'type(titulo)={type(titulo)}')
+            queryset = queryset.filter(titulo=titulo)
+
+        elif isbn:
             print(f'isbn={isbn}')
-            queryset = Libro.objects.filter(isbn=isbn)
+            queryset = queryset.filter(isbn=isbn)
+
         else:
-            queryset=Libro.objects.all()
+            pass
+
         print(f'queryset={queryset}')
         return queryset
     
