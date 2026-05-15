@@ -4,7 +4,7 @@ from django.contrib import admin #Aunque no se vé el uso del admin aquí, si no
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('', views.Libros.as_view(plantilla='base1-inicio.html'), name='home'),
+    path('', views.Libros.as_view(), name='inicio'),
     #Urls de la api para ser consumida por clientes externos (android e iOS):
     path('api/', views.api_root),
     path('api/libros/', views.Libros.as_view(), name='libro-list'),         
@@ -12,9 +12,10 @@ urlpatterns = [
     path('api/autores/', views.Autores.as_view(), name='autor-list'), 
     path('api/autores/<int:pk>', views.AutorDetalle.as_view(), name='autor-detail'), 
     #Urls para consumo interno de la propia app y sus plantillas html con navegadores (chorme, firefox, etc):
-    path('libros/', views.Libros.as_view(plantilla='catalogo/todosLosLibros.html'), name='libros'),
-    path('libros/conbarbara', views.Libros.as_view(plantilla='catalogo/librosConBarbara.html'), name='librosConBarbara'),
-    path('libros/isbn', views.Libros.as_view(plantilla='catalogo/librosConBarbara.html'), name='isbn'),
+    path('libros/', views.Libros.as_view(), name='libros'),
+    path('libros/conbarbara/', views.Libros.as_view(), name='librosConBarbara'),
+    path('libros/isbn/', views.Libros.as_view(), name='isbn'),
+    path('libros/isbn-busqueda/', views.Libros.as_view(), name='isbnConsulta'),
     path('reseteoContSesiones', views.borrarConteoVisitas, name='resetearVisitas'),
 ]
 

@@ -1,6 +1,5 @@
 db.sqlite3
-manualDjango.txt
-requirements.txt
+*.txt
 *.pyc
 __pycache__/
 a.sh

@@ -15,10 +15,34 @@
   <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:23%">
       {% block barraLateral %}
       <h3 class="w3-bar-item">Menu</h3>
-      <a href="{% url 'home' %}" class="w3-bar-item w3-button">Home</a>
-      <a href="{% url 'libros' %}" class="w3-bar-item w3-button">Todos los libros</a>
-      <a href="{% url 'librosConBarbara' %}?titulo=Canaima" class="w3-bar-item w3-button">Libros con titulo "Canaima"</a>
-      <a href="{% url 'isbn' %}?isbn=4077862365395" class="w3-bar-item w3-button">Libros con isbn 4077862365395"</a> 
+      <a href="{% url 'inicio' %}" class="w3-bar-item w3-button">Home</a>
+      {# Impotante!!!: no entrecomillar los valores de los parámetros de consulta, porque no servirán. Ej: ?titulo='Canaima' no servirá, enviará basura en dicho parámetro. #}
+      <a href="{% url 'libros' %}?titulo=Canaima&plantilla=catalogo/todosLosLibros.html" class="w3-bar-item w3-button">Todos los libros</a>
+
+       <a href="{% url 'librosConBarbara' %}?titulo=Canaima&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con titulo "Canaima"</a>
+
+       {# Metimos un formulario para probar enviar solicitudes post puesto que los hipervínculos no pueden enviar solicitudes post: note que usando las clases w3-bar-item w3-button pasa como un elemento que tiene el mismo aspecto que los otros, siendo un formulario en vez de un hipervínculo: #}
+
+{% comment "Formulario post para prueba" %}    
+    <form action="{% url 'isbn' %}?isbn=4077862365395&plantilla=catalogo/librosConBarbara.html" method="POST"> #}
+         {% csrf_token %}  {# encripta los parámetros de consulta #}
+{% endcomment %}
+
+    <form action="{% url 'isbn' %}" method="GET">
+    {# En los métodos get no se pueden enviar parámetros de consulta por el atributo action. Deben estar en inputs, y para nuestro caso invisibilizados para que no aparezcan en textbox de inputs: #}
+       <input type="hidden" name="isbn" value="4077862365395">
+       <input type="hidden" name="plantilla" value="catalogo/librosConBarbara.html">
+         <button class="w3-bar-item w3-button" type="submit">Libro con isbn 4077862365395"</button>
+     </form>
+
+     <form action="{% url 'isbnConsulta' %}" method="GET">
+       <input type="hidden" name="plantilla" value="catalogo/librosConBarbara.html">
+       <button class="w3-bar-item w3-button" type="submit">Buscar libro por isbn</button>
+       <input type="text" name="isbn" placeholder="Ingrese isbn">
+     </form>
+
+    {# <a href="{% url 'isbn' %}?isbn=4077862365395&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con isbn 4077862365395"</a> #}
+
       <a href="{% url 'autor-list' %}" class="w3-bar-item w3-button">Todos los autores</a>
       <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
       <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>
@@ -61,7 +85,7 @@
       <li class="w3-bar-item">
        <form action="{% url 'logout' %}?next={{ request.path }}" method="post">
          {% csrf_token %}
-         <button class="w3-button"type="submit">Cerrar sesión</button>
+         <button class="w3-button" type="submit">Cerrar sesión</button>
        </form>
       </li>  
     

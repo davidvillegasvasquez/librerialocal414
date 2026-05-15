@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from .models import Libro, Autor, LibroInstancia, Genero
 from django.urls import reverse
 from rest_framework.views import APIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 # Create your views here.
 def borrarConteoVisitas(solicitudReset):
@@ -29,38 +28,7 @@ from librerialocal.ArchivosParaImportar.constantes import pi
 from static.images.ej import const2
 from constExt import const3
 
-class LibroVistaListaConBarbara(generics.ListCreateAPIView):
-    model = Libro
-    context_object_name = 'listaDeLibrosConBarbara'
-    template_name = 'catalogo/librosConBarbara.html'
-    #Está claro que no haremos vistas genéricas para conseguir este tipo de queryset, si podemos hacer un filtrado a nivel de frontend con css y js, lo cual reduce la cantidad de computo en el backend, reduciendo el costo de alquiler en nuestro servidor.
-    queryset = Libro.objects.filter(titulo__icontains='barbara')
-    suma = 0
-    #Un atributo método sobre un atributo del modelo (suma), que usaremos para la variable de contexto, 'variableDeContextoN': 
-    def operSuma(self, num):
-        self.suma = num + constante + pi + const2 + const3
-        return self.suma
-    
-    #Podemos poner más variables de contexto en una vista genérica, sobreescribiendo el método get_context_data. Este es un ejemplo de como se sobreescriben los métodos implícitos (heredados de generic.ListView) de esta clase hecha por nosotros:
-    def get_context_data(self, **kwargs):
-        # Llame primero a la implementación base para obtener un contexto.
-        context = super(LibroVistaListaConBarbara, self).get_context_data(**kwargs)
-        #Agregamos al diccionario context:
-        context['una2daVariableDeContexto'] = 'Sólo una cadena. Puede ser cualquier otro tipo de valor.'
-        context['variableDeContextoN'] = self.operSuma(50)
-        return context
 
-class VistaDetalleLibro(generic.DetailView):
-    model = Libro #Como las listas genericas, los demás atributos son opcionales. Aquí usaremos los atributos por defectos que nos proporciona django(automáticos, implicitos).
-    #template_name = 'catalogo/libroDetalle.html' #Podemos usar también como en listas genéricas, nombres arbitrarios para la plantilla, si no queremos usar los automáticos de django (nombreDelModelo_detail.html).
-
-class VistaListaGenAutores(generic.ListView):
-    model = Autor
-    #Si usamos listas o tablas no podemos paginar:
-    #paginate_by = 2
-
-class VistaDetalladaGenAutor(generic.DetailView):
-    model = Autor
     
 class ListaLibrosPrestadosAlUsuario(LoginRequiredMixin, generic.ListView):
     """5
@@ -396,26 +364,24 @@ def descargar_pdf(request):
 from django.contrib.auth.models import Group, User
 from .serializadores import *
 from rest_framework.response import Response
-#from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
 class Libros(generics.ListCreateAPIView):
     """
     Vista de endpoint de tipo generics.ListCreateAPIView, serializada con serializers.HyperlinkedModelSerializer, para listar todos los libros (list) usando el método http get, o crear(create) uno nuevo con el método http post.
     """
- 
-    #queryset = Libro.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = SerializadorLibro
     # Orden importa: primero HTML, luego JSON
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    #Note que al enviar parámetros desde la url, no hay que poner dicho parámetro en los argumentos de la clase, solamente la clase que hereda, en este caso, generics.ListCreateAPIView.
-    plantilla = None
     #Gestionamos el tipo de permiso: sobrescribimos el método get_permissions(self). 
     #Esto te permite evaluar la solicitud (request), la URL o los parámetros del usuario y devolver una lista de clases de permiso diferentes en tiempo de ejecución.
+    
     def get_permissions(self):
-        """
-        Instancia y devuelve la lista de permisos que requiere esta vista.
-        """
+        
+        #Instancia y devuelve la lista de permisos que requiere esta vista.
+       
         if self.request.method == 'POST':
             # Solo administradores pueden crear
             self.permission_classes = [permissions.IsAdminUser]
@@ -424,24 +390,18 @@ class Libros(generics.ListCreateAPIView):
             self.permission_classes = [permissions.AllowAny]
             
         return super().get_permissions()
-    """
-    #Definitivamente, el manejo de plantillas se me hizo imposible sobreescribiendo el método.
+    
     def get_template_names(self):
         # Obtiene el nombre de la plantilla del parámetro de consulta (?template=...)
-        template_name = self.request.query_params.get('template', None)#self.request.query_params.get('plantilla')
+        #El error que tuve de enviar valores de parámetros de consulta url entrecomillados me había causado el problema de que la plantilla no se encontraba:
+        template_name = self.request.query_params.get('plantilla', None)
          
-        if template_name:
+        if template_name is not None:#Nos ayuda con presentar la vista inicial.
             return [template_name]
         # Plantilla por defecto si no viene el parámetro
         return ['base1-inicio.html']
-    """
+    
     def get_queryset(self):
-        #queryset = Libro.objects.all()
-        #Filtra el queryset basado en los parámetros de la URL ?parametro=...
-        #titulo=None
-        #isbn=None
-        # Capturamos el parámetro 'tipo' de la URL (?tipo=valor)
-        #Note que aquí si podemos capturar estos valores, cosa que con la plantilla fue imposible. Es tarea pendiente.
         titulo=self.request.query_params.get('titulo', None)
         isbn=self.request.query_params.get('isbn', None)
         #Creí que el problema era usar if not None para entrar a armar los queryset según el caso, pero resultó al final que estaba enviando los valores
@@ -450,7 +410,7 @@ class Libros(generics.ListCreateAPIView):
             queryset = Libro.objects.filter(titulo=titulo)
 
         elif isbn:
-            print(f'isbn={isbn}')
+   
             queryset = Libro.objects.filter(isbn=isbn)
 
         else:
@@ -465,8 +425,8 @@ class Libros(generics.ListCreateAPIView):
             return response
         # Si es navegador, devuelve la plantilla con los datos. response.data es
  #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
-        print()
-        return Response({'datos': response.data}, template_name=self.plantilla)
+       
+        return Response({'datos': response.data}, template_name=self.get_template_names()[0])
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -481,7 +441,6 @@ class Autores(generics.ListCreateAPIView):
     #permission_classes = [IsAuthenticated]
     serializer_class = SerializadorAutor
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    plantilla = None
     
     def get_permissions(self):
         """
@@ -492,11 +451,15 @@ class Autores(generics.ListCreateAPIView):
         else:
             self.permission_classes = [permissions.AllowAny]
         return super().get_permissions()
+
+    def get_template_names(self):
+        template_name = self.request.query_params.get('plantilla', None)
+        if template_name is not None:#Nos ayuda con presentar la vista inicial.
+            return [template_name]
+        # Plantilla por defecto si no viene el parámetro
+        return ['base1-inicio.html']
     
     def get_queryset(self):
-        titulo=None
-        isbn=None
-       
         titulo = self.request.query_params.get('titulo', None)
         isbn = self.request.query_params.get('isbn', None)
         if titulo is not None:
@@ -515,7 +478,7 @@ class Autores(generics.ListCreateAPIView):
         # Si es navegador, devuelve la plantilla con los datos. response.data es
  #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
         #self.plantilla=request.GET.get('plantilla', None) 
-        return Response({'datos': response.data}, template_name=self.plantilla)
+        return Response({'datos': response.data}, template_name=self.get_template_names()[0])
 
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
     #permission_classes = [IsAuthenticated]
