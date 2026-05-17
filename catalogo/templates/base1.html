@@ -43,6 +43,17 @@
 
     {# <a href="{% url 'isbn' %}?isbn=4077862365395&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con isbn 4077862365395"</a> #}
 
+      <a href="{% url 'libro-detail' 1 %}" class="w3-bar-item w3-button">Recuperando el libro con id=1 usando la vista RetrieveUpdateDestroyAPIView usando literal</a>
+
+      {% comment %}
+      {% load rest_framework %}
+      <form action="{% url 'libro-detail' pk=libro.pk %}" method="GET">
+       {% render_form serializer %}
+       <input type="number" name="pk">
+       <button class="w3-bar-item w3-button" type="submit">Buscar libro por id</button>
+      </form>
+      {% endcomment %}
+
       <a href="{% url 'autor-list' %}" class="w3-bar-item w3-button">Todos los autores</a>
       <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
       <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>

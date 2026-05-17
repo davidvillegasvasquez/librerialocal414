@@ -420,7 +420,7 @@ class Libros(generics.ListCreateAPIView):
     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        # Si la petición es API (JSON), devuelve la respuesta JSON
+        #Antes de todo, evaluamos si la petición es API (JSON), devuelve la respuesta JSON
         if request.accepted_renderer.format == 'json':
             return response
         # Si es navegador, devuelve la plantilla con los datos. response.data es
@@ -432,10 +432,30 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
     Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlo(destroy).
     """
-    #permission_classes = [IsAuthenticated]
-
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'catalogo/libro_detail.html'
+    lookup_field = 'pk'
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [permissions.IsAdminUser]
+        else:
+            self.permission_classes = [permissions.AllowAny]
+        return super().get_permissions()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        #Primero lo primero: vemos que tipo de solicitud es:
+        if request.accepted_renderer.format == 'json':
+            return response
+        contexto = {
+            #'objeto':
+            'data': response.data,
+            'var_ext': "Hola desde la vista",
+        }
+        return Response(contexto)
 
 class Autores(generics.ListCreateAPIView):
     #permission_classes = [IsAuthenticated]

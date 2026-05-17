@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/libros/', views.Libros.as_view(), name='libro-list'),         
     path('api/libros/<int:pk>', views.LibroDetalle.as_view(), name='libro-detail'), 
     path('api/autores/', views.Autores.as_view(), name='autor-list'), 
-    path('api/autores/<int:pk>', views.AutorDetalle.as_view(), name='autor-detail'), 
+    path('api/autores/<int:pk>/', views.AutorDetalle.as_view(), name='autor-detail'), 
     #Urls para consumo interno de la propia app y sus plantillas html con navegadores (chorme, firefox, etc):
     path('libros/', views.Libros.as_view(), name='libros'),
     path('libros/conbarbara/', views.Libros.as_view(), name='librosConBarbara'),

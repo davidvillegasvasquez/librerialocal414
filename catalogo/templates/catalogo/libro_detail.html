@@ -1,6 +1,41 @@
 {% extends "base1.html" %}
 
 {% block content %}
+
+      <form id="mi-formulario" action="" method="GET">
+       <input type="text" id="libro-pk" placeholder="Ingresa el ID del libro" required>
+       <button type="button" onclick="enviarFormulario()">Ver Libro</button>
+<p>====================</p>
+<p></p> 
+<p>objeto: {{ objeto }}</p>
+<p>data: {{ data }}</p>
+<p>var ext.: {{ var_ext }}</p>
+<p>autor: <a href="{{ data.autor }}">autor</a></p>
+<script>
+
+function enviarFormulario() {
+    // 1. Obtener el valor del input
+    const pk = document.getElementById('libro-pk').value;
+    const baseUrl = "{% url 'libro-detail' pk=12345 %}";
+
+    if (pk) {
+
+        // 2. Replace the placeholder '12345' with your actual JS variable
+        const url = baseUrl.replace('12345', pk);
+        
+        // 3. Asignar la URL al atributo action del formulario
+        const form = document.getElementById('mi-formulario');
+        form.action = url;
+
+        // 4. Enviar el formulario
+        form.submit();
+    } else {
+        alert("Por favor, ingresa un ID válido.");
+    }
+}
+</script>
+
+{% comment %}
   <h1>Titulo: {{ libro }} <span style="font-family: Arial; font-size: 18px; color: blue;">(libro.id:{{ libro.id }})</span></h1>
 <!-- Recuerde que la variable de contexto es el nombre del modelo en minúsculas, en este caso, libro -->
 <!-- {{ libro.autor.get_absolute_url }} es igual a {% url 'autorDetalles' libro.autor.pk %} la primera proposición es más concisa y robusta.-->
@@ -21,4 +56,5 @@
     <p class="text-muted"><strong>Id:</strong> {{ libroinstancia.id }}</p>
     {% endfor %}
   </div>
+{% endcomment %}
 {% endblock %}
