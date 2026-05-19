@@ -1,16 +1,27 @@
 {% extends "base1.html" %}
-
 {% block content %}
-
       <form id="mi-formulario" action="" method="GET">
+       {# {% render_form SerializadorLibro %} #}
        <input type="text" id="libro-pk" placeholder="Ingresa el ID del libro" required>
        <button type="button" onclick="enviarFormulario()">Ver Libro</button>
 <p>====================</p>
 <p></p> 
 <p>objeto: {{ objeto }}</p>
-<p>data: {{ data }}</p>
+<p>datos: {{ datos }}</p>
 <p>var ext.: {{ var_ext }}</p>
-<p>autor: <a href="{{ data.autor }}">autor</a></p>
+<p>autor: <a href="{{ datos.autor }}">autor</a></p>
+<p>====================</p>
+<p></p>
+<p>Formulario hecho con renderizado automático del serializador (load rest_framework):</p>
+
+{% comment %}
+<form method="GET">
+        {% load rest_framework %}
+        {% render_form seriali %}
+        <button type="submit">Guardar</button>
+</form>
+{% endcomment %}
+
 <script>
 
 function enviarFormulario() {

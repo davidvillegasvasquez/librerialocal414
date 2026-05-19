@@ -425,8 +425,15 @@ class Libros(generics.ListCreateAPIView):
             return response
         # Si es navegador, devuelve la plantilla con los datos. response.data es
  #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
-       
-        return Response({'datos': response.data}, template_name=self.get_template_names()[0])
+        queryset = self.get_queryset()
+        seriali = SerializadorLibro()
+        contexto = {
+            'datos': response.data,
+            'cant': queryset.count(),
+            'seriali': seriali,
+        }
+        
+        return Response(contexto, template_name=self.get_template_names()[0])
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -452,8 +459,8 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
             return response
         contexto = {
             #'objeto':
-            'data': response.data,
-            'var_ext': "Hola desde la vista",
+            'datos': response.data,
+            'var_ext': "Hola desde la vista",  
         }
         return Response(contexto)
 

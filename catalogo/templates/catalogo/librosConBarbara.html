@@ -9,6 +9,20 @@
     <p>datos.results.0.titulo: {{ datos.results.0.titulo }}</p>
     <p>autor: <a href="{{ datos.results.0.autor }}">autor</a></p>
 
+    <form method="GET">
+        {% load rest_framework %}
+
+        {% comment "Renderizado render_fiel, se pasa toda la instancia del serializador, y se toma el campo deseado: %}
+         <div class="mi-clase-personalizada">
+          <label>{{ seriali.isbn.label }}</label>
+          {% render_field seriali.isbn style=seriali.isbn.style %}  
+          </div>
+         {% endcomment %}   
+ 
+         {% render_field seriali.isbn style=seriali.isbn.style %} 
+        <button type="submit">Buscar</button>
+    </form>
+
     {% if listaDeLibrosConBarbara %}
 
     <ul>
