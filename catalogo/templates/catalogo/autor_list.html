@@ -1,8 +1,27 @@
 {% extends "base1.html" %}
 
 {% block content %}
+{% comment %}
+<p>Agregar nuevo autor:</p>
+<form method="POST">
+        {% csrf_token %}
+        {% load rest_framework %}
+        {% render_form seriali %}
+        <button type="submit">Agregar</button>
+</form>
+{% endcomment %}
+    <p>====================</p>
+<p></p>
     <h1>Lista de Autores</h1>
 
+    <p>datos: {{ datos }}</p>
+    <p>cant: {{ cant }}</p>
+    <p>seriali: {{ seriali }}</p>
+
+
+
+{% comment %}
+    <h1>Lista de Autores</h1>
     {% if autor_list %}
     <br>
     
@@ -25,5 +44,7 @@
     {% endif %}
     <br>
     <p><a href="{% url 'librosConBarbara' %}">Libros con barbara</a></p>
+{% endcomment %}
+
 {% endblock %}
 

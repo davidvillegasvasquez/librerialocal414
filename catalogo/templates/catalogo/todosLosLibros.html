@@ -3,6 +3,11 @@
 {% block content %}
     <h1>Lista de libros</h1>
 
+    <p>datos: {{ datos }}</p>
+    <p>cant: {{ cant }}</p>
+    <p>seriali: {{ seriali }}</p>
+  
+{% comment %}
     {% if mi_listaDeLibros %}
     
     <input oninput="w3.filterHTML('#id01', 'li', this.value)" class="w3-input w3-light-gray" placeholder="Búsqueda libro por nombre:">
@@ -25,5 +30,6 @@
     {% endif %}
     <br>
     <p><a href="{% url 'librosConBarbara' %}">Libros con barbara</a></p>
+{% endcomment %}
 {% endblock %}
 

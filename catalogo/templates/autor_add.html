@@ -1,0 +1,11 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<p>Agregar nuevo autor:</p>
+<form method="POST">
+        {% csrf_token %}
+        {% load rest_framework %}
+        {% render_form seriali %}
+        <button type="submit">Agregar</button>
+</form>
+{% endblock %}

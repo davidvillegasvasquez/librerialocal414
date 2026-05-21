@@ -17,16 +17,11 @@
       <h3 class="w3-bar-item">Menu</h3>
       <a href="{% url 'inicio' %}" class="w3-bar-item w3-button">Home</a>
       {# Impotante!!!: no entrecomillar los valores de los parámetros de consulta, porque no servirán. Ej: ?titulo='Canaima' no servirá, enviará basura en dicho parámetro. #}
-      <a href="{% url 'libros' %}?titulo=Canaima&plantilla=catalogo/todosLosLibros.html" class="w3-bar-item w3-button">Todos los libros</a>
+      <a href="{% url 'libro-list' %}?plantilla=catalogo/todosLosLibros.html" class="w3-bar-item w3-button">Todos los libros</a>
 
-       <a href="{% url 'librosConBarbara' %}?titulo=Canaima&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con titulo "Canaima"</a>
+       <a href="{% url 'libro-list' %}?titulo=Canaima&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con titulo "Canaima"</a>
 
        {# Metimos un formulario para probar enviar solicitudes post puesto que los hipervínculos no pueden enviar solicitudes post: note que usando las clases w3-bar-item w3-button pasa como un elemento que tiene el mismo aspecto que los otros, siendo un formulario en vez de un hipervínculo: #}
-
-{% comment "Formulario post para prueba" %}    
-    <form action="{% url 'isbn' %}?isbn=4077862365395&plantilla=catalogo/librosConBarbara.html" method="POST"> #}
-         {% csrf_token %}  {# encripta los parámetros de consulta #}
-{% endcomment %}
 
     <form action="{% url 'isbn' %}" method="GET">
     {# En los métodos get no se pueden enviar parámetros de consulta por el atributo action. Deben estar en inputs, y para nuestro caso invisibilizados para que no aparezcan en textbox de inputs: #}
@@ -41,20 +36,16 @@
        <input type="text" name="isbn" placeholder="Ingrese isbn">
      </form>
 
-    {# <a href="{% url 'isbn' %}?isbn=4077862365395&plantilla=catalogo/librosConBarbara.html" class="w3-bar-item w3-button">Libros con isbn 4077862365395"</a> #}
+      <a href="{% url 'libro-detail' pk=1 %}" class="w3-bar-item w3-button">Recuperando libro por id en formulario basado en RetrieveUpdateDestroyAPIView html-js clásico</a>
 
-      <a href="{% url 'libro-detail' 1 %}" class="w3-bar-item w3-button">Recuperando el libro proporcionando el id en un formularios usando la vista RetrieveUpdateDestroyAPIView usando literal</a>
+      <a href="{% url 'autor-list' %}" class="w3-bar-item w3-button">Listar todos los autores</a>
 
-      {% comment %}
-      {% load rest_framework %}
-      <form action="{% url 'libro-detail' pk=libro.pk %}" method="GET">
-       {% render_form serializer %}
-       <input type="number" name="pk">
-       <button class="w3-bar-item w3-button" type="submit">Buscar libro por id</button>
-      </form>
-      {% endcomment %}
+      <a href="{% url 'autor-list' %}?plantilla=autor_add.html" class="w3-bar-item w3-button">Agregar autor</a>
 
-      <a href="{% url 'autor-list' %}" class="w3-bar-item w3-button">Todos los autores</a>
+
+
+        {# Resto de urls #}
+
       <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
       <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>
 

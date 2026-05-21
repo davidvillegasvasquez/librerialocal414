@@ -1,5 +1,6 @@
 {% block content %}
  
+{% comment %}
 <h1>Autor: {{ autor }} <span style="font-family: Arial; font-size: 18px; color: blue;">(autor.id:{{ autor.id }})</span></h1>
   <p><strong>{{ autor.nacimiento }} - {{ autor.muerte }}</p>
 
@@ -16,5 +17,5 @@
     <p style="font-family: Arial, Helvetica, sans-serif; font-weight: normal;">{{ libro.descripcion }}</p>
     {% endfor %}
   </div>
-
+{% endcomment %}
 {% endblock %}

@@ -1,9 +1,10 @@
 {% extends "base1.html" %}
 {% block content %}
+     
       <form id="mi-formulario" action="" method="GET">
-       {# {% render_form SerializadorLibro %} #}
-       <input type="text" id="libro-pk" placeholder="Ingresa el ID del libro" required>
+       <input type="text" id="libro-pk" placeholder="Ingresa el ID del libro">
        <button type="button" onclick="enviarFormulario()">Ver Libro</button>
+
 <p>====================</p>
 <p></p> 
 <p>objeto: {{ objeto }}</p>
@@ -13,17 +14,25 @@
 <p>====================</p>
 <p></p>
 <p>Formulario hecho con renderizado automático del serializador (load rest_framework):</p>
+<p>No se puede usar para este caso, porque el modelo de autor no tiene id explicitamente</p> 
 
 {% comment %}
-<form method="GET">
-        {% load rest_framework %}
-        {% render_form seriali %}
-        <button type="submit">Guardar</button>
+{% load rest_framework %}
+<form id="mi-formulario" action="" method="GET">
+           
+           {% load widget_tweaks %}
+           {% load rest_framework %}
+           {% render_field serialiClass.isbn style=serialiClass.isbn.style %}
+           {% render_field seriali.id type="text" class="form-control" %}
+           <label for="id_id">ID:</label>
+           
+
+           {% render_field serialiClass.isbn style=serialiClass.isbn.style %}
+        <button type="button">Recuperar</button>
 </form>
 {% endcomment %}
 
 <script>
-
 function enviarFormulario() {
     // 1. Obtener el valor del input
     const pk = document.getElementById('libro-pk').value;
@@ -43,6 +52,28 @@ function enviarFormulario() {
     } else {
         alert("Por favor, ingresa un ID válido.");
     }
+}
+
+function redirigirPorRuta(event) {
+    //Esto no sirvió. Averiguar por qué.
+    // Evita el envío tradicional del formulario (que genera parámetros de consulta)
+    event.preventDefault();
+    
+    // Obtiene el valor del input por su ID
+    const idValue = document.getElementById('id_isbn').value;
+    console.log("hola desde html");
+    // Asegura que sea un valor válido antes de redirigir
+    if (idValue) {
+        // Construye la URL de la ruta: /objetos/123/
+        const url = `/libros/${encodeURIComponent(idValue)}/`;
+        // Redirige la ventana actual a la nueva URL
+        window.location.href = url;
+
+        const form = document.getElementById("form-busqueda");
+        form.action = url;
+        form.submit();
+    } else {
+        alert("Por favor, ingresa un ID válido.");}
 }
 </script>
 

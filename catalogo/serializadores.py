@@ -8,6 +8,8 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     autor = serializers.HyperlinkedRelatedField(
         many=False, view_name="autor-detail", read_only=True
     )
+    #id = serializers.IntegerField(required=False)
+
     class Meta:
         model = Libro
         fields = [
@@ -23,7 +25,10 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
     libros = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
     ) #many=True: un autor - varios libros.
+    
+    #id = serializers.IntegerField(read_only=True, style={'base_template': 'catalogo/autor_list.html'})
 
     class Meta:
         model = Autor
         fields = ["url", "id", "nombre", "apellido", "nacimiento", "muerte", "libros"]
+

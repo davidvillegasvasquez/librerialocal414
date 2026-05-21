@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'django_filters', 
+    'django_filters',
+    'widget_tweaks', 
 ]
 
 SITE_ID = 1
@@ -150,6 +151,8 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,  
     "DEFAULT_AUTHENTICATION_CLASSES": (
        "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+       "rest_framework.authentication.SessionAuthentication",
+       "rest_framework.authentication.BasicAuthentication",
     ),
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'

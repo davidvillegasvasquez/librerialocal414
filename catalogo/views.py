@@ -378,10 +378,8 @@ class Libros(generics.ListCreateAPIView):
     #Gestionamos el tipo de permiso: sobrescribimos el método get_permissions(self). 
     #Esto te permite evaluar la solicitud (request), la URL o los parámetros del usuario y devolver una lista de clases de permiso diferentes en tiempo de ejecución.
     
-    def get_permissions(self):
-        
-        #Instancia y devuelve la lista de permisos que requiere esta vista.
-       
+    def get_permissions(self):       
+        #Instancia y devuelve la lista de permisos que requiere esta vista.   
         if self.request.method == 'POST':
             # Solo administradores pueden crear
             self.permission_classes = [permissions.IsAdminUser]
@@ -393,7 +391,7 @@ class Libros(generics.ListCreateAPIView):
     
     def get_template_names(self):
         # Obtiene el nombre de la plantilla del parámetro de consulta (?template=...)
-        #El error que tuve de enviar valores de parámetros de consulta url entrecomillados me había causado el problema de que la plantilla no se encontraba:
+        #El error que tuve de enviar valores de parámetros de consulta url entrecomillados (por ej: ?plantilla='catalogo/todosLosLibros.html') me había causado el problema de que la plantilla no se encontraba:
         template_name = self.request.query_params.get('plantilla', None)
          
         if template_name is not None:#Nos ayuda con presentar la vista inicial.
@@ -404,8 +402,7 @@ class Libros(generics.ListCreateAPIView):
     def get_queryset(self):
         titulo=self.request.query_params.get('titulo', None)
         isbn=self.request.query_params.get('isbn', None)
-        #Creí que el problema era usar if not None para entrar a armar los queryset según el caso, pero resultó al final que estaba enviando los valores
-#desde las etiquetas url de base1.html, entrecomillados ('Canaima', en vez de Canaima) via parámetros de consulta url, lo cual cuyas comillas hacía diferente el valor que se quería encontrar según titulo=titulo, arrojando un queryset vacío al no encontrar coincidencias.
+ 
         if titulo:
             queryset = Libro.objects.filter(titulo=titulo)
 
@@ -426,7 +423,7 @@ class Libros(generics.ListCreateAPIView):
         # Si es navegador, devuelve la plantilla con los datos. response.data es
  #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
         queryset = self.get_queryset()
-        seriali = SerializadorLibro()
+        seriali = self.serializer_class()#SerializadorLibro()
         contexto = {
             'datos': response.data,
             'cant': queryset.count(),
@@ -443,7 +440,6 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SerializadorLibro
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'catalogo/libro_detail.html'
-    lookup_field = 'pk'
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -457,17 +453,25 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
         #Primero lo primero: vemos que tipo de solicitud es:
         if request.accepted_renderer.format == 'json':
             return response
+       
+        queryset = self.get_queryset()
+        seriali = self.serializer_class(queryset, many=True, context={'request': request})
         contexto = {
             #'objeto':
             'datos': response.data,
-            'var_ext': "Hola desde la vista",  
+            'var_ext': "Hola desde la vista", 
+            'seriali': seriali,
+            'serialiClass': self.serializer_class, #Pasamos la clase para construir el formulario.
         }
         return Response(contexto)
 
+from rest_framework.authentication import SessionAuthentication
+
 class Autores(generics.ListCreateAPIView):
-    #permission_classes = [IsAuthenticated]
     serializer_class = SerializadorAutor
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
     
     def get_permissions(self):
         """
@@ -478,13 +482,27 @@ class Autores(generics.ListCreateAPIView):
         else:
             self.permission_classes = [permissions.AllowAny]
         return super().get_permissions()
+    
+    def create(self, request, *args, **kwargs):
+        # Utiliza el serializador para validar y guardar los datos
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        # --- Elige una de estas opciones de redirección ---
+        # Opción 1: Redirigir a la vista de detalle del objeto (necesitas pasar el pk/id)
+        # Obtiene la instancia recién creada
+        #instance = serializer.instance
+        #return redirect('nombre-de-tu-url-detalle', pk=instance.pk)
 
+        # Opción 2: Redirigir a la vista de lista de objetos
+        return redirect('autor-list')
+    
     def get_template_names(self):
         template_name = self.request.query_params.get('plantilla', None)
         if template_name is not None:#Nos ayuda con presentar la vista inicial.
             return [template_name]
         # Plantilla por defecto si no viene el parámetro
-        return ['base1-inicio.html']
+        return ['catalogo/autor_list.html']
     
     def get_queryset(self):
         titulo = self.request.query_params.get('titulo', None)
@@ -502,14 +520,18 @@ class Autores(generics.ListCreateAPIView):
         # Si la petición es API (JSON), devuelve la respuesta JSON
         if request.accepted_renderer.format == 'json':
             return response
-        # Si es navegador, devuelve la plantilla con los datos. response.data es
- #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
-        #self.plantilla=request.GET.get('plantilla', None) 
-        return Response({'datos': response.data}, template_name=self.get_template_names()[0])
+         
+        queryset = self.get_queryset()
+        seriali = self.serializer_class()
+        contexto = {
+            'datos': response.data,
+            'cant': queryset.count(),
+            'seriali': seriali,
+        }
+        
+        return Response(contexto, template_name=self.get_template_names()[0])
 
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
-    #permission_classes = [IsAuthenticated]
-
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
@@ -521,7 +543,7 @@ from rest_framework.reverse import reverse
 def api_root(solicitud, formato=None):
     return Response(
         {  
-            "libros": reverse("libro-list", request=solicitud, format=formato),
-            "autores": reverse("autor-list", request=solicitud, format=formato),
+            "libros": reverse("libro-list", request=request, format=format),
+            "autores": reverse("autor-list", request=request, format=format),
         }
     )
