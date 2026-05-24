@@ -8,7 +8,7 @@
   <div class="w3-card-4" style="width:50%; margin:auto;">
   <ul class="w3-ul">
     <li><h3>Estadísticas de la librería:</h3></li>
-    <li><strong>Cantidad de Títulos (datos.count): {{ datos.count }}</strong></li>
+    <li><strong>Cantidad de Títulos (len): {{ len }}</strong></li>
     <li><strong>Cantidad de Títulos (cant): {{ cant }}</strong></li>
     <li><strong>Cantidad de Autores: </strong></li>
     <li><strong>'datos':</strong> {{ datos }}</li>
@@ -20,7 +20,6 @@
 </div> 
  
 <div class="w3-container">
-<p>Has visitado esta página {{ cantVisitas }}{% if cantVisitas == 1 %} vez {% else %} veces {% endif %}. <a href="{% url 'resetearVisitas' %}">Reestablecer contador</a></p>
 </div>
 
 {% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<p>Recuperar libro:</p>
+<form method="GET">
+        {% csrf_token %}
+        {% load rest_framework %}
+        {% render_form seriali.pk %}
+        <button type="submit">Agregar</button>
+</form>
+{% endblock %}

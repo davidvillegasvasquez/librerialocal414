@@ -1,371 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from .models import Libro, Autor, LibroInstancia, Genero
-from django.urls import reverse
-from rest_framework.views import APIView
-
-# Create your views here.
-def borrarConteoVisitas(solicitudReset):
-    """
-    Ejemplo de como borrar conteo con la propiedad session
-    """  
-    solicitudReset.session['numeroDeVisitasAinicio'] = 0
-    #solicitudReset.session.clear() #Da el mismo efecto de restablecer el contador, pero borra todos los demás parámetros de la sesión.
-     
-    return redirect('/') #Para usar con redirect y reverse. Es la mejor opción.
-    #return render(solicitudReset,'base1-inicio.html',context={'cantVisitas':0})
-    #Si se usa la función render, se perderá la visualización en otras variables de contexto a la primera sesión.
-
-from rest_framework import generics, permissions
-from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-#Constante declarada para uso global en este módulo:
-constante = 25
-
-#Importamos una constante desde el módulo constantes.py que creamos para uso didáctico, que se encuentra en el directorio, ArchivosParaImportar, en el paquete (__init__.py) que creó django en la entrada del proyecto, el directorio librerialocal a nivel de manage.py, y const2 y const3:
-
-from librerialocal.ArchivosParaImportar.constantes import pi 
-from static.images.ej import const2
-from constExt import const3
-
-
-    
-class ListaLibrosPrestadosAlUsuario(LoginRequiredMixin, generic.ListView):
-    """5
-    Vista genérica basada en clases que enumera los libros prestados al usuario actual.
-    """
-    model = LibroInstancia
-    template_name ='catalogo/listaInstanciasDeLibrosPrestadasAlUsuario.html'
-    paginate_by = 2
-
-    def get_queryset(self):
-        return LibroInstancia.objects.filter(prestatario=self.request.user).filter(estatus__exact='p').order_by('debidoderegresar')
-
-from django.contrib.auth.mixins import PermissionRequiredMixin
-
-class ListaDeLibrosPrestadosActualmente(PermissionRequiredMixin, generic.ListView):
-    """
-    Vista tipo lista genérica basada en clases que enumera todos los libros prestados actualmente, y que sólo puede ser mostrado si el usuario pertenece al grupo de bibliotecarios.
-    """
-    permission_required = ('catalogo.puedeMarcarRetornado',)#Puede ser una tupla con n permisos requeridos.
-    model = LibroInstancia
-    template_name ='catalogo/todosLosLibrosPrestadosActualmente.html'
-    paginate_by = 2
-
-    def get_queryset(self):
-        return LibroInstancia.objects.filter(estatus__exact='p').order_by('debidoderegresar')
-
-from django.contrib.auth.decorators import permission_required, login_required
-
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-import datetime
-from .forms import ModeloFormRenovDeLibros
-
-#@login_required #Trabaja igual sin este decorador. Averiguar por qué?
-@permission_required('catalogo.puedeMarcarRetornado')
-def renovacionLibroPorLibrero(solicitud, claveprimaria):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    libroInstancia=get_object_or_404(LibroInstancia, pk = claveprimaria)
-
-    # If this is a POST request then process the Form data
-    if solicitud.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
-        formulario = ModeloFormRenovDeLibros(solicitud.POST)
-        # Check if the form is valid:
-        if formulario.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            libroInstancia.debidoderegresar= formulario.cleaned_data['debidoderegresar']
-            libroInstancia.save()
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('librosAlquiladosActualmente') )
-
-    # If this is a GET (or any other method) create the default form.
-    else:
-        fechaDeRenovacionPropuesta = datetime.date.today() + datetime.timedelta(weeks=3)
-
-        formulario = ModeloFormRenovDeLibros(initial={'debidoderegresar': fechaDeRenovacionPropuesta}) #Ojo: los nombres de variables de contexto deben coincidir con sus respectivos nombres de campo en la clase formulario creada, o no se visualizarán en la plantilla.
-
-    return render(solicitud, 'catalogo/formularioRenovacion.html', {'formulario': formulario, 'instanciaDeLibro':libroInstancia})
-
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from django.contrib.auth import logout
-
-"""
-Las vistas "create" y "update" utilizan la misma plantilla de forma predeterminada, que se nombrará después de su model: model_name_form.html. Lo más que puedes cambiar este nombre predeterminado por django, es el sufijo a algo diferente a _form usando el campo template_name_suffix en tu vista, ejemplo: template_name_suffix = '_other_suffix'. Aquí vamos a usar el método conservador de una sóla plantilla model_name_form.html para las vistas crear/actualizar, porque usamos el suffix y nos produjo un extraño duplicado de instancias en una ocasión.
-"""
-from django.views.decorators.cache import never_cache
-from django.utils.decorators import method_decorator
-
-#Los dos decoradores @method_decorator para borrar caché de navegación y requerido de logeo, son inprescindibles para que un usuario no pueda acceder a los formularios post luego de darse de baja en su sesión.
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class CrearAutor(CreateView):
-    model = Autor
-    fields = '__all__'
-    initial={'muerte':'05/01/2018',}
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class ActualizarAutor(UpdateView):
-    model = Autor
-    fields = ['nombre','apellido','nacimiento','muerte']
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class BorrarAutor(DeleteView):
-    model = Autor
-    #Obviamente no necesitamos indicar los campos.
-    success_url = reverse_lazy('toditicosLosAutores')
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class CrearLibro(CreateView):
-    model = Libro
-    fields = '__all__'
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class ActualizarLibro(UpdateView):
-    model = Libro
-    fields = '__all__'
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(never_cache, name='dispatch')
-class BorrarLibro(DeleteView):
-    model = Libro
-    success_url = reverse_lazy('todosLoslibros')
-
-#Así hacemos una vista genérica de lista con dos o más modelos. Debemos declarar el modelo principal en la vista genérica (sólo acepta uno), y el secundario en el método sobreescrito get_context_data:
-"""
-class VistaCombAutorLibro(generic.ListView):
-    
-    Esta implementación dejó de funcionar misteriosamente, ahora dice: Revertir para '' no encontrado. '' no es una función de vista o nombre de patrón válido. Averiguar que sucedió.
-    model = Autor
-    template_name = 'catalogo/combina_LibroAutor.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['listaDeLibros'] = Libro.objects.all()
-        return context
-"""
-
-def goTovistaGenDetailsAutorFromSelect(solicitud):
-    """
-    Función para fines didácticos, que muestra el uso de elementos w3.css select y option en su plantilla asociada, para enlazar los elementos input option html seleccionado, a las vistas detallada genéricas de autor (catalogo/autor/<int:pk>).
-    """
-    return render(solicitud,'irAautorDetailFromSelect.html', context={'autores_contx': Autor.objects.all()})
-
-def irAdetalleAutorDesdeForm(solicitud):
-    """
-    Función para fines didácticos, muestra el javascript necesario en la plantilla correspondiente, para proporcionar la variable de contexto necesaria para cambiar dinámicamente el parámetro de ruta en etiquetas url django en un formulario html común y corriente en la plantilla de esta vista.
-    """
-    lista_valores = list(Autor.objects.values_list('id', flat=True)) #Flat=true da una lista plana
-    contexto = {'listaDeIds':lista_valores}
-
-    return render(solicitud,'formDetalleAutorPorId.html',context=contexto)
-
-def irListaDeAutoresDesdeEstaVista(SolicitudQueNoSeLeExtraeParams):
-    """
-    Función para fines didácticos para ilustrar el uso de reverse y redirect.
-    """
-    return HttpResponseRedirect(reverse('toditicosLosAutores'))
-
-# views.py
-from django.views.generic.edit import FormView
-from .forms import FormAutorYsusLibros
-
-def autorYsusLibrosChoiceFieldJS(solicituche):
-    """
-    Usando un formularion django forms (LibroConsultaForm) en vez de una html directamente en la plantilla, como los casos anteriores.
-    """
-    
-    if solicituche.method == 'POST':
-        form = FormAutorYsusLibros(solicituche.POST)
-        if form.is_valid():
-            if solicituche.POST.get('botonIrAlLibroSelecDeEseAutor') == 'IrAlLibroSelecDeEseAutor':
-                # Lógica para guardar los datos
-                objeto_seleccionado = form.cleaned_data['librosDelAutor']
-                
-                if objeto_seleccionado is not None:
-                    return HttpResponseRedirect(objeto_seleccionado.get_absolute_url())
-                else: pass
-    else:
-        form = FormAutorYsusLibros()
-    
-    return render(solicituche, 'formAutorYsusLibrosJS.html', {'form':form})
-
-#Implementación de django-formtools:
-from .forms import FormularioAutor, FormularioLibros
-from formtools.wizard.views import SessionWizardView
-
-@method_decorator(never_cache, name='dispatch')
-class AutorYsusLibrosChoiceFielFormTools(SessionWizardView): 
-    #Estos identificadores son reservados de formtools.
-    template_name = 'formAutorYsusLibrosFormTools.html' 
-    form_list = [FormularioAutor, FormularioLibros] 
-
-    def get_form(self, step=None, data=None, files=None): 
-        form = super(AutorYsusLibrosChoiceFielFormTools, self).get_form(step, data, files) 
-        stepIndex = self.get_step_index(step) 
-
-        if stepIndex == 1: 
-            identAutor = self.get_cleaned_data_for_step("0")['identif_autor'] 
-            choice = [(choice.pk, choice.titulo) for choice in Libro.objects.filter(autor_id = identAutor)]
-            form = FormularioLibros(choice=choice, data=data)
-        return form
-
-    def done(self, form_list, **kwargs):
-        dataDelFormulario = [form.cleaned_data for form in form_list]
-        idDelLibro = dataDelFormulario[1]['sus_libros']
-        return HttpResponseRedirect(reverse('detallesDeLibro', args=[idDelLibro]))
-        
-def navDetailAutorYSusLibros(otraSolicitudMas):
-    """
-    Navegamos por los autore y sus libros, insertando la sección de código necesaria (baseAutorYsusLibros.html) con la etiqueta de plantilla {% include "catalogo/baseAutorYsusLibros.html" %} para su reutilización en la plantilla de esta vista.
-    """
-    lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
-    #Capturamos el parámetro de consulta 'posiciónEnviada'enviado desde {% url 'navAutorYsusLibJS' %}?posicionEnviada=x con Get.get:
-    posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
-    autorEnPosicionRecibida = Autor.objects.get(id=lista_ids[posicionRecibida])
-    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorEnPosicionRecibida}
-
-    return render(otraSolicitudMas,'navPorAutorYsusLibJS.html',context=contexto) 
-
-def navDetailAutorYSusLibW3JS(otraSolicitudMas):
-    """
-    Al igual que la vista navDetailAutorYsusLib, aquí insertamos la sección de html que reutilizamos -baseAutorYsusLibros.html-en la plantilla django asociada a esta vista, navPorAutorYsusLibW3JS.html, con W3.includeHTML(). Es ineficiente porque tenemos que usar una vista auxiliar intermedia -auxParaUsarW3jsIncludeHTMLEnAutorYsusLib(solicitud)- para poder usar la plantilla que insertaremos.
-    """
-    lista_ids = list(Autor.objects.values_list('id', flat=True)) #flat=true da una lista plana
-    #Capturamos el parámetro de consulta 'posiciónEnviada'enviado desde {% url 'navAutorYsusLibJS' %}?posicionEnviada=x con Get.get:
-    posicionRecibida = int(otraSolicitudMas.GET.get('posicionEnviada', 'Not provided'))
-    autorEnPosicionRecibida = Autor.objects.get(id=lista_ids[posicionRecibida])
-    contexto = {'listaDeIds':lista_ids, 'posicionEnv':posicionRecibida, 'autor':autorEnPosicionRecibida}
-
-    return render(otraSolicitudMas,'navPorAutorYsusLibW3JS.html',context=contexto)
-
-def auxParaUsarW3jsIncludeHTMLEnAutorYsusLib(solicitud):
-    """
-    Se usa esta vista intermedia auxiliar con su respectiva url auxiliar, porque un error 404 se produce debido a que la ruta URL especificada en su w3-include-html atributo, no está asignada a un patrón de URL existente en el urls.py archivo de su proyecto Django, si referimos directamente a la plantilla baseAutorYsusLib.hmtl, por lo cual le creamos esta vista junto a su mapeador path url auxiliares. Este método es ineficiente, se hizo para prácticar el uso de w3.includeHTML().
-    """
-    idRecibido = solicitud.GET.get('autorId', 'Not provided')
-    autorDeIdRecibido = Autor.objects.get(id=idRecibido)
-
-    return render(solicitud, 'catalogo/baseAutorYsusLibros.html', {'autor':autorDeIdRecibido})
-
-def navDetailAutorYSusLibHTMX(sol):
-    """
-    Esto no funcionó.
-    """
-    lista_ids = list(Autor.objects.values_list('id', flat=True))
-
-    return render(sol, 'navPorAutorYsusLibHTMX.html', {'listaDeIds':lista_ids})
-
-#--------------------Fomularios formsets y models formsets-------
-
-from django.forms import modelformset_factory
-from django.core.paginator import Paginator
-
-def navAutorModelFormsetJS(request):
-    """
-    """
-    #autorFormset = modelformset_factory(Autor, form=FormGenAutor, extra=0)
-
-    #Usando el parámetro fields, no necesito hacer una ModelForm(FormGenAutor) en forms.py para importarlo aquí, y hacer el formset para Autor. 
-    #La bibliografía dice que fields y extra son opcionales, con valor predeterminado de __all__ y 0, pero no es verdad:
-
-    autorFormset = modelformset_factory(Autor, fields = '__all__', extra = 0)
-
-    if request.method == 'POST':
-        formset = autorFormset(request.POST, prefix='mi_formset')
-        if formset.is_valid():
-            # Procesar formularios...
-            pass
-    else:
-        formset = autorFormset(prefix='mi_formset')
-
-    return render(request, 'navAutoresConModelFormsetJS.html', {'formset': formset})
-
-from django.core.paginator import Paginator
-from django.forms import formset_factory
-
-def navAutorModelFormsetYpaginator(request):
-    todos_los_objetos = Autor.objects.all().order_by('id') # Ajusta el orden
-
-    # 2. Crear el paginador
-    paginator = Paginator(todos_los_objetos, 1) # 1 elementos por página
-
-    # 3. Obtener la página actual de la URL (ej: ?page=2)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number) # get_page maneja errores y devoluciones por defecto
-
-    # 4. Crear el FormSet a partir de la página actual (¡Importante!)
-    MiModeloFormSet = modelformset_factory(Autor, fields = '__all__', extra = 0)
-    
-    # Usamos page_obj.object_list para pasar solo los objetos de la página actual
-    formset = MiModeloFormSet(queryset=page_obj.object_list) 
-
-    context = {
-        'formset': formset,
-        'page_obj': page_obj, # Para la navegación en la plantilla
-        'paginator': paginator, # Para range de páginas
-        'is_paginated': True # Para activar el html de paginación heredado de base1.html
-    }
-    return render(request, 'navAutorModelFormsetYpaginator.html', context)
-
-from .forms import inlineFormsetParaAutorYsusLibros
-
-def navAutorYsusLibrosInlienformset(request):
-    """
-    Podemos concluir, que la navegación con formularios no es conveniente: definitivamente los formularios están indicados para la modificación de contenido en un sólo objeto, y eventualmente sus relacionados.
-    """
-    autorRecibido = int(request.GET.get('autor_id', 'Not provided'))
-    autor = get_object_or_404(Autor, id=autorRecibido)
-    if request.method == 'POST':
-        formset = inlineFormsetParaAutorYsusLibros(request.POST, request.FILES, instance=autor)
-        if formset.is_valid():
-            formset.save()
-            return redirect('author_detail', autorRecibido=autor.id) # Redirect to a success page
-    else:
-        formset = inlineFormsetParaAutorYsusLibros(instance=autor)
-    
-    return render(request, 'navAutorYsusLibrosInlineformset.html', {'formset': formset, 'autor': autor})
-
 #Imprimir pdf:
-
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse
-
-def descargar_pdf(request):
-    # 1. Obtener datos de la base de datos (ej. búsqueda)
-    resultados = Libro.objects.all() 
-
-    # 2. Renderizar HTML con los datos
-    html_string = render_to_string('plantilla_pdf.html', {'resultados': resultados})
-
-    # 3. Generar PDF
-    html = HTML(string=html_string)
-    result = html.write_pdf()
-
-    # 4. Crear respuesta HTTP para descarga
-    response = HttpResponse(result, content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
-    return response
-
-
-#Vistas de django rest framework a base de serializadores:
-
 from django.contrib.auth.models import Group, User
+from django.urls import reverse
+
+#Rest framework:
+
 from .serializadores import *
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework import generics
+from rest_framework import permissions
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.authentication import SessionAuthentication
 
 class Libros(generics.ListCreateAPIView):
     """
@@ -405,15 +56,25 @@ class Libros(generics.ListCreateAPIView):
  
         if titulo:
             queryset = Libro.objects.filter(titulo=titulo)
-
-        elif isbn:
-   
+        elif isbn:   
             queryset = Libro.objects.filter(isbn=isbn)
-
         else:
             queryset=Libro.objects.all()
-
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        # Utiliza el serializador para validar y guardar los datos
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        # --- Elige una de estas opciones de redirección ---
+        # Opción 1: Redirigir a la vista de detalle del objeto (necesitas pasar el pk/id)
+        # Obtiene la instancia recién creada
+        #instance = serializer.instance
+        #return redirect('nombre-de-tu-url-detalle', pk=instance.pk)
+
+        # Opción 2: Redirigir a la vista de lista de objetos
+        return redirect('libro-list')
     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
@@ -423,9 +84,10 @@ class Libros(generics.ListCreateAPIView):
         # Si es navegador, devuelve la plantilla con los datos. response.data es
  #un diccionario que contiene el campo o clave  'results', que es una lista de diccionarios, cuyo cada diccionario representa un registro o fila de cada libro, con los campos: url, id, titulo, autor, descripción e isbn. 
         queryset = self.get_queryset()
-        seriali = self.serializer_class()#SerializadorLibro()
+        seriali = self.serializer_class(context={'request': request})
         contexto = {
             'datos': response.data,
+            'len': len(response.data), #response.data es una lista.
             'cant': queryset.count(),
             'seriali': seriali,
         }
@@ -439,7 +101,6 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'catalogo/libro_detail.html'
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -454,25 +115,43 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
         if request.accepted_renderer.format == 'json':
             return response
        
-        queryset = self.get_queryset()
-        seriali = self.serializer_class(queryset, many=True, context={'request': request})
+        instance = self.get_object() 
+        seriali = self.get_serializer(instance)
+
         contexto = {
             #'objeto':
             'datos': response.data,
             'var_ext': "Hola desde la vista", 
             'seriali': seriali,
-            'serialiClass': self.serializer_class, #Pasamos la clase para construir el formulario.
         }
         return Response(contexto)
 
-from rest_framework.authentication import SessionAuthentication
+    def get_template_names(self):
+        template_name = self.request.query_params.get('plantilla', None)
+        if template_name is not None:#Nos ayuda con presentar la vista inicial.
+            return [template_name]
+        # Plantilla por defecto si no viene el parámetro
+        return ['catalogo/libro_detail.html']
+
+    # Sobreescribir post para manejar la actualización desde form
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return redirect('libro-list') #Response({'seriali': serializer, 'instance': instance})
+        return Response({'seriali': serializer, 'instance': instance}, template_name='libro_actualizar.html')
+
+class PaginacionAutores(PageNumberPagination):
+    page_size = 2  # Solo 2 elementos para esta vista
 
 class Autores(generics.ListCreateAPIView):
     serializer_class = SerializadorAutor
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
-    
+    #pagination_class = PaginacionAutores
+
     def get_permissions(self):
         """
         Instancia y devuelve la lista de permisos que requiere esta vista.
@@ -488,13 +167,7 @@ class Autores(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        # --- Elige una de estas opciones de redirección ---
-        # Opción 1: Redirigir a la vista de detalle del objeto (necesitas pasar el pk/id)
-        # Obtiene la instancia recién creada
-        #instance = serializer.instance
-        #return redirect('nombre-de-tu-url-detalle', pk=instance.pk)
-
-        # Opción 2: Redirigir a la vista de lista de objetos
+        
         return redirect('autor-list')
     
     def get_template_names(self):
@@ -534,10 +207,39 @@ class Autores(generics.ListCreateAPIView):
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [permissions.IsAdminUser]
+        else:
+            self.permission_classes = [permissions.AllowAny]
+        return super().get_permissions()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        #Primero lo primero: vemos que tipo de solicitud es:
+        if request.accepted_renderer.format == 'json':
+            return response
+       
+        instance = self.get_object() 
+        seriali = self.get_serializer(instance)
+
+        contexto = {
+            'datos': response.data, 
+            'seriali': seriali,
+        }
+        return Response(contexto)
+
+    def get_template_names(self):
+        template_name = self.request.query_params.get('plantilla', None)
+        if template_name is not None:#Nos ayuda con presentar la vista inicial.
+            return [template_name]
+        # Plantilla por defecto si no viene el parámetro
+        return ['catalogo/autor_detail.html']
 
 #Hacemos un pundo de entrada para nuestra api:
 from rest_framework.decorators import api_view
-from rest_framework.reverse import reverse
 
 @api_view(["GET", "POST"])
 def api_root(solicitud, formato=None):
@@ -547,3 +249,19 @@ def api_root(solicitud, formato=None):
             "autores": reverse("autor-list", request=request, format=format),
         }
     )
+
+def descargar_pdf(request):
+    # 1. Obtener datos de la base de datos (ej. búsqueda)
+    resultados = Libro.objects.all() 
+
+    # 2. Renderizar HTML con los datos
+    html_string = render_to_string('plantilla_pdf.html', {'resultados': resultados})
+
+    # 3. Generar PDF
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+
+    # 4. Crear respuesta HTTP para descarga
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
+    return response

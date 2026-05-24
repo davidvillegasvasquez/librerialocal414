@@ -4,14 +4,14 @@
 
     <h1>Lista de libros con Barbara</h1>
     <p>datos: {{ datos }}</p>
-    <p>datos.results: {{ datos.results }}</p>
-    <p>datos.results.0: {{ datos.results.0 }}</p>
-    <p>datos.results.0.titulo: {{ datos.results.0.titulo }}</p>
-    <p>autor: <a href="{{ datos.results.0.autor }}">autor</a></p>
+    <p>datos.0: {{ datos.0 }}</p>
+    <p>datos.0.titulo: {{ datos.0.titulo }}</p>
+    
+    <p>autor: <a href="{{ datos.0.autor }}">autor</a></p>
 
     <form method="GET">
          {% load rest_framework %}  
-         {% render_field seriali.isbn style=seriali.isbn.style %} 
+         {% render_field seriali.isbn style=seriali.isbn.style %}
         <button type="submit">Buscar</button>
     </form>
 

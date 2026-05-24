@@ -1,0 +1,16 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<p>Eliminar autor:</p>
+<!-- template.html -->
+<form method="POST">
+    {% csrf_token %}
+    <!-- Enviar un campo oculto para indicar la acción de borrado, 
+         si la vista no borra automáticamente con POST -->
+    <input type="hidden" name="_method" value="DELETE">
+    <button type="submit" onclick="return confirm('¿Estás seguro?');">
+        Delete Object
+    </button>
+</form>
+
+{% endblock %}

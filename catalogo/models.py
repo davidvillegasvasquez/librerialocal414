@@ -44,7 +44,7 @@ class Libro(models.Model):
         """
         Devuelve el URL a una instancia particular de Book
         """
-        return reverse('detallesDeLibro', args=[str(self.id)])
+        return reverse('libro-detail', args=[str(self.id)])
 
     class Meta:
         ordering = ['titulo', 'autor']
