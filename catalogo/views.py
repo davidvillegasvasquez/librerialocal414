@@ -141,6 +141,14 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
             serializer.save()
             return redirect('libro-list') #Response({'seriali': serializer, 'instance': instance})
         return Response({'seriali': serializer, 'instance': instance}, template_name='libro_actualizar.html')
+    
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
+
+class BorrarLibroHtml(DeleteView):
+    model = Libro
+    success_url = reverse_lazy('libro-list') # A dónde ir tras borrar
+    #template_name = 'libro_confirm_delete.html' # HTML de confirmación
 
 class PaginacionAutores(PageNumberPagination):
     page_size = 2  # Solo 2 elementos para esta vista

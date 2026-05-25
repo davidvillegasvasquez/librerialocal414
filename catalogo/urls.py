@@ -15,6 +15,7 @@ urlpatterns = [
     path('libros/isbn/', views.Libros.as_view(), name='isbn'),
     path('libros/isbn-busqueda/', views.Libros.as_view(), name='isbnConsulta'),
     path('libros/descargar-pdf/', views.descargar_pdf, name='descargar_pdf'),
+    path('libros/<int:pk>/eliminar/', views.BorrarLibroHtml.as_view(), name='libro-eliminar'),
     path('autores/eliminar-autor/', views.Libros.as_view(), name='isbn'),
 ]
 

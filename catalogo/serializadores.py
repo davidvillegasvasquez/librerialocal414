@@ -7,7 +7,7 @@ from .models import Libro, Autor
 class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     autor = serializers.HyperlinkedRelatedField(
         many=False, view_name="autor-detail", queryset=Autor.objects.all())
-    id = serializers.IntegerField(required=False) #Para poder visualizarlo en el renderizado.
+    #id = serializers.IntegerField(required=False) #Para poder visualizarlo en el renderizado.
 
     class Meta:
         model = Libro

@@ -11,8 +11,17 @@
     {% for objetoNomArbitr in datos %}
       <li>
         <!-- Recuerde que el objeto retorna la propiedad titulo del modelo Libro con su atributo método __str__(self): return self.titulo -->
-        <a href="{{ objetoNomArbitr.url }}">{{ objetoNomArbitr.titulo }}</a> (id libro:{{ objetoNomArbitr.id }}) {% if user.is_authenticated %}<a href="{% url 'libro-detail' objetoNomArbitr.id %}?plantilla=libro_actualizar.html">Actualizar</a> <a href="">-Borrar</a>{% endif %}
-<!-- Recuerde que este hipervínculo (href), llama al método get_absolute_url(self) del modelo que se está utilizando, en este caso, Libro, que retorna reverse('detallesDeLibro', args=[str(self.id)])  -->
+        <a href="{{ objetoNomArbitr.url }}">{{ objetoNomArbitr.titulo }}</a> (id libro:{{ objetoNomArbitr.id }}) 
+        {% if user.is_authenticated %}
+           <a href="{% url 'libro-detail' objetoNomArbitr.id %}?plantilla=libro_actualizar.html">Actualizar</a> 
+           <!-- template.html -->
+           <form action="{% url 'libro-eliminar' objetoNomArbitr.id %}" method="POST" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este libro?');">Eliminar</button>
+           </form>
+
+        {% endif %}
+
       </li>
       {% endfor %}
     </ul>
