@@ -1,0 +1,142 @@
+{% load static %} <!-- Sin esta etiqueta no se cargará el favicon que está en el directorio de los estáticos. -->
+<!DOCTYPE html>
+<html>
+<title>LibreríaLocalMain</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Link para el favicon: -->
+<link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}">
+<!-- Link para w3.css y w3.js: -->
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<!-- Link para htmx: -->
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+
+<body class="w3-container">
+  <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:23%">
+      {% block barraLateral %}
+      <h3 class="w3-bar-item">Menu</h3>
+      <a href="{% url 'vistaHome' %}" class="w3-bar-item w3-button">Home</a>
+      <a href="{% url 'todosLoslibros' %}" class="w3-bar-item w3-button">Todos los libros</a>
+      <a href="{% url 'librosConBarbara' %}" class="w3-bar-item w3-button">Libros con Barbara</a>
+      <a href="{% url 'toditicosLosAutores' %}" class="w3-bar-item w3-button">Todos los autores</a>
+      <a href="{% url 'irAautorDetailsDesdeUnSelect' %}" class="w3-bar-item w3-button">Uso de w3.css select-option y vista basada en función para enlazar a las vistas genéricas de detalle de autor</a>
+      <a href="{% url 'autorDetailDesdeForm' %}" class="w3-bar-item w3-button">Formulario html(no django forms) que envía a la vista vista name='autorDetalles', introduciendo su id (parámetro de ruta) detectado por js con el método addEventListener 'change'</a>
+
+      <a href="{% url 'redirigiendoA-listaDelibros' %}" class="w3-bar-item w3-button">Redirigir desde aquí a la vista de lista de todos los libros, usando una función anónima lambda directamente en el mapeador url en urls.py, como vista, sin función en views.py</a>
+
+      <a href="{% url 'UsarUnHttpResponseSinPlantillaNiVista' %}" class="w3-bar-item w3-button">Usando un HttpResponse sin plantilla en templates, ni vista en views.py, usando una función anónima lambda</a>
+
+      <a href="{% url 'formModelChoiceFieldAutorYsusLibrosJS' %}" class="w3-bar-item w3-button">Formulario de consulta autor y sus libros usando django forms y campos forms.ModelChoiceField que se actualizan dinámicamente usando js</a>
+
+      <a href="{% url 'formToolsAutorYsusLibros' %}" class="w3-bar-item w3-button">Formulario multipasos para autor y sus libros usando django-formtools</a>
+
+      <a href="{% url 'navAutorYsusLibJS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros sin formularios, usando el método "automágico", "for libro in autor.libro_set.all" de la plantilla baseAutorYsusLibros.html insertándola con la etiqueta include en la plantilla padre y enviando a la vista la posición actual en lista de ids por parámetro de consulta en etiqueta url </a>
+
+      <a href="{% url 'navAutorYsusLibW3JS' %}?posicionEnviada=0" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, insertando baseAutorYsusLibros.html con w3.includeHTML() en la plantilla padre</a>
+      <a href="{% url 'navAutorYsusLibHTMX' %}" class="w3-bar-item w3-button">Navegar por autor y sus libros igual que la opción anterior, pero reutilizando baseAutorYsusLibros.html con htmx</a>
+
+      <a href="{% url 'navAutorModelFormsetJS' %}" class="w3-bar-item w3-button">Navegar por sólo autores con ModelFormset y JS</a>
+
+      <a href="{% url 'navAutorModelFormsetYpaginator' %}" class="w3-bar-item w3-button">Navegar por solo autores con ModelFormset y paginator sin una pizca de JS</a>
+
+    <a href="{% url 'navAutorYsusLibrosInlineformset' %}?autor_id=1" class="w3-bar-item w3-button">Navegar por autor y sus libro usando inlineformset_factory</a>
+
+<a href="{% url 'descargar_pdf' %}" class="w3-bar-item w3-button">Descargar todos los títulos en pdf</a>
+
+{# Note como referimos el enlace a la app snippets desde la app catalogo: #}
+<a href="{% url 'snippets:irAsnippets' %}" class="w3-bar-item w3-button">Ir a la app Snippets</a> 
+
+      <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
+      <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
+
+      <a href="{% url 'resetearVisitas' %}" class="w3-bar-item w3-button">Reestablecer contador</a>
+
+            <!-- Area de autenticación del usuario: -->
+                
+          {% if user.is_authenticated %}
+            <span class="w3-bar-item">Usuario: {{ user.get_username }} {% if user.is_superuser %} y es super usuario {% elif user.groups.all.0.name == "bibliotecarios" %}, es bibliotecario {% if user.is_staff %} y pertenece al staff{% endif %}{% else %} y es miembro corriente{% endif %}</span>
+            
+      <a href="{% url 'misLibrosalquilados' user.get_username %}" class="w3-bar-item w3-button">Libros en manos de {{ user.get_username }} </a>
+      
+      {# Por seguridad (prevención CSRF), Django requiere que el cierre de sesión se realice mediante una petición POST, no un enlace GET directo. De lo contrario se producirá el error 405 Method Not Allowed, así que tenemos que incrustar como item un form con método post: #}
+      <li class="w3-bar-item">
+       <form action="{% url 'logout' %}?next={{ request.path }}" method="post">
+         {% csrf_token %}
+         <button class="w3-button"type="submit">Cerrar sesión</button>
+       </form>
+      </li>  
+    
+            {% if perms.catalogo.puedeMarcarRetornado %}
+              <hr>
+              <span class="w3-bar-item">Bibliotecario</span>
+              <a href="{% url 'librosAlquiladosActualmente' %}" class="w3-bar-item w3-button">Todos los libros prestados actualmente por la biblioteca</a>
+              <a href="{% url 'crearautorini' %}" class="w3-bar-item w3-button">Crear Autor</a>
+              <a href="{% url 'crearlibro' %}" class="w3-bar-item w3-button">Crear Libro</a>
+    
+              {% endif %}
+          {% else %}
+    
+              <a href="{% url 'login' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Iniciar sesión</a>
+       {% endif %}   
+        
+       <!-- Practicando w3.css, pegamos dos etiquetas contiguas con flexboxs: -->
+       <div class="w3-container">
+         <div class="w3-flex" style="gap:8px">
+           <div class="w3-padding w3-green"><h3>1</h3></div>
+
+           <div class="w3-card-4">
+            <header class="w3-container w3-blue">
+              <h5>Encabezado</h5>
+            </header>
+           
+            <div class="w3-container">
+              <p>Esta es una etiqueta con sombra 4.</p>
+            </div>
+
+            <footer class="w3-container w3-blue">
+              <h5>Pie</h5>
+            </footer>
+         </div>  
+       </div>
+       </div>
+      <!-- Fin del bloque barra lateral: -->  
+      {% endblock %}
+  </div>
+
+<!-- Bloque de contenido principal: -->
+
+  <div style="margin-left:25%">
+      <div class="w3-container w3-teal w3-center">
+      <h1>Biblioteca Pío Tamayo</h1>
+      </div>
+
+      <!-- Bloque para sobreescribir en la plantilla heredera o hija -->
+      {% block content %}{% endblock %}
+
+   
+{# Paginación para vistas que lo requieran (recuerde enviar is_paginated=True en context): #}
+
+{% block pagination %}
+  {% if is_paginated %}
+      <div class="pagination">
+          <span class="page-links">
+              {% if page_obj.has_previous %}
+                  <a href="?page=1">&laquo; Primera</a>
+                  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+              {% endif %}
+              <span class="page-current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
+              {% if page_obj.has_next %}
+                  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+                  <a href="?page={{ paginator.num_pages }}">Última &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  {% endif %}
+{% endblock %}
+
+  </div>
+    
+</body>
+</html>

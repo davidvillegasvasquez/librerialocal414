@@ -1,0 +1,20 @@
+{% extends "base1.html" %}
+
+{% block content %}
+    <h1>Libros prestados a {{user.get_username}} <span style="font-size: 18px">({% if user.is_staff %}Usuario staff id.{{user.id}}{% else %}id. {{user.id}}{% endif %})</span></h1>
+
+    {% if libroinstancia_list %}
+    <ul>
+
+      {% for instanciaDeLibro in libroinstancia_list %}
+      <li class="{% if instanciaDeLibro.estaVencido %}text-danger{% endif %}">
+        <a href="{{ instanciaDeLibro.libro.get_absolute_url }}">{{instanciaDeLibro.libro}}</a> {% if not instanciaDeLibro.estaVencido %} Debe regresarlo el {{ instanciaDeLibro.debidoderegresar }}) {% else %} Debió regresarlo el {{ instanciaDeLibro.debidoderegresar }} ... no ha regresado el libro aún!!!{% endif %}
+<!-- Recuerde que la propiedad get_absolute_url del libro al que pertenece el objeto de modelo LibroInstancia, instanciaDeLibro, retorna reverse('detallesDeLibro', args=[str(self.id)]), y  libro, self.titulo -->
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>No hay libros prestados para este usuario.</p>
+    {% endif %}
+{% endblock %}

@@ -199,18 +199,6 @@ class BorrarLibro(DeleteView):
     success_url = reverse_lazy('todosLoslibros')
 
 #Así hacemos una vista genérica de lista con dos o más modelos. Debemos declarar el modelo principal en la vista genérica (sólo acepta uno), y el secundario en el método sobreescrito get_context_data:
-"""
-class VistaCombAutorLibro(generic.ListView):
-    
-    Esta implementación dejó de funcionar misteriosamente, ahora dice: Revertir para '' no encontrado. '' no es una función de vista o nombre de patrón válido. Averiguar que sucedió.
-    model = Autor
-    template_name = 'catalogo/combina_LibroAutor.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['listaDeLibros'] = Libro.objects.all()
-        return context
-"""
 
 def goTovistaGenDetailsAutorFromSelect(solicitud):
     """

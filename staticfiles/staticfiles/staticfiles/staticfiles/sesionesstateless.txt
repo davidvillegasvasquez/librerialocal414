@@ -1,0 +1,200 @@
+Al cambiar a sesiones sin estado (stateless) usando JWT (JSON Web Tokens) en Django REST Framework (DRF), el objeto user estándar de las plantillas Django (request.user) ya no se "autentica" automáticamente a través de cookies de sesión, ya que has eliminado la sesión del lado del servidor.
+Para mantener la funcionalidad de {% if user.is_authenticated %} en tus plantillas (HTML renderizado por Django) mientras usas JWT, debes almacenar el JWT en cookies (HttpOnly) y decodificarlo en cada petición.
+
+Aquí tienes las mejores estrategias para sustituirlo, ordenadas de la más recomendada a la menos recomendada.
+
+1. La solución recomendada: JWT en Cookies HttpOnly + Middleware Personalizado
+Esta es la mejor opción para aplicaciones híbridas (Django Templates + DRF externos).
+1.Frontend/API: Inicia sesión y recibe el JWT.
+2.Frontend: Guarda el JWT en una cookie HttpOnly y Secure.
+3.Backend (Django): Crea un middleware que lea esa cookie y establezca request.user.
+
+Paso 1: Configurar SimpleJWT para usar cookiesInstala djangorestframework-simplejwt.
+Paso 2: Crear el Middleware (middleware.py)
+tu_app/middleware.py
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.utils.functional import SimpleLazyObject
+from django.contrib.auth.models import AnonymousUser
+
+class JWTAuthenticationMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # 1. Intentar obtener el token de la cookie
+        token = request.COOKIES.get('access_token')
+        
+        if token:
+            request.META['HTTP_AUTHORIZATION'] = f'Bearer {token}'
+            
+            # 2. Autenticar manualmente
+            auth = JWTAuthentication()
+            try:
+                user, token = auth.authenticate(request)
+                request.user = user
+                # Si usas JWTStatelessUserAuthentication, 
+                # request.user será un TokenUser, no un modelo User completo
+            except Exception:
+                request.user = AnonymousUser()
+        else:
+            request.user = AnonymousUser()
+            
+        return self.get_response(request)
+
+Paso 3: Añadir a settings.py
+MIDDLEWARE = [
+    # ...
+    'tu_app.middleware.JWTAuthenticationMiddleware',
+    # ...
+]
+
+Resultado: Ahora tus plantillas seguirán funcionando tal cual:
+
+{% if user.is_authenticated %}
+    Hola, {{ user.username }}
+{% else %}
+    <a href="/login/">Iniciar sesión</a>
+{% endif %}
+
+2. Sustituir en la Plantilla usando JavaScript (LocalStorage/SessionStorage)
+Si no quieres usar cookies HttpOnly y prefieres guardar el token en localStorage/sessionStorage, Django no puede leerlo directamente. Debes ocultar/mostrar elementos con JavaScript.
+<!-- templates/base.html -->
+<div id="auth-menu" style="display: none;">
+    <span id="username"></span>
+    <button onclick="logout()">Cerrar Sesión</button>
+</div>
+<div id="login-button" style="display: none;">
+    <a href="/login/">Iniciar Sesión</a>
+</div>
+
+<script>
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        document.getElementById('auth-menu').style.display = 'block';
+        // Opcional: decodificar JWT para obtener el nombre
+        // fetch('/api/user/info/', {headers: {Authorization: `Bearer ${token}`}})
+    } else {
+        document.getElementById('login-button').style.display = 'block';
+    }
+</script>
+
+3. Usar el paquete django-rest-framework-simplejwt con JWTStatelessUserAuthentication
+Si usas JWTStatelessUserAuthentication, el objeto user que obtienes no es un objeto User de la base de datos, sino un TokenUser (basado en los datos del payload del token).
+Si configuras el middleware del punto 1 para usar esto, el if funciona, pero asegúrate de no intentar hacer user.profile.image si no está en el token, ya que no existe base de datos.
+En settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
+    )
+}
+
+Resumen de cambios
+
+Contexto         Antes(Sesiones)             Ahora (JWT Stateless)
+Plantilla   {% if user.is_authenticated %} {% if user.is_authenticated %} (Con Middleware)
+Almacenamiento CookiesdeSesión(Django)       CookiesHttpOnly/LocalStorage Autenticación   SessionAuthenticationJ   WTAuthentication/JWTStateless
+Variable user   Objeto User completo           Objeto User o TokenUser
+
+¿Se puede hacer una conexión totalmente stateless pero segura al no usar cookies HttpOnly y guardar el token en localStorage/sessionStorage ?
+
+Sí, es posible técnicamente realizar una conexión stateless (sin estado en el servidor) y relativamente segura guardando el token (normalmente un JWT - JSON Web Token) en localStorage o sessionStorage sin usar HttpOnly cookies. Sin embargo, esta aproximación es más vulnerable a ataques de Cross-Site Scripting (XSS) que el uso de cookies HttpOnly.
+La clave para que sea segura radica en medidas defensivas estrictas para prevenir la inyección de JavaScript.
+¿Por qué localStorage es "menos seguro" que HttpOnly?
+Accesible por JS: Cualquier script JavaScript corriendo en tu sitio (incluyendo librerías de terceros, extensiones de navegador o código inyectado) puede leer localStorage.getItem('token').
+XSS es la amenaza: Si un atacante logra inyectar código en tu página (XSS), puede robar el token y hacerse pasar por el usuario.
+Ventaja: No sufre de ataques CSRF (Cross-Site Request Forgery), ya que el token debe ser enviado manualmente en la cabecera Authorization: Bearer <token>.
+¿Cómo hacerlo seguro (Mitigación de riesgos)?
+Para usar localStorage sin HttpOnly y mantener la seguridad, debes implementar defensas sólidas:Política de Seguridad de Contenidos (CSP): Implementa una CSP estricta para evitar que se ejecuten scripts no autorizados (reducir el riesgo de XSS).Sanitización de Datos: Asegúrate de sanitizar cualquier entrada de usuario en el frontend para evitar inyecciones.Tokens de Corta Duración: Usa JWTs con un tiempo de vida muy corto (ej. 5-15 minutos).Refresh Tokens seguros: Si el token caduca, usa un refresh token (que idealmente sí debería ir en una cookie HttpOnly, pero si no, protegido al máximo) para obtener uno nuevo.Uso de HTTPS estricto: Obligatorio para evitar que el token viaje en texto plano.
+
+Resumen: 
+Característica    localStorage/sessionStorage    CookiesHttpOnly+Secure
+Accesible vía JS     Sí(Vulnerable a XSS)     No(Protegido contra XSS)
+Protección CSRF     Alta(no se envían solas)    Requiere SameSite=Strict Estrategia      Recomendado si es necesario acceder al token en el cliente.  cookiesHttpOnly:Recomendado por OWASP (más seguro)
+
+Conclusión:
+Usar localStorage es seguro si tu aplicación no es susceptible a XSS. Si tu aplicación carga scripts de terceros o permite comentarios/entradas de usuario, las cookies HttpOnly son una mejor opción.
+
+OWASP (Open Web Application Security Project) es una fundación sin fines de lucro y una comunidad global de código abierto dedicada a mejorar la seguridad del software.
+
+OWASP Top 10
+El OWASP Top 10 es un informe estándar de la industria que enumera los 10 riesgos de seguridad más críticos en aplicaciones web, basado en datos de expertos mundiales. Sirve como guía esencial para desarrolladores y profesionales de ciberseguridad para prevenir vulnerabilidades.
+
+Lista del OWASP Top 10 (Versión 2021 - Actualizada):
+1.Controles de Acceso Rotos: Los usuarios pueden actuar fuera de sus permisos (el riesgo #1).
+2.Fallos Criptográficos: Protección inadecuada de datos sensibles (contraseñas, tarjetas).
+3.Ataques de Inyección: Inserción de código malicioso (ej. SQL, XSS) en el intérprete.
+4.Diseño Inseguro: Fallos de diseño lógico que permiten vulnerabilidades incluso si la implementación es correcta.
+5.Errores de Configuración en la Seguridad: Configuraciones por defecto inseguras o falta de endurecimiento (hardening).
+6.Componentes Vulnerables y Desactualizados: Uso de librerías o frameworks con fallos de seguridad conocidos.
+7.Fallos en Identificación y Autenticación: Gestión deficiente de sesiones y contraseñas.
+8.Fallos de Software e Integridad de Datos: Actualizaciones o deserialización que no verifican la integridad.
+9.Fallos de Registro y Monitoreo de Seguridad: Incapacidad para detectar brechas activas.
+10.Server-Side Request Forgery (SSRF): La aplicación web realiza peticiones a destinos inesperados, explotando la confianza del servidor.
+
+Puntos clave:
+Enfoque en riesgo: Más allá de contar vulnerabilidades, se prioriza el impacto.
+Cambio principal: El Control de Acceso Roto subió al puesto #1 en 2021.
+Recurso: La fundación OWASP ofrece guías gratuitas y herramientas para mitigar estos riesgos.
+
+    ***
+Otro enfoque, al parecer más sencillo e igual de ejectivo:
+
+Cuando utilizas autenticación stateless con djangorestframework-simplejwt y cookies HttpOnly, el objeto estándar user de Django en las plantillas (generalmente request.user) suele ser AnonymousUser porque no existe una sesión de servidor tradicional. 
+El equivalente para verificar la autenticación en tus plantillas HTML de Django es comprobar la existencia de la cookie que contiene el token, utilizando un procesador de contexto (context processor) personalizado. 
+
+Aquí tienes las mejores opciones:
+1. La forma recomendada: Custom Context Processor
+Crea un procesador de contexto para que la plantilla conozca el estado de la cookie.
+tu_app/context_processors.py
+
+from django.conf import settings
+
+def jwt_auth_status(request):
+    # 'access_token' es el nombre por defecto en simplejwt, 
+    # ajusta si cambiaste 'JWT_AUTH_COOKIE' en settings.py
+    token_name = settings.SIMPLE_JWT.get('AUTH_COOKIE', 'access_token')
+    return {
+        'is_jwt_authenticated': token_name in request.COOKIES
+    }
+
+settings.py
+TEMPLATES = [
+    {
+        ...
+        'OPTIONS': {
+            'context_processors': [
+                ...
+                'tu_app.context_processors.jwt_auth_status',
+            ],
+        },
+    },
+]
+
+Uso en la plantilla (template.html)
+html
+{% if is_jwt_authenticated %}
+    <p>Bienvenido, usuario autenticado.</p>
+    <a href="/logout">Cerrar sesión</a>
+{% else %}
+    <a href="/login">Iniciar sesión</a>
+{% endif %}
+
+2. Verificar directamente en la plantilla (sin código Python)
+Si no quieres crear un archivo nuevo, puedes usar la etiqueta if comprobando request.COOKIES directamente (requiere tener activo django.template.context_processors.request).
+html
+{% if request.COOKIES.access_token %}
+    <p>Usuario autenticado (token presente en cookie)</p>
+{% else %}
+    <p>Usuario no autenticado</p>
+{% endif %}
+Nota: Reemplaza access_token por el nombre de tu cookie en SIMPLE_JWT['AUTH_COOKIE'].
+3. Usando dj-rest-auth (Si lo usas)
+Si estás utilizando dj-rest-auth con JWT, este paquete suele facilitar la gestión del estado de la sesión, aunque al ser stateless, la comprobación de la cookie sigue siendo la forma más directa. 
+
+Medium
+·CodeUmwelt
+ +2
+Consideraciones Clave
+Seguridad: Las cookies HttpOnly no son accesibles por JavaScript, por lo que el frontend no puede hacer if (cookie). La comprobación debe ser del lado del servidor (Django templates).
+Stateless: user.is_authenticated de Django no funcionará automáticamente sin una sesión.
+CSRF: Al usar cookies para el token, asegúrate de gestionar la protección CSRF correctamente en las peticiones API.

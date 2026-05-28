@@ -35,8 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles', 
-    'catalogo.apps.ConfiguracionDeCatalogo',
-    'snippets.apps.ConfiguracionDeSnippets', 
+    'catalogo.apps.ConfiguracionDeCatalogo', 
     'formtools', 
     'rest_framework',
     'rest_framework.authtoken',
@@ -49,8 +48,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google', 
 ]
-
-SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -123,6 +120,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR, 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+#Si se migra de versiones antiguas, se presentará problemas para visualizar correctamente el administrador de django (letras vérticales mayúsculas)
+#Para solucionarlo se debe usar STATIC_ROOT, y ejecutar python manage.py collectstatic, por último limpiar historial de navegación.
+
 SESSION_SAVE_EVERY_REQUEST = False
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
@@ -151,22 +152,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-"""
-'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    ],
-"DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ], 
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
-'DEFAULT_AUTHENTICATION_CLASSES': (
-       'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
-    ),
-'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-"""
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -188,8 +173,8 @@ REST_AUTH = {
 }
 
 # Allauth configuration
-"""
-ACCOUNT_EMAIL_REQUIRED = None # Change to 'mandatory' for production
-ACCOUNT_EMAIL_VERIFICATION = None # Change to 'mandatory' for production
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-"""
+SITE_ID = 1
+#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+LOGIN_REDIRECT_URL = "todosLoslibros"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+

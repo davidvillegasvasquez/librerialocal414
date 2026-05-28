@@ -1,0 +1,22 @@
+{% extends "base1.html" %}
+
+{% block content %}
+    <h1>Libros que Están Prestados Actualmente</h1>
+
+    {% if libroinstancia_list %}
+    <ul>
+      {% for instanciaDeLibro in libroinstancia_list %}
+        
+          <li class="{% if instanciaDeLibro.estaVencido %}text-danger{% endif %}">
+          <a href="{{ instanciaDeLibro.libro.get_absolute_url }}">{{instanciaDeLibro.libro}}</a> ({{ instanciaDeLibro.debidoderegresar }}) <span style="color: black;">- {{ instanciaDeLibro.prestatario }} (id.{{instanciaDeLibro.prestatario.id}}) </span> {% if perms.catalogo.puedeMarcarRetornado %}- <a href="{% url 'renovDeLibroPorLibrero' instanciaDeLibro.id %}">Renovar</a>  {% endif %}
+<!-- Recuerde que la propiedad get_absolute_url del libro al que pertenece el objeto de modelo LibroInstancia, instanciaDeLibro, retorna reverse('detallesDeLibro', args=[str(self.id)]), y  libro, self.titulo -->
+         
+         </li>
+
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>No hay libros prestados actualmente en la biblioteca.</p>
+    {% endif %}
+{% endblock %}

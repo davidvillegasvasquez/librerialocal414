@@ -1,0 +1,64 @@
+{% load static %} <!-- Sin esta etiqueta no se cargará el favicon que está en el directorio de los estáticos. -->
+<!DOCTYPE html>
+<html>
+<title>App Snippets</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Link para el favicon: -->
+<link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}">
+<!-- Link para w3.css y w3.js: -->
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<!-- Link para htmx: -->
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+
+<body class="w3-container">
+  <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:23%">
+      {% block barraLateral %}
+      <h3 class="w3-bar-item">Menu</h3>
+      <a href="" class="w3-bar-item w3-button">Home</a>
+      <a href="" class="w3-bar-item w3-button">Todos los libros</a>   
+      <a href="{% url 'vistaHome' %}" class="w3-bar-item w3-button">Ir a la app Catalogo</a>{# Note que no tenemos que hacer el proceso inverso para ir a catalogo desde la app snippets, con respecto declarar un espacios de nombre en catalogo, ni referenciar con un presumible catalogo:vistaHome aquí en snippets. Es un proceso que enlaza, conecta a dos app dentro de un proyecto django, y que se declara una sola vez en una dirección. #}
+
+      <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
+      <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
+      <!-- Fin del bloque barra lateral: -->  
+      {% endblock %}
+  </div>   
+
+<!-- Bloque de contenido principal: -->
+
+  <div style="margin-left:25%">
+      <div class="w3-container w3-teal w3-center">
+      <h1>Apps Snippets</h1>
+      </div>
+
+      <!-- Bloque para sobreescribir en la plantilla heredera o hija -->
+      {% block content %}{% endblock %}
+
+   
+{# Paginación para vistas que lo requieran (recuerde enviar is_paginated=True en context): #}
+
+{% block pagination %}
+  {% if is_paginated %}
+      <div class="pagination">
+          <span class="page-links">
+              {% if page_obj.has_previous %}
+                  <a href="?page=1">&laquo; Primera</a>
+                  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+              {% endif %}
+              <span class="page-current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
+              {% if page_obj.has_next %}
+                  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+                  <a href="?page={{ paginator.num_pages }}">Última &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  {% endif %}
+{% endblock %}
+
+  </div>
+    
+</body>
+</html>

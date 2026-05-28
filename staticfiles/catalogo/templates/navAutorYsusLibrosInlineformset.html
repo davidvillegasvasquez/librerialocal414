@@ -1,0 +1,53 @@
+{% extends "base1.html" %}
+{% block content %}
+<p class="w3-center">Navegación por Autor y sus Libros usando Inlineformset</p>
+<h1>Libros de {{ autor }}</h1>
+
+<form method="get">
+    {{ formset.management_form }}
+
+ <div class="w3-container">
+
+  <table class="w3-table-all w3-hoverable">
+    <thead>
+      <tr class="w3-light-grey">
+        <th>Título</th>
+        <th>ISBN</th>
+      </tr>
+    </thead>
+    {% for form in formset %}
+    <tr>
+      <td>{{ form.titulo }}</td>
+      <td>{{ form.isbn }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% comment %}
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Isbn</th>
+               {# <th>Género</th> #}
+            </tr>
+        </thead>
+
+
+     <tbody>
+    {% for form in formset %}
+        <tr>
+        <td>{{ form.titulo }}</td>
+        <td>{{ form.isbn }}</td>
+       {# <td>{{ form.genero }}</td> #}
+
+       {# <td>{{ form.as_p }}</td> #}
+        </tr>
+    {% endfor %}
+     </tbody>
+    </table>
+{% endcomment %}
+
+</form>
+{% endblock %}
