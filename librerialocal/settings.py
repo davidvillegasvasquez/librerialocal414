@@ -43,10 +43,13 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'allauth_ui',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google', 
+    'allauth.socialaccount.providers.google',
+    'widget_tweaks',
+    'slippers', 
 ]
 
 MIDDLEWARE = [
@@ -177,4 +180,7 @@ SITE_ID = 1
 #EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGIN_REDIRECT_URL = "todosLoslibros"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+
+#Cofiguración django-allauth-ui:
+ALLAUTH_UI_THEME = "light"
 
