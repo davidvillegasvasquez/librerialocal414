@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,8 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dogg&*6_^d*pq!u#5!m_#!t!8^+&=a--e-q*4_7q5%ij+87i@h'
+# Carga las variables de entorno desde el archivo .env
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+SECRET_KEY = os.environ.get('CLAVE')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -184,11 +188,18 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 #Cofiguración django-allauth-ui:
 ALLAUTH_UI_THEME = "light"
-
 ACCOUNT_ADAPTER = 'librerialocal.adapters.NoSignupAccountAdapter'
 
+#Configuaración email:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # O el servidor de tu proveedor (ej. ://outlook.com)
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('CORREO_EMPRESA') # Tu correo personal/profesional
+EMAIL_HOST_PASSWORD = os.environ.get('CORREO_PASSWORD') # Contraseña de aplicación
+DEFAULT_FROM_EMAIL = 'Nombre del Remitente <tucorreo@ejemplo.com>'
 
-
-
-
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]

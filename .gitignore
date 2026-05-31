@@ -6,4 +6,5 @@ __pycache__/
 a.sh
 d.sh
 private_key.pem
+.env
 
