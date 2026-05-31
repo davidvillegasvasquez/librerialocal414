@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'es-la'
+LANGUAGE_CODE = 'en'
 TIME_ZONE = 'America/Caracas'
 USE_I18N = True
 USE_TZ = True
@@ -121,7 +122,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR, 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 #Si se migra de versiones antiguas, se presentará problemas para visualizar correctamente el administrador de django (letras vérticales mayúsculas)
@@ -133,7 +134,7 @@ SESSION_SAVE_EVERY_REQUEST = False
 LOGIN_REDIRECT_URL = '/'
 
 # settings.py
-LOGOUT_REDIRECT_URL = 'login'  # or any other appropriate URL
+LOGOUT_REDIRECT_URL = '/'  # or any other appropriate URL
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DATE_INPUT_FORMATS = ['%d/%m/%Y', '%Y-%m-%d']
 
@@ -178,9 +179,16 @@ REST_AUTH = {
 # Allauth configuration
 SITE_ID = 1
 #EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-LOGIN_REDIRECT_URL = "todosLoslibros"
+LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 #Cofiguración django-allauth-ui:
 ALLAUTH_UI_THEME = "light"
+
+ACCOUNT_ADAPTER = 'librerialocal.adapters.NoSignupAccountAdapter'
+
+
+
+
+
 

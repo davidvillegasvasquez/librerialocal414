@@ -4,7 +4,8 @@
 <title>LibreríaLocalMain</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Link para el favicon: -->
-<link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}">
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{% static 'images/djangoIco.ico' %}">
+{# <link rel="icon" type="image/svg" href="{% static '/images/djangoIco.svg' %}"> #}
 <!-- Link para w3.css y w3.js: -->
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 <script src="https://www.w3schools.com/lib/w3.js"></script>
@@ -43,9 +44,6 @@
 
 <a href="{% url 'descargar_pdf' %}" class="w3-bar-item w3-button">Descargar todos los títulos en pdf</a>
 
-{# Note como referimos el enlace a la app snippets desde la app catalogo: #}
-<a href="{% url 'snippets:irAsnippets' %}" class="w3-bar-item w3-button">Ir a la app Snippets</a> 
-
       <!-- Hacemos un solucionador de url a nivel de la aplicación para ir a admin, que se encuentra en la base o entrada del proyecto, con fines didácticos. Sería un disparate hacerlo en producción. Para ello usamos la etiqueta reservada, admin:index: -->
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Ir a admin</a>
 
@@ -60,7 +58,7 @@
       
       {# Por seguridad (prevención CSRF), Django requiere que el cierre de sesión se realice mediante una petición POST, no un enlace GET directo. De lo contrario se producirá el error 405 Method Not Allowed, así que tenemos que incrustar como item un form con método post: #}
       <li class="w3-bar-item">
-       <form action="{% url 'logout' %}?next={{ request.path }}" method="post">
+       <form action="{% url 'account_logout' %}" method="post">
          {% csrf_token %}
          <button class="w3-button"type="submit">Cerrar sesión</button>
        </form>
@@ -75,8 +73,7 @@
     
               {% endif %}
           {% else %}
-    
-              <a href="{% url 'login' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Iniciar sesión</a>
+              <a href="{% url 'account_login' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Iniciar sesión</a>
        {% endif %}   
         
        <!-- Practicando w3.css, pegamos dos etiquetas contiguas con flexboxs: -->

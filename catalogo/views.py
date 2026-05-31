@@ -51,7 +51,7 @@ constante = 25
 #Importamos una constante desde el módulo constantes.py que creamos para uso didáctico, que se encuentra en el directorio, ArchivosParaImportar, en el paquete (__init__.py) que creó django en la entrada del proyecto, el directorio librerialocal a nivel de manage.py, y const2 y const3:
 
 from librerialocal.ArchivosParaImportar.constantes import pi 
-from static.images.ej import const2
+from catalogo.static.images.ej import const2
 from constExt import const3
 
 class LibroVistaListaConBarbara(generic.ListView):
@@ -63,7 +63,7 @@ class LibroVistaListaConBarbara(generic.ListView):
     suma = 0
     #Un atributo método sobre un atributo del modelo (suma), que usaremos para la variable de contexto, 'variableDeContextoN': 
     def operSuma(self, num):
-        self.suma = num + constante + pi + const2 + const3
+        self.suma = num + constante + pi + const3
         return self.suma
     
     #Podemos poner más variables de contexto en una vista genérica, sobreescribiendo el método get_context_data. Este es un ejemplo de como se sobreescriben los métodos implícitos (heredados de generic.ListView) de esta clase hecha por nosotros:

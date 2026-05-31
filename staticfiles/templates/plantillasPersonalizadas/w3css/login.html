@@ -1,0 +1,28 @@
+{% extends "base1.html" %} 
+{% load i18n %}
+
+{% block content %}
+
+<div class="w3-panel w3-tiny" style="width:50%;">
+<div class="w3-card-4">
+
+<div class="w3-panel w3-brown">
+<h1>{% trans "Sign In" %}</h1>
+</div>
+
+<form class="w3-container" method="POST" action="{% url 'account_login' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  
+  <button class="w3-button w3-green w3-margin-top" type="submit">{% trans "Sign In" %}</button>
+  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+</form>
+
+</div>
+</div>
+{% endblock %}
+

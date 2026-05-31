@@ -1,0 +1,67 @@
+Para personalizar el formulario de login de django-allauth, puedes modificar su comportamiento en el backend (creando una clase heredada) o ajustar su diseño en el frontend (sobrescribiendo la plantilla HTML). 
+A continuación, te detallo los pasos para ambas opciones basándonos en la documentación oficial de django-allauth.
+1. Personalizar la lógica del formulario (Backend)
+Si necesitas añadir validaciones personalizadas o procesar información extra al momento de iniciar sesión, debes crear una subclase del formulario original y registrarla en tu archivo settings.py.
+Crea tu formulario personalizado: En tu archivo forms.py (dentro de tu aplicación, por ejemplo, cuentas/forms.py), añade el siguiente código:
+python
+from allauth.account.forms import LoginForm
+
+class MiLoginFormPersonalizado(LoginForm):
+    def login(self, *args, **kwargs):
+        # Agrega aquí tu lógica de procesamiento personalizada
+        
+        # Debes retornar el resultado original al final
+        return super().login(*args, **kwargs)
+Registra el formulario en settings.py: Dile a Django que utilice tu formulario modificado en lugar del predeterminado: 
+
+AllAuth
+python
+ACCOUNT_FORMS = {
+    'login': 'cuentas.forms.MiLoginFormPersonalizado',
+}
+
+2. Personalizar el diseño y estilo (Frontend)
+La plantilla original que viene de fabrica (build in) es esta: https://github.com/pennersr/django-allauth/blob/main/allauth/templates/account/login.html
+
+Para cambiar el aspecto visual (añadir clases CSS como Tailwind o Bootstrap, cambiar textos, etc.), debes sobrescribir la plantilla login.html en tu proyecto. 
+
+Built with Django
+ +1
+Ubica la plantilla original:
+Normalmente, la ruta por defecto es allauth/templates/account/login.html.
+Copia la plantilla a tu proyecto:
+Crea la misma estructura de carpetas en el directorio de plantillas de tu proyecto (ej. mi_proyecto/templates/account/login.html).
+Modifica el HTML:
+El contenido típico para personalizar el formulario dentro de tu archivo login.html se verá así:
+html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Iniciar Sesión</h1>
+
+<form class="login" method="POST" action="{% url 'account_login' %}">
+  {% csrf_token %}
+  
+  <!-- Renderizas los campos con tus estilos CSS -->
+  <div class="mi-clase-input">
+    {{ form.login.label_tag }}
+    {{ form.login }}
+  </div>
+  
+  <div class="mi-clase-input">
+    {{ form.password.label_tag }}
+    {{ form.password }}
+  </div>
+
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_value }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  
+  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">¿Olvidaste tu contraseña?</a>
+  <button class="primaryAction" type="submit">Iniciar Sesión</button>
+</form>
+
+{% endblock %}
+3. Personalización rápida con Django Crispy Forms
+Para no estilizar los formularios input por input, la comunidad recomienda integrar django-crispy-forms y envolver el formulario en el tag {% crispy %} para aplicar estilos automáticos de Bootstrap, Tailwind o Bulma.
+Puedes revisar guías detalladas de implementación en el blog de Built with Django.
