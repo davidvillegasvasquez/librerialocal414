@@ -336,9 +336,6 @@ def navAutorModelFormsetJS(request):
 
     return render(request, 'navAutoresConModelFormsetJS.html', {'formset': formset})
 
-from django.core.paginator import Paginator
-from django.forms import formset_factory
-
 def navAutorModelFormsetYpaginator(request):
     todos_los_objetos = Autor.objects.all().order_by('id') # Ajusta el orden
 
@@ -403,7 +400,6 @@ def descargar_pdf(request):
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
     return response
 
-
 #Vistas de django rest framework a base de serializadores:
 
 from django.contrib.auth.models import Group, User
@@ -457,8 +453,6 @@ def api_root(request, format=None):
         }
     )
 
-#from django.shortcuts import render, redirect
-#from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from .forms import CustomUserCreationForm
@@ -490,3 +484,43 @@ def crear_usuario_inferior(request):
         
     return render(request, 'crear_usuario.html', {'form': form})
 
+from django.contrib.auth.forms import UserChangeForm
+
+#Lista de usuarios de un grupo específico
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class UsuariosPorGrupoListView(generic.ListView):
+    model = User
+    template_name = 'usuarios_biblioteca.html'
+    context_object_name = 'usuarios'
+
+    def get_queryset(self):
+        # Obtenemos el nombre del grupo desde la URL
+        self.grupo_nombre = self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')#self.kwargs.get['miembros_de_la_librería'] #self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')
+        # Filtramos los usuarios que pertenecen a este grupo
+        grupo = Group.objects.get(name=self.grupo_nombre)
+       
+        return grupo.user_set.all() #User.objects.filter(groups__name=grupo_nombre).distinct().exclude(is_superuser=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Añadimos el nombre del grupo al contexto por si deseas mostrarlo en pantalla
+        context['grupo'] = self.grupo_nombre #self.kwargs['grupo_nombre']
+        return context
+
+#Formulario de actualización de usuario
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class UsuarioUpdateView(UpdateView):
+    model = User
+    form_class = UserChangeForm
+    template_name = 'usuario_update_form.html'
+    # Redirige a la misma lista de usuarios una vez guardado con éxito
+    success_url = reverse_lazy('vistaHome') 
+    """
+    def get_success_url(self):
+        # Mantiene al usuario en la misma lista del grupo de donde proviene
+        grupo = self.object.groups.first()
+        grupo_nombre = grupo.name if grupo else 'default'
+        return reverse_lazy('lista_usuarios_grupo', kwargs={'grupo_nombre': grupo_nombre})
+    """
