@@ -91,3 +91,17 @@ from django.forms import inlineformset_factory
 
 # Crea un FormSet para los libros de un autor
 inlineFormsetParaAutorYsusLibros = inlineformset_factory(Autor, Libro, fields=('titulo', 'isbn', 'genero'), extra=0, can_delete=False) #can_delete=False hace que no aparezca un checkbox de eliminar en cada subformulario.
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class CustomUserCreationForm(UserCreationForm):
+    # Añadir campos que no están en el UserCreationForm por defecto
+    email = forms.EmailField(required=True, label="Correo electrónico")
+    first_name = forms.CharField(required=True, label="Nombre")
+    last_name = forms.CharField(required=True, label="Apellido")
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "first_name", "last_name")
+

@@ -456,3 +456,37 @@ def api_root(request, format=None):
             "api-todosLoslibros": reverse("libro-list", request=request, format=format),
         }
     )
+
+#from django.shortcuts import render, redirect
+#from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import Group
+from .forms import CustomUserCreationForm
+
+# Función para verificar si el usuario es superior (ej. is_staff o miembro de un grupo)
+def es_usuario_superior(user):
+    return user.is_authenticated and user.is_staff
+
+@user_passes_test(es_usuario_superior)
+def crear_usuario_inferior(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            # Guardamos el usuario pero pausamos la escritura en BD con commit=False
+            nuevo_usuario = form.save(commit=False)
+            
+            # Aquí asignas el rango o permisos específicos
+            # Ejemplo: asignar un rol específico (requiere que tengas el modelo Group)
+            grupo_inferior = Group.objects.get(name='miembros de la librería')
+            nuevo_usuario.save()
+            nuevo_usuario.groups.add(grupo_inferior)
+            
+            # Alternativa: simplemente hacerlo 'is_staff = False' explícitamente
+            #nuevo_usuario.is_staff = False 
+            #nuevo_usuario.save()
+            return HttpResponseRedirect(reverse('vistaHome')) # Redirige a donde desees
+    else:
+        form = CustomUserCreationForm()
+        
+    return render(request, 'crear_usuario.html', {'form': form})
+

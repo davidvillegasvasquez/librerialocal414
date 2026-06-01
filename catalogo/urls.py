@@ -72,6 +72,10 @@ urlpatterns += [path('api-todosLosAutores/', views.Autores.as_view(), name="auto
 
 urlpatterns += [path("", views.api_root),]
 
-urlpatterns += [path("api-todosLosAutores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail")]
+urlpatterns += [path("api-todosLosAutores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail"),]
+
+urlpatterns += [
+    path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

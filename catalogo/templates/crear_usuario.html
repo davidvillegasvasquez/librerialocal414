@@ -1,0 +1,27 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Nuevo Usuario</title>
+</head>
+<body>
+    <h2>Crear Usuario de Menor Rango</h2>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        
+        <!-- Renderiza los campos del formulario de Django -->
+        {{ form.as_p }}
+
+        <button type="submit">Crear Usuario</button>
+    </form>
+
+    <a href="{% url 'vistaHome' %}">Abortar y volver a inicio</a>
+</body>
+</html>
+
+
+{% endblock %}

@@ -186,20 +186,24 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 #Cofiguración django-allauth-ui:
 ALLAUTH_UI_THEME = "light"
 ACCOUNT_ADAPTER = 'librerialocal.adapters.NoSignupAccountAdapter'
 
 #Configuaración email:
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # O el servidor de tu proveedor (ej. ://outlook.com)
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mail.yahoo.com'  # O el servidor de tu proveedor (ej. ://outlook.com)
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
 EMAIL_HOST_USER = os.environ.get('CORREO_EMPRESA') # Tu correo personal/profesional
 EMAIL_HOST_PASSWORD = os.environ.get('CORREO_PASSWORD') # Contraseña de aplicación
-DEFAULT_FROM_EMAIL = 'Nombre del Remitente <tucorreo@ejemplo.com>'
+DEFAULT_FROM_EMAIL = os.environ.get('REMITENTE_EMPRESA')
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
+#Nos vamos directamente a la pág de inicio ya loggeado:
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
