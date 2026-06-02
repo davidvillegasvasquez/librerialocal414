@@ -10,6 +10,7 @@
                 {{ usuario.username }} - {{ usuario.email }}
                 <!-- Enlace al formulario de actualización utilizando el pk de cada usuario -->
                 <a href="{% url 'editar_usuario' usuario.pk %}">Editar</a>
+                <a href="{% url 'eliminar_usuario' usuario.pk %}">Eliminar</a>
             </li>
         {% empty %}
             <li>No hay usuarios en este grupo.</li>

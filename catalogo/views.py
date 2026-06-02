@@ -524,3 +524,10 @@ class UsuarioUpdateView(UpdateView):
         grupo_nombre = grupo.name if grupo else 'default'
         return reverse_lazy('lista_usuarios_grupo', kwargs={'grupo_nombre': grupo_nombre})
     """
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class UsuarioDeleteView(DeleteView):
+    model = User
+    template_name = 'confirmarBorrarUsuario.html' # Plantilla de confirmación
+    success_url = reverse_lazy('vistaHome')

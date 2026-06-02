@@ -1,0 +1,15 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<h1>Eliminar Usuario</h1>
+
+<p>Estas seguro de querer eliminar el usuario: {{ user }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" action="" value="Si, eliminar" />
+  <a href="{% url 'vistaHome' %}">Cancelar</a>
+</form>
+
+{% endblock %}
