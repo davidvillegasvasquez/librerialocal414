@@ -70,10 +70,12 @@
               <a href="{% url 'librosAlquiladosActualmente' %}" class="w3-bar-item w3-button">Todos los libros prestados actualmente por la biblioteca</a>
               <a href="{% url 'crearautorini' %}" class="w3-bar-item w3-button">Crear Autor</a>
               <a href="{% url 'crearlibro' %}" class="w3-bar-item w3-button">Crear Libro</a>
+              {% comment %}
               <a href="{% url 'crear_usuario' %}" class="w3-bar-item w3-button">Crear nuevo usuario normal</a>
               {% if user.is_superuser %}
               <a href="{% url 'lista_usuarios_grupo' 'miembros_de_la_libreria' %}" class="w3-bar-item w3-button">Listar usuarios</a>
               {% endif %}
+              {% endcomment %}
             {% endif %}
           {% else %}
               <a href="{% url 'account_login' %}?next = {{ request.path }}" class="w3-bar-item w3-button">Iniciar sesión</a>

@@ -2,6 +2,7 @@
 
 {% block content %}
 <div>Navegar por autor y sus libros con JS y reutilizando la plantilla baseAutorYsusLibros.html insertando aquí con la etiqueta de plantilla include:</div>
+  {% if listaDeIds %}
   <div>
       lita de ids: {{ listaDeIds }}
       <button id="botonAvanzar">Avanzar</button>
@@ -10,8 +11,9 @@
   <div>
       {% include "catalogo/baseAutorYsusLibros.html" %}
   </div>
-</div>
-
+  {% else %}
+    <p>No se encuentra registrado algún autor y sus libros en estos momentos.</p>
+  {% endif %}
 <script>
 // Guardar un dato (igual que localStorage, pero solo para la sesión actual)
 //sessionStorage.setItem('posicionActual', 0);
