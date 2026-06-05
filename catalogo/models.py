@@ -57,6 +57,7 @@ class Libro(models.Model):
 
 import uuid # Requerida para las instancias de libros únicos
 from django.core.validators import MaxValueValidator, MinValueValidator 
+from django.conf import settings
 
 class LibroInstancia(models.Model):
     """
@@ -66,7 +67,7 @@ class LibroInstancia(models.Model):
     libro = models.ForeignKey('Libro', on_delete=models.SET_NULL, null=True)
     imprenta = models.CharField(max_length=200)
     debidoderegresar = models.DateField(null=True, blank=True)
-    prestatario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    prestatario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     PRESTAMO_STATUS = (
         ('m', 'Mantenimieno'),
@@ -129,3 +130,26 @@ class Lenguaje(models.Model):
         String que representa al objeto Lenguaje
         """
         return self.nombre
+
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
+from .managers import CustomUserManager
+
+class CustomUser(AbstractUser):
+    username = None
+    email = models.EmailField(_("email address"), unique=True)
+    creador = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='usuarios_creados'
+    )
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.email
