@@ -6,28 +6,28 @@ class CustomUserAdmin(UserAdmin):
     # Agregamos los campos personalizados para poder visualizarlos y editarlos
     model = CustomUser
     #Se debe explicitar el orden, ya que usamos el usuario personalizado con email:
+    
     ordering = ('email',)
     list_display = ['email', 'first_name', 'last_name', 'creador', 'is_staff']
     search_fields = ('email',)
+
     fieldsets = (
         (None, {'fields': ('email', 'password', 'creador')}),
         ('Personal info', {'fields': ('first_name', 'last_name')}), # Remove fields if your model doesn't have them
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    
+   
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password', 'creador'), # Use your login identifier here
+            'fields': ('email', 'password1', 'password2'), # Recuerde que estos son los únicos campos para agregar nuevo usuario. password2 se refiere a la verificación que pide de volver a colocar el password para verificar.
         }),
     )
-
+   
+    
 admin.site.register(CustomUser, CustomUserAdmin)
 
-# Register your models here.
-
-# Register your models here.
 from .models import Autor, Genero, Libro, LibroInstancia, Lenguaje
 
 # Define the admin class

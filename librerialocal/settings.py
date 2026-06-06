@@ -202,7 +202,7 @@ AUTHENTICATION_BACKENDS = [
 ALLAUTH_UI_THEME = "light"
 ACCOUNT_ADAPTER = 'librerialocal.adapters.NoSignupAccountAdapter'
 
-#Configuaración email:
+#Configuaración servidor de correo:
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.yahoo.com'  # O el servidor de tu proveedor (ej. ://outlook.com)
 EMAIL_USE_SSL = True
