@@ -8,6 +8,11 @@
         
         {% url 'account_login' as action_url %}
         {% #form form=form url=action_url button_text=heading %}
+
+        <div class="password-toggle-container">
+            <input type="checkbox" id="password-toggle">
+            <label id="password-toggle-label" for="password-toggle">Mostrar contraseña</label>
+        </div>
         
         {{ redirect_field }}
         {% csrf_token %}
@@ -27,4 +32,23 @@
     <a href="{% url 'vistaHome' %}">Ir a inicio</a>
     {% /container %}
      
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleCheckbox = document.getElementById('password-toggle');
+    // django-allauth default password input has the name 'password'
+    const passwordInput = document.querySelector('input[name="password"]');
+
+    if (toggleCheckbox && passwordInput) {
+      toggleCheckbox.addEventListener('change', function () {
+        // Switch the input type between 'password' and 'text'
+        if (this.checked) {
+          passwordInput.type = 'text';
+        } else {
+          passwordInput.type = 'password';
+        }
+      });
+    }
+  });
+</script>
+
 {% endblock content %}
