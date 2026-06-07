@@ -92,16 +92,26 @@ from django.forms import inlineformset_factory
 # Crea un FormSet para los libros de un autor
 inlineFormsetParaAutorYsusLibros = inlineformset_factory(Autor, Libro, fields=('titulo', 'isbn', 'genero'), extra=0, can_delete=False) #can_delete=False hace que no aparezca un checkbox de eliminar en cada subformulario.
 
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+#Recuerde que ya no importamos from django.contrib.auth.models import User, puesto que implementamos un usuario personalizado:
+from django.contrib.auth import get_user_model
+#MiUsuario = get_user_model() # Obtiene tu usuario personalizado correctamente
+
 
 class CustomUserCreationForm(UserCreationForm):
-    # Añadir campos que no están en el UserCreationForm por defecto
-    email = forms.EmailField(required=True, label="Correo electrónico")
-    first_name = forms.CharField(required=True, label="Nombre")
-    last_name = forms.CharField(required=True, label="Apellido")
 
     class Meta:
-        model = User
-        fields = ("username", "email", "first_name", "last_name")
+        model = get_user_model()
+        fields = ("email", "first_name", "last_name")
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = get_user_model()
+        fields = ("email", "first_name", "last_name")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # OPCIONAL: Eliminar el texto de ayuda o cambiar widgets
+        if 'password' in self.fields:
+            self.fields.pop('password') # Quita el campo de clave si no lo quieres
 

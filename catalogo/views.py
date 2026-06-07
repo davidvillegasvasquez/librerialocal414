@@ -406,7 +406,7 @@ def descargar_pdf(request):
 
 #Vistas de django rest framework a base de serializadores:
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group #, User
 from rest_framework import permissions, viewsets
 from .serializadores import *
 from rest_framework import generics
@@ -459,11 +459,12 @@ def api_root(request, format=None):
 
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from django.contrib.auth import get_user_model
 
 # Función para verificar si el usuario es superior (ej. is_staff o miembro de un grupo)
-def es_usuario_superior(user):
-    return user.is_authenticated and user.is_staff
+def es_usuario_superior(usuario):
+    return usuario.is_authenticated and usuario.is_staff
 
 @user_passes_test(es_usuario_superior)
 def crear_usuario_inferior(request):
@@ -475,8 +476,11 @@ def crear_usuario_inferior(request):
             
             # Aquí asignas el rango o permisos específicos
             # Ejemplo: asignar un rol específico (requiere que tengas el modelo Group)
-            grupo_inferior = Group.objects.get(name='miembros de la librería')
+            grupo_inferior = Group.objects.get(name='miembros de la libreria')
+            #Asigna el usuario creador
+            nuevo_usuario.creador = request.user
             nuevo_usuario.save()
+          
             nuevo_usuario.groups.add(grupo_inferior)
             
             # Alternativa: simplemente hacerlo 'is_staff = False' explícitamente
@@ -488,19 +492,19 @@ def crear_usuario_inferior(request):
         
     return render(request, 'crear_usuario.html', {'form': form})
 
-from django.contrib.auth.forms import UserChangeForm
+#from django.contrib.auth.forms import UserChangeForm
 
 #Lista de usuarios de un grupo específico
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class UsuariosPorGrupoListView(generic.ListView):
-    model = User
+    model = get_user_model()
     template_name = 'usuarios_biblioteca.html'
     context_object_name = 'usuarios'
 
     def get_queryset(self):
         # Obtenemos el nombre del grupo desde la URL
-        self.grupo_nombre = self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')#self.kwargs.get['miembros_de_la_librería'] #self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')
+        self.grupo_nombre = self.kwargs.get('miembros de la libreria', 'miembros de la libreria')#self.kwargs.get['miembros_de_la_librería'] #self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')
         # Filtramos los usuarios que pertenecen a este grupo
         grupo = Group.objects.get(name=self.grupo_nombre)
        
@@ -516,8 +520,8 @@ class UsuariosPorGrupoListView(generic.ListView):
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class UsuarioUpdateView(UpdateView):
-    model = User
-    form_class = UserChangeForm
+    model = get_user_model()
+    form_class = CustomUserChangeForm
     template_name = 'usuario_update_form.html'
     # Redirige a la misma lista de usuarios una vez guardado con éxito
     success_url = reverse_lazy('vistaHome') 
@@ -525,6 +529,6 @@ class UsuarioUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class UsuarioDeleteView(DeleteView):
-    model = User
+    model = get_user_model()
     template_name = 'confirmarBorrarUsuario.html' # Plantilla de confirmación
     success_url = reverse_lazy('vistaHome')

@@ -7,10 +7,10 @@
     <ul>
         {% for usuario in usuarios %}
             <li>
-                {{ usuario.username }} - {{ usuario.email }}
+                {{ usuario.email }} - Creado por: {{ usuario.creador }} 
                 <!-- Enlace al formulario de actualización utilizando el pk de cada usuario -->
-                <a href="{% url 'editar_usuario' usuario.pk %}">Editar</a>
-                <a href="{% url 'eliminar_usuario' usuario.pk %}">Eliminar</a>
+                <a href="{% url 'editar_usuario' usuario.id %}">Editar</a>
+                <a href="{% url 'eliminar_usuario' usuario.id %}">Eliminar</a>
             </li>
         {% empty %}
             <li>No hay usuarios en este grupo.</li>

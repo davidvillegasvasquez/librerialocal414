@@ -47,11 +47,11 @@ urlpatterns += [
     path("api", views.api_root),
     path("autores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail"),
     #Creación y actualización de usuarios:
-    #path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
-    #path('usuarios/<str:miembros_de_la_libreria>/', views.UsuariosPorGrupoListView.as_view(), name='lista_usuarios_grupo'),
+    path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
+    path('usuarios/<str:miembros_de_la_libreria>/', views.UsuariosPorGrupoListView.as_view(), name='lista_usuarios_grupo'),
     # Ruta para actualizar un usuario específico usando su primary key (pk)
-    #path('usuario/<int:pk>/editar/', views.UsuarioUpdateView.as_view(), name='editar_usuario'),
-    #path('usuario/<int:pk>/eliminar/', views.UsuarioDeleteView.as_view(), name='eliminar_usuario'),
+    path('usuario/<int:pk>/editar/', views.UsuarioUpdateView.as_view(), name='editar_usuario'),
+    path('usuario/<int:pk>/eliminar/', views.UsuarioDeleteView.as_view(), name='eliminar_usuario'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

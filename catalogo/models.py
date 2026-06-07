@@ -1,7 +1,8 @@
 # Create your models here.
 
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from django.conf import settings
 from datetime import date
 
 
@@ -67,6 +68,7 @@ class LibroInstancia(models.Model):
     libro = models.ForeignKey('Libro', on_delete=models.SET_NULL, null=True)
     imprenta = models.CharField(max_length=200)
     debidoderegresar = models.DateField(null=True, blank=True)
+    #En la definición de modelos no usamos from django.contrib.auth import get_user_model para obtener el modelo de usuario que ha sido personalizado, sino que lo traemos desde setting:
     prestatario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     PRESTAMO_STATUS = (

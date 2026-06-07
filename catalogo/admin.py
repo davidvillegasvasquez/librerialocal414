@@ -8,7 +8,7 @@ class CustomUserAdmin(UserAdmin):
     #Se debe explicitar el orden, ya que usamos el usuario personalizado con email:
     
     ordering = ('email',)
-    list_display = ['email', 'first_name', 'last_name', 'creador', 'is_staff']
+    list_display = ['email', 'first_name', 'last_name', 'is_staff',]
     search_fields = ('email',)
 
     fieldsets = (
