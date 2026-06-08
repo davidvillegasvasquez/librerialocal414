@@ -411,14 +411,14 @@ from rest_framework import permissions, viewsets
 from .serializadores import *
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class Libros(generics.ListCreateAPIView):
     """
     Vista de endpoint de tipo generics.ListCreateAPIView, serializada con serializers.HyperlinkedModelSerializer, para listar todos los libros (list) usando el método http get, o crear(create) uno nuevo con el método http post.
     """
     #Permisos necesario para usar con la autenticación con simplejwt:
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
@@ -427,24 +427,24 @@ class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
     Vista de endpoint de tipo generics.RetrieveUpdateDestroyAPIView, serializada con serializers.HyperlinkedModelSerializer, para recuperar un libro(retrieve), actualizarlo(update), o eliminarlo(destroy).
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
 
 class Autores(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
 class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
-#Hacemos un pundo de entrada para nuestra api:
+#Hacemos un pundo de entrada para nuestra api drf:
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 
@@ -457,6 +457,9 @@ def api_root(request, format=None):
         }
     )
 
+            #   ****
+
+#Vistas para operaciones crud en usuarios:
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from .forms import CustomUserCreationForm, CustomUserChangeForm

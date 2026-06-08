@@ -41,11 +41,11 @@ urlpatterns += [
     path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsusLibrosInlienformset, name='navAutorYsusLibrosInlineformset'),
     path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),
     #Endpoints de la api django rest framework:
-    path('libros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"),
-    path('libros/', views.Libros.as_view(), name="libro-list"),
-    path('autores/', views.Autores.as_view(), name="autor-list"),
-    path("api", views.api_root),
-    path("autores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail"),
+    path("apirest", views.api_root),
+    path('apirest/autores/', views.Autores.as_view(), name="autor-list"),
+    path("apirest/autores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail"),
+    path('apirest/libros/', views.Libros.as_view(), name="libro-list"),
+    path('apirest/libros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), 
     #Creación y actualización de usuarios:
     path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
     path('usuarios/<str:miembros_de_la_libreria>/', views.UsuariosPorGrupoListView.as_view(), name='lista_usuarios_grupo'),
