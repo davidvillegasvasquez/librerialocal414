@@ -149,26 +149,29 @@ DATE_INPUT_FORMATS = ['%d/%m/%Y', '%Y-%m-%d']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = None # Opcional: si prefieres cookies en lugar de headers
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ], 
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,  
+    # or allow read-only access for unauthenticated users.   
     "DEFAULT_AUTHENTICATION_CLASSES": (
-       "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+    "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        #"rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS":"rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1), #seconds=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=2), #seconds=29),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': True,
 }
 
@@ -176,7 +179,7 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'access-token',
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
-    'JWT_AUTH_HTTPONLY': True,
+    'JWT_AUTH_HTTPONLY': False,
     'JWT_AUTH_SECURE': False,  # Set to True in production (HTTPS)
     'JWT_AUTH_SAMESITE': 'Lax',
     'JWT_AUTH_RETURN_EXPIRATION': True,
@@ -188,7 +191,6 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
@@ -211,6 +213,5 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = os.environ.get('CORREO_EMPRESA') # Tu correo personal/profesional
 EMAIL_HOST_PASSWORD = os.environ.get('CORREO_PASSWORD') # Contraseña de aplicación
 DEFAULT_FROM_EMAIL = os.environ.get('REMITENTE_EMPRESA')
-
 #Nos vamos directamente a la pág de inicio ya loggeado:
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"

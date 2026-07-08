@@ -26,3 +26,8 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Autor
         fields = ["url", "id", "nombre", "apellido", "nacimiento", "muerte", "libros"]
+        #Asegurarse de que el campo url apunte a la ruta correcta:
+        extra_kwargs = {
+            'url': {'view_name': 'autor-detail', 'format': 'json'}
+        }
+
