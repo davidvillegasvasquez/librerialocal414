@@ -12,6 +12,11 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     lenguaje = serializers.HyperlinkedRelatedField(
         many=False, view_name="lenguaje-detail", read_only=True
     )
+
+    genero = serializers.HyperlinkedRelatedField(
+        many=True, view_name="genero-list", read_only=True
+    )
+
     class Meta:
         model = Libro
         fields = [
@@ -21,7 +26,7 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
             "autor",
             "descripcion",
             "isbn",
-            #"genero",
+            "genero",
             "lenguaje"
         ]
 
@@ -49,9 +54,13 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
         }
 
 class SerializadorGenero(serializers.HyperlinkedModelSerializer):
+    libros = serializers.HyperlinkedRelatedField(
+        many=True, view_name="libro-detail", read_only=True
+    )
+
     class Meta:
         model = Genero
-        fields = ['id', 'nombre']
+        fields = ['url', 'id', 'nombre', 'libros']
 
 class SerializadorLenguaje(serializers.HyperlinkedModelSerializer):
     libros = serializers.HyperlinkedRelatedField(

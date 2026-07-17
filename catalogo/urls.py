@@ -48,6 +48,7 @@ urlpatterns += [
     path('apirest/libros/', views.Libros.as_view(), name="libro-list"),
     path('apirest/libros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), 
     path('apirest/generos/', views.Generos.as_view(), name="genero-list"),
+    path('apirest/generos/<int:pk>/', views.GeneroDetalle.as_view(), name="genero-detail"),
     path('apirest/lenguajes/', views.Lenguajes.as_view(), name="lenguaje-list"),
     path('apirest/lenguajes/<int:pk>/', views.LenguajeDetalle.as_view(), name="lenguaje-detail"),
     #Creación y actualización de usuarios:

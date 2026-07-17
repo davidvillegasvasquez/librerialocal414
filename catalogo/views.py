@@ -431,24 +431,17 @@ class Libros(generics.ListCreateAPIView):
         # Asumiendo que Flet envía el ID del autor como parte del payload en 'autor_id'
         # o puedes extraerlo de la URL si el endpoint es /autores/{autor_pk}/libros/
         autor_id = request.data.get('autor_id') 
-        #genero = request.data.get('genero')
+        genero_id = request.data.get('genero_id')
         lenguaje_id = request.data.get('lenguaje_id')
 
-        # Guardamos la instancia asignando explícitamente el autor
-        #self.perform_create(serializer, autor_id=autor_id)
+        # Guardamos la instancia asignando explícitamente el autor       
         serializer.save(autor_id=autor_id)
-        serializer.save(lenguaje_id=lenguaje_id)
-        #self.perform_create(serializer, genero=genero)
-        #self.perform_create2(serializer, lenguaje=lenguaje)
+        serializer.save(genero_id=genero_id)
+        serializer.save(lenguaje_id=lenguaje_id)     
 
         headers = self.get_success_headers(serializer.data)
         
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    """
-    def perform_create(self, serializer, autor_id):
-        serializer.save(autor_id=autor_id)
-    """
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -477,13 +470,19 @@ class Generos(generics.ListAPIView):
     queryset = Genero.objects.all()
     serializer_class = SerializadorGenero
 
+class GeneroDetalle(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated] #[AllowAny]
+
+    queryset = Genero.objects.all()
+    serializer_class = SerializadorGenero
+
 class Lenguajes(generics.ListAPIView):
     permission_classes = [IsAuthenticated] #[AllowAny]
 
     queryset = Lenguaje.objects.all()
     serializer_class = SerializadorLenguaje
 
-class LenguajeDetalle(generics.ListAPIView):
+class LenguajeDetalle(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated] #[AllowAny]
 
     queryset = Lenguaje.objects.all()
