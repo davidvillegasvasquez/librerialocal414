@@ -20,6 +20,9 @@ class Genero(models.Model):
         """
         return self.nombre
 
+    class Meta:
+        ordering = ['id']
+
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 
 class Libro(models.Model):
@@ -119,7 +122,7 @@ class Autor(models.Model):
         return '%s, %s' % (self.apellido, self.nombre)
 
     class Meta:
-        ordering = ['apellido']
+        ordering = ['id']
 
 class Lenguaje(models.Model):
     """
@@ -127,10 +130,14 @@ class Lenguaje(models.Model):
     """
     nombre = models.CharField(max_length=100)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         """
         String que representa al objeto Lenguaje
         """
+    
         return self.nombre
 
 from django.contrib.auth.models import AbstractUser

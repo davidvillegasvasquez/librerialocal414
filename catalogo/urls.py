@@ -40,15 +40,20 @@ urlpatterns += [
     path('navAutoresConModelFormsetYpaginator/', views.navAutorModelFormsetYpaginator, name='navAutorModelFormsetYpaginator'),
     path('navAutoresYsusLibrosConInlineformset/', views.navAutorYsusLibrosInlienformset, name='navAutorYsusLibrosInlineformset'),
     path('todos-losTitulos-pdf/', views.descargar_pdf, name='descargar_pdf'),
+
     #Endpoints de la api django rest framework:
     path("apirest", views.api_root),
     path('apirest/autores/', views.Autores.as_view(), name="autor-list"),
     path("apirest/autores/<int:pk>/", views.AutorDetalle.as_view(), name="autor-detail"),
     path('apirest/libros/', views.Libros.as_view(), name="libro-list"),
     path('apirest/libros/<int:pk>/', views.LibroDetalle.as_view(), name="libro-detail"), 
+    path('apirest/generos/', views.Generos.as_view(), name="genero-list"),
+    path('apirest/lenguajes/', views.Lenguajes.as_view(), name="lenguaje-list"),
+    path('apirest/lenguajes/<int:pk>/', views.LenguajeDetalle.as_view(), name="lenguaje-detail"),
     #Creación y actualización de usuarios:
     path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
     path('usuarios/<str:miembros_de_la_libreria>/', views.UsuariosPorGrupoListView.as_view(), name='lista_usuarios_grupo'),
+
     # Ruta para actualizar un usuario específico usando su primary key (pk)
     path('usuario/<int:pk>/editar/', views.UsuarioUpdateView.as_view(), name='editar_usuario'),
     path('usuario/<int:pk>/eliminar/', views.UsuarioDeleteView.as_view(), name='eliminar_usuario'),

@@ -412,6 +412,7 @@ from .serializadores import *
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
 
 class Libros(generics.ListCreateAPIView):
     """
@@ -422,6 +423,32 @@ class Libros(generics.ListCreateAPIView):
 
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
+    
+    def create(self, request, *args, **kwargs):
+        serializer= self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Asumiendo que Flet envía el ID del autor como parte del payload en 'autor_id'
+        # o puedes extraerlo de la URL si el endpoint es /autores/{autor_pk}/libros/
+        autor_id = request.data.get('autor_id') 
+        #genero = request.data.get('genero')
+        lenguaje_id = request.data.get('lenguaje_id')
+
+        # Guardamos la instancia asignando explícitamente el autor
+        #self.perform_create(serializer, autor_id=autor_id)
+        serializer.save(autor_id=autor_id)
+        serializer.save(lenguaje_id=lenguaje_id)
+        #self.perform_create(serializer, genero=genero)
+        #self.perform_create2(serializer, lenguaje=lenguaje)
+
+        headers = self.get_success_headers(serializer.data)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    """
+    def perform_create(self, serializer, autor_id):
+        serializer.save(autor_id=autor_id)
+    """
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -444,6 +471,24 @@ class AutorDetalle(generics.RetrieveUpdateDestroyAPIView):
     queryset = Autor.objects.all()
     serializer_class = SerializadorAutor
 
+class Generos(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] #[AllowAny]
+
+    queryset = Genero.objects.all()
+    serializer_class = SerializadorGenero
+
+class Lenguajes(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] #[AllowAny]
+
+    queryset = Lenguaje.objects.all()
+    serializer_class = SerializadorLenguaje
+
+class LenguajeDetalle(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] #[AllowAny]
+
+    queryset = Lenguaje.objects.all()
+    serializer_class = SerializadorLenguaje
+
 #Hacemos un pundo de entrada para nuestra api drf:
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
@@ -454,6 +499,8 @@ def api_root(request, format=None):
         {
             "autores": reverse("autor-list", request=request, format=format),
             "libros": reverse("libro-list", request=request, format=format),
+            "generos": reverse("genero-list", request=request, format=format),
+            "lenguajes": reverse("lenguaje-list", request=request, format=format),
         }
     )
 
