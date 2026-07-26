@@ -30,7 +30,8 @@ class Libro(models.Model):
     Modelo que representa un libro (pero no un Ejemplar específico).
     """
     titulo = models.CharField(max_length=200)
-    autor = models.ForeignKey('Autor', on_delete=models.SET_NULL, null=True, related_name="libros") #Atributo related_name para los hipervínculos de la api rest.
+    autor = models.ForeignKey('Autor', on_delete=models.SET_NULL, null=True, related_name="librosx") #Atributo related_name para los hipervínculos de la api rest. Note que usamos un nombre arbitrario que no tiene nada con los campos de los modelos en cuestión.
+#Averiguar porque no es obligatorio usar related_name para los demás serializadores. Creo que es porque Autor se definió con el atributo método get_absolute_url.
     descripcion = models.TextField(max_length=1000, help_text="Ingrese una breve descripción del libro")
     isbn = models.CharField('ISBN',max_length=13, help_text='13 Caracteres <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
     genero = models.ManyToManyField(Genero, help_text="Seleccione un genero para este libro")

@@ -17,7 +17,6 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
         many=True, 
         view_name="genero-detail", 
         read_only=True,
-        #queryset=Genero.objects.all()
     )
 
     class Meta:
@@ -37,25 +36,11 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'libro-detail', 'format': 'json'}
         }
-    """
-    def create(self, validated_data):
-        # 1. Extraemos los campo de los datos validados
-        autor_data = validated_data.pop('autor_id', None)
-        lenguaje_data = validated_data.pop('lenguaje_id', None)
-        generos_data = validated_data.pop('genero_id', [])
-
-        # 2. Creamos la instancia del libro principal
-        libro = Libro.objects.create(**validated_data)
-
-        # 3. Guardamos/vinculamos las relaciones muchos a muchos manualmente
-        for gen in generos_data:
-            libro.genero.add(gen)
-
-        # 4. Retornamos la instancia creada
-        return libro        
-    """                
+                   
 class SerializadorAutor(serializers.HyperlinkedModelSerializer):
-    libro = serializers.HyperlinkedRelatedField(
+    #Creamos un campo auxiliar para extraer los libros del autor usando libro-detail y acceder a ellos por medio de dicho campo auxiliar. 
+#Aquí es librosx, el nombre arbitrario que definimos como related_name en el modelo Autor:
+    librosx = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
     )
 
@@ -66,7 +51,7 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Autor
-        fields = ["url", "id", "nombre", "apellido", "nacimiento", "muerte", "libro"]
+        fields = ["url", "id", "nombre", "apellido", "nacimiento", "muerte", "librosx"]
         #Asegurarse de que el campo url apunte a la ruta correcta. Se usa para las operaciones c, u, and d de crud:
         extra_kwargs = {
             'url': {'view_name': 'autor-detail', 'format': 'json'}
@@ -74,18 +59,18 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
 
 
 class SerializadorGenero(serializers.HyperlinkedModelSerializer):
-    libro = serializers.HyperlinkedRelatedField(
+    titulo = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
     )
 
     class Meta:
         model = Genero
-        fields = ['url', 'id', 'nombre', 'libro']
+        fields = ['url', 'id', 'nombre', 'titulo']
 
 class SerializadorLenguaje(serializers.HyperlinkedModelSerializer):
-    libro = serializers.HyperlinkedRelatedField(
+    titulo = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
     )
     class Meta:
         model = Lenguaje
-        fields = ['url', 'id', 'nombre', 'libro']
+        fields = ['url', 'id', 'nombre', 'titulo']

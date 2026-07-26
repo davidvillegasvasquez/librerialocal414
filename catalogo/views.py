@@ -515,7 +515,7 @@ class LenguajeDetalle(generics.RetrieveAPIView):
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 
-@api_view(["GET", "POST"])
+@api_view(["GET", "POST", "PATCH", "DELETE"])
 def api_root(request, format=None):
     return Response(
         {
