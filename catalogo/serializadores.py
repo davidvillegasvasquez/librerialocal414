@@ -10,13 +10,14 @@ class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     )
 
     lenguaje = serializers.HyperlinkedRelatedField(
-        many=False, view_name="lenguaje-detail", read_only=True
+        many=False, view_name="lenguaje-detail", read_only=False
     )
     #Así serializamos un campo con relación ManyToMany:
     genero = serializers.HyperlinkedRelatedField(
         many=True, 
         view_name="genero-detail", 
-        read_only=True,
+        read_only=False, #Porque se necesita para las operaciones updates.
+        queryset=Genero.objects.all()
     )
 
     class Meta:
