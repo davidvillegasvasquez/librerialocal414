@@ -425,46 +425,6 @@ class Libros(generics.ListCreateAPIView):
     queryset = Libro.objects.all()
     serializer_class = SerializadorLibro
     
-    #Tenemo que reescribir create por los campos ManyToMany y foreingkey:
-    def create(self, request, *args, **kwargs):
-        #serializer= self.get_serializer(data=request.data)
-        #serializer.is_valid(raise_exception=True)
-        
-        # Asumiendo que Flet envía el ID del autor como parte del payload en 'autor_id'
-        # o puedes extraerlo de la URL si el endpoint es /autores/{autor_pk}/libros/
-        autor_id = request.data.get('autor_id') 
-        lenguaje_id = request.data.get('lenguaje_id')
-        #Proceso para genero_id:
-        #1 Usamos request.data.getlist() si el payload de Flet manda múltiples valores, o .get() si es una lista JSON.
-        m2m_ids = request.data.get('genero', [])
-
-        #2. Hacer una copia mutable de request.data para no alterar el original y extraer los datos básicos
-        datos_basicos = request.data.copy()
-
-        # 3. Remover el campo ManyToMany de los datos básicos para que el Serializador no intente guardarlo directamente
-        if 'genero' in datos_basicos:
-            datos_basicos.pop('genero')
-
-        # 4. Validar y guardar la instancia principal con el Serializador (sin la relación ManyToMany por ahora)
-        serializer = self.get_serializer(data=datos_basicos)
-        serializer.is_valid(raise_exception=True)
-
-        # Usamos atomic para asegurar que si algo falla, no se cree el registro principal a medias
-        with transaction.atomic():
-            instance = serializer.save()
-
-        # 5. Asignar los valores de la relación ManyToMany usando .set()
-            if m2m_ids:
-                instance.genero.set(m2m_ids)
-
-        # Finalmente guardamos las otras instancias de relación tipo foreingkey:       
-        serializer.save(autor_id=autor_id)
-        serializer.save(lenguaje_id=lenguaje_id)     
-
-        headers = self.get_success_headers(serializer.data)
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
 
 class LibroDetalle(generics.RetrieveUpdateDestroyAPIView):
     """

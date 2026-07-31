@@ -6,11 +6,11 @@ from .models import Libro, Autor, Genero, Lenguaje
 
 class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     autor = serializers.HyperlinkedRelatedField(
-        many=False, view_name="autor-detail", read_only=True
+        many=False, view_name="autor-detail", read_only=False, queryset=Autor.objects.all()
     )
 
     lenguaje = serializers.HyperlinkedRelatedField(
-        many=False, view_name="lenguaje-detail", read_only=False
+        many=False, view_name="lenguaje-detail", read_only=False, queryset=Lenguaje.objects.all()
     )
     #Así serializamos un campo con relación ManyToMany:
     genero = serializers.HyperlinkedRelatedField(
@@ -44,12 +44,7 @@ class SerializadorAutor(serializers.HyperlinkedModelSerializer):
     librosx = serializers.HyperlinkedRelatedField(
         many=True, view_name="libro-detail", read_only=True
     )
-
-    def get_url(self, obj, view_name, request, format):
-        if obj is None:
-            return None # Retorna nulo en lugar de intentar generar la URL sin pk
-        return super().get_url(obj, view_name, request, format)
-
+    
     class Meta:
         model = Autor
         fields = ["url", "id", "nombre", "apellido", "nacimiento", "muerte", "librosx"]
