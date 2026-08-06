@@ -215,3 +215,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('CORREO_PASSWORD') # Contraseña de aplicac
 DEFAULT_FROM_EMAIL = os.environ.get('REMITENTE_EMPRESA')
 #Nos vamos directamente a la pág de inicio ya loggeado:
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
+
+#Variables para indicar dónde se guardarán los archivos multimedia subidos por los usuarios en desarrollo:
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

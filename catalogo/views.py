@@ -198,6 +198,25 @@ class BorrarLibro(DeleteView):
     model = Libro
     success_url = reverse_lazy('todosLoslibros')
 
+#Vistas genericas crud para el modelo LibroInstancia:
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class CrearLibroInstancia(CreateView):
+    model = LibroInstancia
+    fields = '__all__'
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class ActualizarLibroInstancia(UpdateView):
+    model = LibroInstancia
+    fields = '__all__'
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class BorrarLibroInstancia(DeleteView):
+    model = LibroInstancia
+    success_url = reverse_lazy('todosLoslibros')
+
 #Así hacemos una vista genérica de lista con dos o más modelos. Debemos declarar el modelo principal en la vista genérica (sólo acepta uno), y el secundario en el método sobreescrito get_context_data:
 
 def goTovistaGenDetailsAutorFromSelect(solicitud):

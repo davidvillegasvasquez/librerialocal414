@@ -20,6 +20,17 @@ Recuerde que la variable de contexto es el nombre del modelo en minúsculas, en 
     {% if libroinstancia.estatus == 'p' %}<p><strong>Pendiente de devolución:</strong> {% if not libroinstancia.estaVencido %}{{ libroinstancia.debidoderegresar }} {% else %} el usuario de nombre "{{ libroinstancia.prestatario }}" (id.{{ libroinstancia.prestatario.id }}) debió regresarlo el {{ libroinstancia.debidoderegresar }} ... no ha regresado el libro aún!!! {% endif %}</p>{% endif %}<!--Note cómo podemos llegar hasta el id del usuario, prestatario de la instancia de libro (libroinstancia.prestatario.id), a través de un elemento de libro.libroinstancia_set.all: con django se hace fácil e intuitivo acceder a los valores de los campos de las intancias de sus modelos correspondientes.--> 
     <p><strong>Imprenta:</strong> {{ libroinstancia.imprenta }}</p>
     <p class="text-muted"><strong>Id:</strong> {{ libroinstancia.id }}</p>
+    <p><strong>Portada:</strong></p>
+    {% comment %}
+     Así se cargan imágenes en una plantilla django. Se debe cargar static y evaluar con un if, de lo contrario arrojará error http 400 si se coloca sólo la etiqueta <img>. En producción hay que hacer algunas modificaciones.
+    {% endcomment %}
+    {% load static %}
+    {% if libroinstancia.portada %}
+    <img src="{{ libroinstancia.portada.url }}" alt="Portada del libro" style="width: 300px; height: 200px; object-fit: cover;">
+{% else %}
+    <img src="" alt="Sin portada disponible">
+{% endif %}
+    <p><strong>Código QR:</strong> {{ libroinstancia.imgqr }}</p>
     {% endfor %}
   </div>
 {% endblock %}

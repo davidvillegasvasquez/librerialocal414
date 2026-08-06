@@ -35,5 +35,7 @@ urlpatterns = [path('admin/', admin.site.urls),
     path('apiauth/auth/', include('dj_rest_auth.urls')),
     path('apiauth/auth/registration/', include('dj_rest_auth.registration.urls')),
 ]
-
+#Configuramos los estáticos para uso en desarrollo:
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+#Para fotos y otras multimedias:
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

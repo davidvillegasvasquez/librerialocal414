@@ -75,6 +75,10 @@ class LibroInstancia(models.Model):
     #En la definición de modelos no usamos from django.contrib.auth import get_user_model para obtener el modelo de usuario que ha sido personalizado, sino que lo traemos desde setting:
     prestatario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
+    #Foto portada:
+    portada = models.ImageField(upload_to='fotos_portada/', blank=True, null=True)
+    imgqr = models.ImageField(upload_to='fotos_qr/', blank=True, null=True)
+
     PRESTAMO_STATUS = (
         ('m', 'Mantenimieno'),
         ('p', 'En prestamo'),

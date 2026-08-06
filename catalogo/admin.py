@@ -49,10 +49,12 @@ class LibroAdministrador(admin.ModelAdmin):
 
 @admin.register(LibroInstancia)
 class LibroInstanciaAdmin(admin.ModelAdmin):
-    list_display = ('libro', 'imprenta', 'id','estatus')
+    list_display = ('libro', 'imprenta', 'id', 'estatus', 'portada', 'imgqr')
+    list_editable = ('portada', 'imgqr')
     list_filter = ('estatus', 'debidoderegresar')
     
-    fieldsets = ((None, {'fields': ('libro', 'imprenta', 'id')}),('Disponibilidad', {'fields': ('estatus', 'debidoderegresar', 'prestatario')}),)
+    
+    fieldsets = ((None, {'fields': ('libro', 'imprenta', 'id', 'portada', 'imgqr')}),('Disponibilidad', {'fields': ('estatus', 'debidoderegresar', 'prestatario')}),)
 
 #Hacemos registros sencillos (no es necesario hacer una clase para ellos), para modelos sencillos de un sólo campo:
 
