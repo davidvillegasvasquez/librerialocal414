@@ -1,0 +1,13 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    {% if request.path == "/catalogo/libroinstancia/crear/" %} <input type="submit" class="w3-button w3-border w3-black"  value="Crear"> {% else %} <input type="submit" class="w3-button w3-border w3-black"  value="Actualizar">{% endif %}
+
+</form>
+{% endblock %}

@@ -14,9 +14,12 @@ urlpatterns = [
     path('TodosLosLibrosActualmenteAlquilados/', views.ListaDeLibrosPrestadosActualmente.as_view(), name='librosAlquiladosActualmente'),
     path('libro/<uuid:claveprimaria>/renovacion/', views.renovacionLibroPorLibrero, name='renovDeLibroPorLibrero'),
     path('autor/crear/', views.CrearAutor.as_view(), name='crearautorini'),
-    path('autor/<int:pk>/actualizar/', views.ActualizarAutor.as_view(), name='actualizarEsteAutor'), path('autor/<int:pk>/borrar/', views.BorrarAutor.as_view(), name='borrar-autor'),
+    path('autor/<int:pk>/actualizar/', views.ActualizarAutor.as_view(), name='actualizarEsteAutor'), 
+    path('autor/<int:pk>/borrar/', views.BorrarAutor.as_view(), name='borrar-autor'),
     path('libro/crear/', views.CrearLibro.as_view(), name='crearlibro'),
-    path('libro/<int:pk>/actualizar/', views.ActualizarLibro.as_view(), name='actualizarLibro'), path('libro/<int:pk>/borrar/', views.BorrarLibro.as_view(), name='borrarlibro'),
+    path('libro/<int:pk>/actualizar/', views.ActualizarLibro.as_view(), name='actualizarLibro'), 
+    path('libro/<int:pk>/borrar/', views.BorrarLibro.as_view(), name='borrarlibro'),
+    path('libroinstancia/crear/', views.CrearLibroInstancia.as_view(), name='crearlibroinstancia'),
     path('ejemUsoSelectOptionsW3.css/', views.goTovistaGenDetailsAutorFromSelect, name='irAautorDetailsDesdeUnSelect'),
     path('irAdetalleAutorDesdeFormulario/', views.irAdetalleAutorDesdeForm, name='autorDetailDesdeForm'),]
 

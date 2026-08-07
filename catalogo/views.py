@@ -203,7 +203,7 @@ class BorrarLibro(DeleteView):
 @method_decorator(never_cache, name='dispatch')
 class CrearLibroInstancia(CreateView):
     model = LibroInstancia
-    fields = '__all__'
+    fields = ['libro', 'imprenta', 'portada']
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
