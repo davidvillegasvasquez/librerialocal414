@@ -27,10 +27,18 @@ Recuerde que la variable de contexto es el nombre del modelo en minúsculas, en 
     {% load static %}
     {% if libroinstancia.portada %}
     <img src="{{ libroinstancia.portada.url }}" alt="Portada del libro" style="width: 300px; height: 200px; object-fit: cover;">
-{% else %}
+        {% else %}
     <img src="" alt="Sin portada disponible">
-{% endif %}
+    {% endif %}
     <p><strong>Código QR:</strong> {{ libroinstancia.imgqr }}</p>
+    {% if libroinstancia.imgqr %}
+    <img src="{{ libroinstancia.imgqr.url }}" alt="Qr del libro" style="width: 300px; height: 200px; object-fit: cover;">
+        {% else %}
+    <img src="" alt="Sin código qr disponible">
+    {% endif %}
+
     {% endfor %}
+
+    
   </div>
 {% endblock %}
