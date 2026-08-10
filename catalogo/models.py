@@ -122,9 +122,23 @@ class LibroInstancia(models.Model):
         # 4. Guardar las imagenes en búfer de formato PNG
         buffer_imgqr = BytesIO()
         img_qr.save(buffer_imgqr, format="PNG")
+        # Asignar la imagen al ImageField sin perder el ciclo normal
         file_name_qr = f"qr_{self.libro}.png"
-        # 5. Asignar el archivo al campo ImageField usando ContentFile
         self.imgqr.save(file_name_qr, ContentFile(buffer_imgqr.getvalue()), save=False)
+        #Verificamos si hay una instancia anterior para borrar el código qr de esa instancia anterior en el proceso de una actualización, y que no se acumulen qr viejos de la misma instancia actualizada.
+#Se debe poner al final del método save y no al principio, de lo contrario no borrará la imagen del qr anterior y se iran acumulando:
+        if self.pk:
+            try:
+                # Buscar la instancia anterior en la base de datos
+                instancia_vieja = LibroInstancia.objects.get(pk=self.pk)
+                # Verificar si la imagen cambió
+                if instancia_vieja.imgqr and instancia_vieja.imgqr != self.imgqr:
+                    # Borrar el archivo de imagen del qr viejo sin volver a guardar el modelo:
+                    instancia_vieja.imgqr.delete(save=False)
+            except LibroInstancia.DoesNotExist:
+                pass
+
+        #Finalmente grabamos el nuevo código qr habiendo borrado el viejo (si lo había):
         super().save(*args, **kwargs)
 
 
