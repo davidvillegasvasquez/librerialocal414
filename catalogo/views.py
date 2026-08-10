@@ -198,11 +198,8 @@ class BorrarLibro(DeleteView):
     model = Libro
     success_url = reverse_lazy('todosLoslibros')
 
-#Vistas genericas crud para el modelo LibroInstancia. Comenzamos importando las librerías necesarias:
-import qrcode
-from io import BytesIO
-from django.core.files.base import ContentFile
 
+#Vistas genericas crud para el modelo LibroInstancia. 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class CrearLibroInstancia(CreateView):
@@ -210,61 +207,15 @@ class CrearLibroInstancia(CreateView):
     fields = ['libro', 'imprenta', 'portada']
     success_url = reverse_lazy('todosLoslibros')
 
-    #Cómo tenemos que llenar automáticamente el campo imgqr con los datos de los demás campos, tenemos que sobreescribir el método form_valid:
-    def form_valid(self, form):
-        #Asignamos los datos del formulario a la instancia (self.object), sin guardala aún:
-        self.object = form.save(commit=False)
-        
-        #Procedemos a captar el valor de los campos que conforman los datos para la constitución del valor del campo imgqr:
-
-        titulo = form.cleaned_data.get('libro') #Recuerde que el objeto libroinstancia retorna con el método __str__, self.id concatenada a self.libro.titulo:
-        imprenta = form.cleaned_data.get('imprenta')
-        
-        portada = form.cleaned_data.get('portada') 
-
-        #Construir la estructura de datos en formato vCard
-        vcard_data = (
-            "BEGIN:VCARD\n"
-            "VERSION:3.0\n"
-            f"ID:{self.object.id}\n" #Se crea automáticamente (default=uuid.uuid4 en la definición del campo en el modelo).
-            f"TITULO:{titulo}\n"
-            f"IMPRENTA:{imprenta}\n"
-            "END:VCARD"
-        )
-
-        #Generar la imagen del código QR con qrcode
-        qr = qrcode.QRCode(version=1, box_size=10, border=4)
-        qr.add_data(vcard_data)
-        qr.make(fit=True)
-        img_qr = qr.make_image(fill_color="black", back_color="white")
-        #img_portada = 
-        
-        # 4. Guardar las imagenes en búfer de formato PNG
-        buffer_imgqr = BytesIO()
-        #buffer_portada = BytesIO()
-       
-        img_qr.save(buffer_imgqr, format="PNG")
-        #img_portada.save(buffer_portada, format="PNG")
-
-        file_name_qr = f"qr_{titulo}.png"
-        #file_name_portada = f"portada_{titulo}.png"
-        # 5. Asignar el archivo al campo ImageField usando ContentFile
-        self.object.imgqr.save(file_name_qr, ContentFile(buffer_imgqr.getvalue()), save=False)
-
-        #file_name_portada = f"qr_{titulo}.png"
-        #self.object.portada.save(file_name_portada, save=False)
-
-        #Finalmente guardamos el objeto definivamente:
-        self.object.save()
-    
-        return super().form_valid(form)
-       
-
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class ActualizarLibroInstancia(UpdateView):
+    """
+    No debes colocar un campo que se autorrellena en la lista fields de tu UpdateView. Si el campo se calcula o se llena solo de manera automática en el método form_valid, ponerlo en fields haría que Django espere (y exija) que el usuario lo envíe desde el formulario HTML.
+    """
     model = LibroInstancia
-    fields = '__all__'
+    fields = ['imprenta', 'portada']
+    success_url = reverse_lazy('todosLoslibros')
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')

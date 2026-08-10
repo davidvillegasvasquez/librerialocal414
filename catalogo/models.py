@@ -1,9 +1,11 @@
 # Create your models here.
 
 from django.db import models
-#from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import date
+from io import BytesIO
+import qrcode
+from django.core.files.base import ContentFile
 
 
 # Create your models here.
@@ -97,6 +99,34 @@ class LibroInstancia(models.Model):
         if self.debidoderegresar and date.today() > self.debidoderegresar:
             return True
         return False
+
+    #Tenemos que sobreescribir el método save en vez del form_valid en la vista CrearLibroInstancia xq a pesar de que se puede crear el qr sin ningún problema,
+ #no se podrá actualizar puesto que el cambio no se persiste cuando llamemos la vista ActualizarLibroInstancia; los datos limpios del formulario aún no están consolidados en la instancia cuándo se ejecute la vista:
+    def save(self, *args, **kwargs):
+        # Generar el texto a partir de los campos. Construir la estructura de datos en formato vCard
+        vcard_data = (
+            "BEGIN:VCARD\n"
+            "VERSION:3.0\n"
+            f"ID:{self.id}\n" #Se crea automáticamente (default=uuid.uuid4 en la definición del campo en el modelo).
+            f"TITULO:{self.libro}\n"
+            f"IMPRENTA:{self.imprenta}\n"
+            "END:VCARD"
+        )
+
+        #Generar la imagen en formato png del código QR con qrcode. No lo haremos con portada, por lo cual la foto de de portada se guardará en el formato que la ingresemos:
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(vcard_data)
+        qr.make(fit=True)
+        img_qr = qr.make_image(fill_color="black", back_color="white")
+        
+        # 4. Guardar las imagenes en búfer de formato PNG
+        buffer_imgqr = BytesIO()
+        img_qr.save(buffer_imgqr, format="PNG")
+        file_name_qr = f"qr_{self.libro}.png"
+        # 5. Asignar el archivo al campo ImageField usando ContentFile
+        self.imgqr.save(file_name_qr, ContentFile(buffer_imgqr.getvalue()), save=False)
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         """

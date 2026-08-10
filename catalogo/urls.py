@@ -20,6 +20,11 @@ urlpatterns = [
     path('libro/<int:pk>/actualizar/', views.ActualizarLibro.as_view(), name='actualizarLibro'), 
     path('libro/<int:pk>/borrar/', views.BorrarLibro.as_view(), name='borrarlibro'),
     path('libroinstancia/crear/', views.CrearLibroInstancia.as_view(), name='crearlibroinstancia'),
+    #Para usar una DeleteView con un modelo que tiene un campo UUIDField como clave primaria, tu URL debe capturar el parámetro como un UUID usando el conversor
+    #de rutas <uuid:pk> o <uuid:uuid>. La ruta se define típicamente como 'tu-modelo/<uuid:pk>/eliminar/'
+    #Plantilla((base1.html)): Usa el nombre de la URL con el objeto respectivo: {% url 'objeto_eliminar' object.pk %}    
+    path('libroinstancia/<uuid:pk>/borrar/', views.BorrarLibroInstancia.as_view(), name='borrarlibroinstancia'),
+    path('libroinstancia/<uuid:pk>/actualizar/', views.ActualizarLibroInstancia.as_view(), name='actualizarlibroinstancia'),
     path('ejemUsoSelectOptionsW3.css/', views.goTovistaGenDetailsAutorFromSelect, name='irAautorDetailsDesdeUnSelect'),
     path('irAdetalleAutorDesdeFormulario/', views.irAdetalleAutorDesdeForm, name='autorDetailDesdeForm'),]
 
@@ -58,7 +63,7 @@ urlpatterns += [
     path('crear-usuario/', views.crear_usuario_inferior, name='crear_usuario'),
     path('usuarios/<str:miembros_de_la_libreria>/', views.UsuariosPorGrupoListView.as_view(), name='lista_usuarios_grupo'),
 
-    # Ruta para actualizar un usuario específico usando su primary key (pk)
+    # Ruta para actualizar y borrar un usuario específico usando su primary key (pk)
     path('usuario/<int:pk>/editar/', views.UsuarioUpdateView.as_view(), name='editar_usuario'),
     path('usuario/<int:pk>/eliminar/', views.UsuarioDeleteView.as_view(), name='eliminar_usuario'),
 ]
