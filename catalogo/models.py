@@ -113,7 +113,7 @@ class LibroInstancia(models.Model):
             "END:VCARD"
         )
 
-        #Generar la imagen en formato png del código QR con qrcode. No lo haremos con portada, por lo cual la foto de de portada se guardará en el formato que la ingresemos:
+        #Generar la imagen en formato png del código QR con qrcode. No lo haremos con portada, por lo cual la foto de portada se guardará en el formato que la ingresemos:
         qr = qrcode.QRCode(version=1, box_size=10, border=4)
         qr.add_data(vcard_data)
         qr.make(fit=True)

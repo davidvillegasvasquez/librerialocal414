@@ -1,0 +1,62 @@
+Cómo implementar django ninja en una app dedicada sólo para la api en un proyecto django con multiples app ?
+
+Para implementar Django Ninja en una app dedicada exclusivamente a la API dentro de un proyecto con múltiples aplicaciones, debes crear una app centralizadora (por ejemplo, llamada api) que agrupe los routers de las demás aplicaciones usando el sistema de enrutamiento modular (add_router).
+
+1. Crear y registrar la app de la API
+Ejecuta el comando para crear la nueva aplicación:
+python manage.py startapp api
+Luego, agrégala a tu archivo settings.py:
+INSTALLED_APPS = [
+    # ...
+    'tu_otra_app',
+    'api',
+]
+
+2. Inicializar la instancia principal de Django Ninja
+Dentro de la carpeta de tu app api, crea un archivo llamado api.py (o routers.py):
+
+#api/api.py
+from ninja import NinjaAPI
+api = NinjaAPI()
+
+3. Crear routers modulares en tus otras apps
+En cada una de tus aplicaciones de negocio (por ejemplo, productos o usuarios), puedes definir sus propios endpoints usando Router en lugar de NinjaAPI.
+
+# productos/api.py
+from ninja import Router
+from .models import Producto
+from typing import List
+from .schemas import ProductoSchema # Define tus esquemas con Pydantic
+
+router = Router()
+
+@router.get("/", response=List[ProductoSchema])
+def listar_productos(request):
+    return Producto.objects.all()
+
+4. Conectar los routers a la API principal
+Importa los routers de tus otras apps en el archivo api/api.py de tu app api y agrégalos usando add_router:
+# api/api.py
+from ninja import NinjaAPI
+from productos.api import router as productos_router
+# from usuarios.api import router as usuarios_router
+
+api = NinjaAPI()
+
+# Registras los sub-routers con un prefijo
+api.add_router("/productos/", productos_router)
+# api.add_router("/usuarios/", usuarios_router)
+
+5. Exponer la API en las URLs del proyecto
+Finalmente, incluye la instancia api.urls en el urls.py principal de tu proyecto Django:
+# mi_proyecto/urls.py
+from django.contrib import admin
+from django.urls import path
+from api.api import api
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', api.urls), # Todos los endpoints colgarán de /api/
+]
+
+Con esta estructura, tu documentación interactiva estará disponible en /api/docs y mantendrás el código limpio, desacoplado y organizado por dominios en cada app de tu proyecto.

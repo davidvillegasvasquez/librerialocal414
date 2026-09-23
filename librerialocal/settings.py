@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.google',
     'widget_tweaks',
     'slippers', 
 ]
@@ -120,10 +120,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en'
-TIME_ZONE = 'America/Caracas'
 USE_I18N = True
 USE_TZ = True
+LANGUAGE_CODE = 'es'
+TIME_ZONE = 'America/Caracas'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -141,7 +142,6 @@ LOGIN_REDIRECT_URL = '/'
 
 # settings.py
 LOGOUT_REDIRECT_URL = '/'  # or any other appropriate URL
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DATE_INPUT_FORMATS = ['%d/%m/%Y', '%Y-%m-%d']
 
 # Default primary key field type
@@ -186,8 +186,6 @@ REST_AUTH = {
 }
 
 # Allauth configuration
-SITE_ID = 1
-#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_LOGIN_METHODS = {'email'}
@@ -205,6 +203,7 @@ ALLAUTH_UI_THEME = "light"
 ACCOUNT_ADAPTER = 'librerialocal.adapters.NoSignupAccountAdapter'
 
 #Configuaración servidor de correo:
+#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.yahoo.com'  # O el servidor de tu proveedor (ej. ://outlook.com)
 EMAIL_USE_SSL = True
@@ -219,3 +218,9 @@ ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
 #Variables para indicar dónde se guardarán los archivos multimedia subidos por los usuarios en desarrollo:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+SITE_ID = 1
+
+# Evita que Django codifique en caracteres ASCII en sus respuestas JSON internas
+#JSON_ENSURE_ASCII = False
+

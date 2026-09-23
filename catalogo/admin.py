@@ -23,8 +23,7 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2'), # Recuerde que estos son los únicos campos para agregar nuevo usuario. password2 se refiere a la verificación que pide de volver a colocar el password para verificar.
         }),
-    )
-   
+    ) 
     
 admin.site.register(CustomUser, CustomUserAdmin)
 

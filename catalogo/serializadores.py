@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group, User
 from rest_framework import serializers
 from .models import Libro, Autor, Genero, Lenguaje
 
-# Serializers define the API representation.
+# Serializadores para django rest framework.
 
 class SerializadorLibro(serializers.HyperlinkedModelSerializer):
     autor = serializers.HyperlinkedRelatedField(

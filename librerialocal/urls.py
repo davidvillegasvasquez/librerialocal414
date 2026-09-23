@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from .apiNinja import apiXXX
 
 #Urls para los JWT:
 from rest_framework_simplejwt.views import (
@@ -34,6 +35,8 @@ urlpatterns = [path('admin/', admin.site.urls),
     path('apitoken/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('apiauth/auth/', include('dj_rest_auth.urls')),
     path('apiauth/auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('api-ninja/', apiXXX.urls), #api implementada a nivel de proyecto
+    #path('ninja-api/', include('ninjaApi.urls')), #api implementada en una app dedicada.
 ]
 #Configuramos los estáticos para uso en desarrollo:
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -12,6 +12,7 @@ class MiLoginFormPersonalizado(LoginForm):
         
         # Debes retornar el resultado original al final
         return super().login(*args, **kwargs)
+
 Registra el formulario en settings.py: Dile a Django que utilice tu formulario modificado en lugar del predeterminado: 
 
 AllAuth

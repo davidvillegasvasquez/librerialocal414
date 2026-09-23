@@ -559,7 +559,7 @@ class UsuariosPorGrupoListView(generic.ListView):
 
     def get_queryset(self):
         # Obtenemos el nombre del grupo desde la URL
-        self.grupo_nombre = self.kwargs.get('miembros de la libreria', 'miembros de la libreria')#self.kwargs.get['miembros_de_la_librería'] #self.kwargs.get('miembros_de_la_libreria', 'valor_por_defecto')
+        self.grupo_nombre = self.kwargs.get('miembros de la libreria', 'miembros de la libreria')
         # Filtramos los usuarios que pertenecen a este grupo
         grupo = Group.objects.get(name=self.grupo_nombre)
        
